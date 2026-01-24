@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-navy: #0a0e17;
+  --color-brand-cyan: #00f2ea;
+  --color-brand-dark: #050505;
+  --font-sans: "Montserrat", sans-serif;
+}
+
+/* Global Styles */
+body {
+    @apply bg-brand-navy text-white font-sans;
+    overflow-x: hidden;
+}
+
+/* Typography Defaults */
+h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+}
+
+a {
+    @apply transition-colors duration-200;
+}
