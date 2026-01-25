@@ -1,19 +1,24 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { browser } from "$app/environment";
+    import * as THREE from "three";
 
     let canvas: HTMLCanvasElement;
     let scene: THREE.Scene;
     let camera: THREE.PerspectiveCamera;
     let renderer: THREE.WebGLRenderer;
     let cube: THREE.Mesh;
+    let toroid: THREE.Mesh;
     let animationId: number;
+    let geometry: THREE.BoxGeometry;
+    let material: THREE.MeshStandardMaterial;
+    let toroidGeometry: THREE.TorusGeometry;
+    let toroidMaterial: THREE.MeshStandardMaterial;
+    let handleResize: (() => void) | null = null;
+    let handleMouseMove: ((event: MouseEvent) => void) | null = null;
 
-    onMount(async () => {
+    onMount(() => {
         if (!browser) return;
-
-        // Import THREE dynamically
-        const THREE = await import("three");
 
         // Scene setup
         scene = new THREE.Scene();
@@ -37,7 +42,7 @@
         renderer.setSize(canvas.clientWidth, canvas.clientHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFShadowShadowMap;
+        renderer.shadowMap.type = THREE.PCFShadowMap;
 
         // Lighting
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -53,8 +58,8 @@
         scene.add(directionalLight);
 
         // Create animated cube
-        const geometry = new THREE.BoxGeometry(2, 2, 2);
-        const material = new THREE.MeshStandardMaterial({
+        geometry = new THREE.BoxGeometry(2, 2, 2);
+        material = new THREE.MeshStandardMaterial({
             color: 0x6366f1,
             metalness: 0.7,
             roughness: 0.2,
@@ -65,14 +70,14 @@
         scene.add(cube);
 
         // Create toroid geometry for background
-        const toroidGeometry = new THREE.TorusGeometry(3, 0.3, 16, 32);
-        const toroidMaterial = new THREE.MeshStandardMaterial({
+        toroidGeometry = new THREE.TorusGeometry(3, 0.3, 16, 32);
+        toroidMaterial = new THREE.MeshStandardMaterial({
             color: 0x8b5cf6,
             metalness: 0.5,
             roughness: 0.4,
             wireframe: false,
         });
-        const toroid = new THREE.Mesh(toroidGeometry, toroidMaterial);
+        toroid = new THREE.Mesh(toroidGeometry, toroidMaterial);
         toroid.position.z = -5;
         toroid.castShadow = true;
         scene.add(toroid);
@@ -95,7 +100,7 @@
         animate();
 
         // Handle window resize
-        const handleResize = () => {
+        handleResize = () => {
             const width = canvas.clientWidth;
             const height = canvas.clientHeight;
             camera.aspect = width / height;
@@ -106,7 +111,7 @@
         window.addEventListener("resize", handleResize);
 
         // Handle mouse movement
-        const handleMouseMove = (event: MouseEvent) => {
+        handleMouseMove = (event: MouseEvent) => {
             const x = (event.clientX / window.innerWidth) * 2 - 1;
             const y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -117,8 +122,10 @@
         window.addEventListener("mousemove", handleMouseMove);
 
         return () => {
-            window.removeEventListener("resize", handleResize);
-            window.removeEventListener("mousemove", handleMouseMove);
+            if (handleResize)
+                window.removeEventListener("resize", handleResize);
+            if (handleMouseMove)
+                window.removeEventListener("mousemove", handleMouseMove);
             cancelAnimationFrame(animationId);
             renderer.dispose();
             geometry.dispose();
@@ -129,7 +136,7 @@
     });
 </script>
 
-<canvas bind:this={canvas} class="h-screen w-full" />
+<canvas bind:this={canvas} class="h-screen w-full"></canvas>
 
 <style>
     canvas {
