@@ -1,7 +1,19 @@
 <script lang="ts">
+    import { onMount } from "svelte";
     import SEOHead from "$lib/components/SEOHead.svelte";
-    import HeroScene from "$lib/components/3d/HeroScene.svelte";
     import type { SEOConfig } from "$lib/seo/schema";
+
+    let HeroScene: any;
+    let mounted = false;
+
+    onMount(async () => {
+        // Dynamically import Three.js scene only when component is mounted
+        const { default: Scene } = await import(
+            "$lib/components/3d/HeroScene.svelte"
+        );
+        HeroScene = Scene;
+        mounted = true;
+    });
 
     const seoConfig: SEOConfig = {
         title: "HEINZE MEDIA - Metaverse, XR & 3D Web Solutions",
@@ -31,8 +43,15 @@
 
 <!-- 3D Hero Section -->
 <section class="relative h-screen w-full overflow-hidden">
-    <!-- Three.js Canvas Background -->
-    <HeroScene />
+    <!-- Three.js Canvas Background - Lazy loaded -->
+    {#if mounted && HeroScene}
+        <svelte:component this={HeroScene} />
+    {:else}
+        <!-- Fallback background while loading -->
+        <div
+            class="absolute inset-0 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900"
+        ></div>
+    {/if}
 
     <!-- Content Overlay -->
     <div class="absolute inset-0 flex items-center justify-center">
