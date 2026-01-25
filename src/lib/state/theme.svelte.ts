@@ -37,15 +37,21 @@ const CATEGORY_THEME_MAP: Record<string, Theme> = {
     'sitemap': 'meteorite'
 };
 
-class ThemeState {
+class ThemeStore {
     theme = $state<Theme>('meteorite');
     mode = $state<Mode>('dark');
-    private initialized = $state(false);
+    private initialized = false;
 
-    // Derived computed state
-    themeClass = $derived.by(() => `theme-${this.theme}`);
-    isDarkMode = $derived(this.mode === 'dark');
-    themeName = $derived.by(() => {
+    // Derived computed state (only works in components, so mark as computed getters)
+    get themeClass(): string {
+        return `theme-${this.theme}`;
+    }
+
+    get isDarkMode(): boolean {
+        return this.mode === 'dark';
+    }
+
+    get themeName(): string {
         const themeLabels: Record<Theme, string> = {
             'meteorite': 'Meteorite (Tech)',
             'steel': 'Steel (Pro)',
@@ -53,17 +59,12 @@ class ThemeState {
             'insight': 'Insight (Offer)'
         };
         return themeLabels[this.theme] || this.theme;
-    });
+    }
 
     constructor() {
         if (browser) {
             this.init();
-            // Reactive apply on theme/mode change
-            $effect(() => {
-                if (this.initialized) {
-                    this.applyToDOM();
-                }
-            });
+            this.applyToDOM();
         }
     }
 
@@ -114,15 +115,17 @@ class ThemeState {
     setTheme(newTheme: Theme) {
         if (!VALID_THEMES.includes(newTheme)) return;
         this.theme = newTheme;
+        this.applyToDOM();
         if (browser) localStorage.setItem(THEME_KEY, newTheme);
     }
 
     toggleMode() {
         this.mode = this.mode === 'dark' ? 'light' : 'dark';
+        this.applyToDOM();
         if (browser) localStorage.setItem(MODE_KEY, this.mode);
     }
 
-    private applyToDOM() {
+    applyToDOM() {
         if (!browser) return;
 
         const root = document.documentElement;
@@ -138,4 +141,5 @@ class ThemeState {
     }
 }
 
-export const themeState = new ThemeState();
+export const themeState = new ThemeStore();
+
