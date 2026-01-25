@@ -4,9 +4,9 @@
   import "@fontsource/montserrat/700.css";
   import Header from "$lib/components/Header.svelte";
   import Footer from "$lib/components/Footer.svelte";
+  import SEOHead from "$lib/components/SEOHead.svelte";
   import { themeState } from "$lib/state/theme.svelte";
   import { adminState } from "$lib/state/admin.svelte";
-  import { onMount } from "svelte";
 
   let { children } = $props();
 
@@ -30,6 +30,8 @@
     }
   }
 </script>
+
+<SEOHead />
 
 <svelte:window onkeydown={handleKeydown} />
 

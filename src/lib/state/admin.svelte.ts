@@ -4,6 +4,8 @@ const ADMIN_KEY = 'hm-admin-access';
 
 class AdminState {
     isAdmin = $state(false);
+    // Derived state for reactive admin status display
+    adminStatus = $derived(this.isAdmin ? 'Admin Mode' : 'Viewer Mode');
 
     constructor() {
         if (browser) {
@@ -18,7 +20,7 @@ class AdminState {
             if (status) {
                 localStorage.setItem(ADMIN_KEY, 'true');
             } else {
-                localStorage.removeItem(ADMIN_KEY); // Or set 'false'
+                localStorage.removeItem(ADMIN_KEY);
             }
         }
     }

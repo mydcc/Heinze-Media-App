@@ -1,9 +1,32 @@
 <script lang="ts">
+    import SEOHead from "$lib/components/SEOHead.svelte";
+    import type { SEOConfig } from "$lib/seo/schema";
+
     let { data } = $props();
+
+    const seoConfig: SEOConfig = {
+        title: "Blog - News & Insights | HEINZE MEDIA",
+        description:
+            "Neueste Artikel und Insights über XR, Metaverse, 3D Web-Technologien und digitale Innovation für Unternehmen.",
+        keywords: [
+            "Blog",
+            "XR News",
+            "Metaverse",
+            "3D Web",
+            "Digital Innovation",
+            "Insights",
+        ],
+        url: "https://heinze.media/blog",
+        type: "website",
+        image: "https://heinze.media/og-blog.png",
+        author: "HEINZE MEDIA",
+    };
 </script>
 
+<SEOHead config={seoConfig} />
+
 <svelte:head>
-    <title>News | Heinze Media</title>
+    <title>{seoConfig.title}</title>
 </svelte:head>
 
 <div class="container mx-auto px-6 py-24">

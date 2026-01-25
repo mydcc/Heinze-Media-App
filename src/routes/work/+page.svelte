@@ -1,9 +1,32 @@
 <script lang="ts">
+    import SEOHead from "$lib/components/SEOHead.svelte";
+    import type { SEOConfig } from "$lib/seo/schema";
+
     let { data } = $props();
+
+    const seoConfig: SEOConfig = {
+        title: "Portfolio - Our Work | HEINZE MEDIA",
+        description:
+            "Entdecken Sie unsere erfolgreichen Projekte im Bereich XR, Metaverse und 3D Web. Von Virtual Production bis zur Metaverse-Integration - professionelle Lösungen für zukunftsorientierte Marken.",
+        keywords: [
+            "Portfolio",
+            "Work",
+            "XR Projects",
+            "Metaverse",
+            "Cases",
+            "3D Web",
+        ],
+        url: "https://heinze.media/work",
+        type: "website",
+        image: "https://heinze.media/og-work.png",
+        author: "HEINZE MEDIA",
+    };
 </script>
 
+<SEOHead config={seoConfig} />
+
 <svelte:head>
-    <title>Work | Heinze Media</title>
+    <title>{seoConfig.title}</title>
 </svelte:head>
 
 <div class="container mx-auto px-6 py-24">

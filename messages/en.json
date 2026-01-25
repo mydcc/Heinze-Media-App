@@ -1,0 +1,9 @@
+{
+    "$schema": "https://inlang.com/schema/message-format-plugin/messages",
+    "header_home": "Home",
+    "header_about": "About",
+    "header_work": "Work",
+    "header_services": "XR/AR/VR",
+    "header_news": "News",
+    "header_contact": "Contact"
+}

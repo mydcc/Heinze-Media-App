@@ -1,13 +1,31 @@
 <script lang="ts">
-    import { themeState } from "$lib/state/theme.svelte";
+    import SEOHead from "$lib/components/SEOHead.svelte";
+    import type { SEOConfig } from "$lib/seo/schema";
     import AdminGuard from "$lib/components/AdminGuard.svelte";
 
-    // Set category to 'special' (Red Accent) - e.g. Black Friday or Limited Deal
-    $effect(() => {
-        themeState.setCategory("special");
-        return () => themeState.setCategory("default");
-    });
+    const seoConfig: SEOConfig = {
+        title: "Special Deal - Limited Time Offer | HEINZE MEDIA",
+        description:
+            "Exklusives Angebot: Sparen Sie bis zu 50% auf XR Studio Services und Metaverse Projekte. Begrenzt verfügbar!",
+        keywords: [
+            "Special Offer",
+            "Deal",
+            "Discount",
+            "Limited Time",
+            "XR Services",
+        ],
+        url: "https://heinze.media/offer/special-deal",
+        type: "website",
+        image: "https://heinze.media/og-deal.png",
+        author: "HEINZE MEDIA",
+    };
 </script>
+
+<SEOHead config={seoConfig} />
+
+<svelte:head>
+    <title>{seoConfig.title}</title>
+</svelte:head>
 
 <AdminGuard>
     <div class="pt-20 pb-32">

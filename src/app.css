@@ -1,393 +1,555 @@
 @import "tailwindcss";
 
 /* =========================================
-   1. GLOBAL VARIABLES & PALETTES
+   1. GLOBAL VARIABLES & BRAND ASSETS
    ========================================= */
-@layer base {
-    :root {
-        /* --- Base Fonts --- */
-        --font-heading: "Montserrat", sans-serif;
-        --font-body: "Montserrat", sans-serif;
+/* =========================================
+   1. GLOBAL VARIABLES & BRAND ASSETS
+   ========================================= */
+/* Moved to @theme block */
 
-        /* --- Default Theme (Navy) - Dark (Default) --- */
-        --navy-950: #0a0e17;
-        --navy-900: #111625;
-        --navy-800: #1c2333;
-        --cyan-500: #00f2ea;
-        --cyan-400: #33f5ee;
+/* =========================================
+   2. THEME DEFINITIONS (4 CATEGORIES)
+   ========================================= */
 
-        /* --- Default Theme - Light --- */
-        --slate-50: #f8fafc;
-        --slate-100: #f1f5f9;
-        --slate-200: #e2e8f0;
-        --slate-900: #0f172a;
-        --sky-500: #0ea5e9;
+/* --- THEME 1: METEORITE (Default / Blog / Generic) --- */
+.theme-meteorite {
+    /* Core */
+    --core-primary: #4e21e7;
+    --core-base: #433f65;
 
-        /* --- Steel Theme - Dark --- */
-        --steel-950: #05081a;
-        --steel-800: #0f173d;
-        --steel-700: #1a2a6c;
-        --blue-600: #334eff;
+    /* Highlighting */
+    --highlight-primary: #7383f5;
+    --highlight-alt: #c2befa;
 
-        /* --- Steel Theme - Light --- */
-        --steel-50: #f0f4f8;
-        --steel-white: #ffffff;
-        --blue-500: #2563eb;
+    /* Modes */
+    --clr-dark: #0c082f;
+    --clr-light: #ede8fd;
 
-        /* --- Meteorite Theme - Dark --- */
-        --meteor-950: #0c082f;
-        --meteor-800: #161245;
-        --meteor-700: #2b1f99;
-        --purple-500: #7c3aed;
+    /* Gradient */
+    --grad-light: #2b1f99;
+    --grad-dark: #0c082f;
 
-        /* --- Meteorite Theme - Light --- */
-        --meteor-50: #f3f0ff;
-        --meteor-white: #ffffff;
-        --purple-600: #7c3aed;
-    }
+    /* Semantic Mapping */
+    --bg-body: var(--clr-dark);
+    --bg-surface: #08051e;
+    --bg-surface-2: #161245;
+    --bg-primary: radial-gradient(farthest-side at top, var(--grad-light), var(--grad-dark));
+    --bg-footer: var(--clr-dark);
 
-    /* =========================================
-     2. SEMANTIC MAPPING (The Magic)
-     ========================================= */
+    --text-main: var(--clr-light);
+    --text-muted: var(--highlight-alt);
+    --text-tertiary: var(--core-base);
 
-    /* --- THEME: DEFAULT (Navy) --- */
-    .theme-default {
-        /* Mode: Dark (Default) */
-        --bg-body: var(--navy-950);
-        --bg-surface: var(--navy-900);
-        --bg-surface-2: var(--navy-800);
-        --text-main: #ffffff;
-        --text-muted: #94a3b8;
-        --color-accent: var(--cyan-500);
-        --color-border: rgba(255, 255, 255, 0.1);
-    }
+    --color-accent: var(--core-primary);
+    --color-border: #2b1f99;
 
-    .theme-default[data-mode="light"] {
-        --bg-body: var(--slate-50);
-        --bg-surface: var(--slate-100);
-        --bg-surface-2: var(--slate-200);
-        --text-main: var(--slate-900);
-        --text-muted: #475569;
-        --color-accent: var(--sky-500);
-        --color-border: #cbd5e1;
-    }
+    /* Buttons */
+    --btn-primary-bg: var(--core-primary);
+    --btn-primary-text: #ffffff;
+    --btn-secondary-bg: var(--core-base);
+    --btn-secondary-text: #ffffff;
+}
 
-    /* --- THEME: STEEL --- */
-    .theme-steel {
-        /* Mode: Dark */
-        --bg-body: var(--steel-950);
-        --bg-surface: var(--steel-800);
-        --bg-surface-2: var(--steel-700);
-        --text-main: #e2e8f0;
-        --text-muted: #93a1a1;
-        --color-accent: var(--blue-600);
-        --color-border: rgba(51, 78, 255, 0.2);
-    }
+.theme-meteorite[data-mode="light"] {
+    --bg-body: #f8f9fb;
+    --bg-surface: #ffffff;
+    --bg-surface-2: #f3f0ff;
+    --bg-primary: #f3f0ff;
+    --bg-footer: var(--clr-dark);
 
-    .theme-steel[data-mode="light"] {
-        --bg-body: var(--steel-50);
-        --bg-surface: var(--steel-white);
-        --bg-surface-2: #e2e8f0;
-        --text-main: #1e293b;
-        --text-muted: #64748b;
-        --color-accent: var(--blue-500);
-        --color-border: #e2e8f0;
-    }
+    --text-main: #433f65;
+    --text-muted: #5a587a;
 
-    /* --- THEME: METEORITE --- */
-    .theme-meteorite {
-        /* Mode: Dark */
-        --bg-body: var(--meteor-950);
-        --bg-surface: var(--meteor-800);
-        --bg-surface-2: var(--meteor-700);
-        --text-main: #ede8fd;
-        --text-muted: #c2befa;
-        --color-accent: var(--blue-600);
-        /* Keep Blue Pro accent from original */
-        --color-border: #2b1f99;
-    }
+    --color-border: #ddd6fe;
 
-    .theme-meteorite[data-mode="light"] {
-        --bg-body: var(--meteor-50);
-        --bg-surface: var(--meteor-white);
-        --bg-surface-2: #e9d5ff;
-        --text-main: #2e1065;
-        --text-muted: #5b21b6;
-        --color-accent: var(--purple-600);
-        --color-border: #ddd6fe;
-    }
+    /* Pattern Background for Meteorite Light */
+    background-image: url("/assets/pattern-lg.svg");
+    background-size: 800px;
+    background-repeat: repeat;
+    background-attachment: fixed;
+    background-blend-mode: multiply;
+}
 
-    /* =========================================
-     2.1 CATEGORY OVERRIDES (The Brand Layer)
-     ========================================= */
+/* --- THEME 2: STEEL (Professional / Services / Pro) --- */
+.theme-steel {
+    /* Core */
+    --core-primary: #334eff;
+    --core-base: #433f65;
 
-    /* FREE Category: Green (#0da49a) */
-    [data-category="free"] {
-        --color-accent: #0da49a;
-        --color-border: rgba(13, 164, 154, 0.3);
-    }
+    /* Highlighting */
+    --highlight-primary: #80b8f2;
+    --highlight-alt: #c2cfed;
 
-    /* PRO Category: Blue (#334eff) */
-    [data-category="pro"] {
-        --color-accent: #334eff;
-        --color-border: rgba(51, 78, 255, 0.3);
-    }
+    /* Modes */
+    --clr-dark: #08103f;
+    --clr-light: #eaedff;
 
-    /* SPECIAL Category: Red (#ee485f) */
-    [data-category="special"] {
-        --color-accent: #ee485f;
-        --color-border: rgba(238, 72, 95, 0.3);
-    }
+    /* Gradient */
+    --grad-light: #3c6e99;
+    --grad-dark: #08103f;
 
-    /* GENERIC/BLOG Category: Purple (#4e21e7) - Default fallback but explicit here */
-    [data-category="default"] {
-        /* Uses theme defaults usually, but if we want strictly purple for "Blog": */
-        /* --color-accent: #4e21e7; */
-    }
+    /* Semantic Mapping */
+    --bg-body: var(--clr-dark);
+    --bg-surface: #05081a;
+    --bg-surface-2: #0f173d;
+    --bg-primary: radial-gradient(farthest-side at top, var(--grad-light), var(--grad-dark));
+    --bg-footer: var(--clr-dark);
+
+    --text-main: var(--clr-light);
+    --text-muted: var(--highlight-primary);
+    --text-tertiary: var(--core-base);
+
+    --color-accent: var(--core-primary);
+    --color-border: #1a2a6c;
+
+    /* Buttons */
+    --btn-primary-bg: var(--core-primary);
+    --btn-primary-text: #ffffff;
+    --btn-secondary-bg: var(--core-base);
+    --btn-secondary-text: #ffffff;
+}
+
+.theme-steel[data-mode="light"] {
+    --bg-body: #f8f9fb;
+    --bg-surface: #ffffff;
+    --bg-surface-2: #eef2f7;
+    --bg-primary: #eef2f7;
+    --bg-footer: var(--clr-dark);
+
+    --text-main: #433f65;
+    --text-muted: #5a587a;
+
+    --color-border: #e2e8f0;
+}
+
+/* --- THEME 3: EVER (Community / Growth / Free) --- */
+.theme-ever {
+    /* Core */
+    --core-primary: #0da49a;
+    --core-base: #433f65;
+
+    /* Highlighting */
+    --highlight-primary: #48b0b2;
+    --highlight-alt: #7fb5a8;
+
+    /* Modes */
+    --clr-dark: #002039;
+    --clr-light: #e6f6f5;
+
+    /* Gradient */
+    --grad-light: #3c8499;
+    --grad-dark: #002039;
+
+    /* Semantic Mapping */
+    --bg-body: var(--clr-dark);
+    --bg-surface: #001628;
+    --bg-surface-2: #002d4f;
+    --bg-primary: radial-gradient(farthest-side at top, var(--grad-light), var(--grad-dark));
+    --bg-footer: var(--clr-dark);
+
+    --text-main: var(--clr-light);
+    --text-muted: var(--highlight-primary);
+    --text-tertiary: var(--core-base);
+
+    --color-accent: var(--core-primary);
+    --color-border: #0da49a;
+
+    /* Buttons */
+    --btn-primary-bg: var(--core-primary);
+    --btn-primary-text: #ffffff;
+    --btn-secondary-bg: var(--core-base);
+    --btn-secondary-text: #ffffff;
+}
+
+.theme-ever[data-mode="light"] {
+    --bg-body: #f8f9fb;
+    --bg-surface: #ffffff;
+    --bg-surface-2: #eef7f6;
+    --bg-primary: #eef7f6;
+    --bg-footer: var(--clr-dark);
+
+    --text-main: #433f65;
+    --text-muted: #5a587a;
+
+    --color-border: #99f6e4;
+}
+
+/* --- THEME 4: INSIGHT (Offers / Conversion / Special) --- */
+.theme-insight {
+    /* Core */
+    --core-primary: #ee485f;
+    --core-base: #433f65;
+
+    /* Highlighting */
+    --highlight-primary: #fa9de7;
+    --highlight-alt: #ff60ee;
+
+    /* Modes */
+    --clr-dark: #0f0523;
+    --clr-light: #feecef;
+
+    /* Gradient */
+    --grad-light: #6d2954;
+    --grad-dark: #0f0523;
+
+    /* Semantic Mapping */
+    --bg-body: var(--clr-dark);
+    --bg-surface: #0a0316;
+    --bg-surface-2: #1c0b3a;
+    --bg-primary: radial-gradient(farthest-side at top, var(--grad-light), var(--grad-dark));
+    --bg-footer: var(--clr-dark);
+
+    --text-main: var(--clr-light);
+    --text-muted: var(--highlight-primary);
+    --text-tertiary: var(--core-base);
+
+    --color-accent: var(--core-primary);
+    --color-border: #6d2954;
+
+    /* Buttons */
+    --btn-primary-bg: var(--core-primary);
+    --btn-primary-text: #ffffff;
+    --btn-secondary-bg: var(--core-base);
+    --btn-secondary-text: #ffffff;
+}
+
+.theme-insight[data-mode="light"] {
+    --bg-body: #f8f9fb;
+    --bg-surface: #ffffff;
+    --bg-surface-2: #f9eff1;
+    --bg-primary: #f9eff1;
+    --bg-footer: var(--clr-dark);
+
+    --text-main: #433f65;
+    --text-muted: #5a587a;
+
+    --color-border: #fecdd3;
 }
 
 /* =========================================
-   3. TAILWIND CONFIGURAION
+   3. TAILWIND CONFIGURATION (@theme)
    ========================================= */
 @theme {
+    /* Font Families */
+    --font-heading: "Montserrat", sans-serif;
+    --font-sans: "Inter", sans-serif;
+
+    /* Color Palette - Semantic Semantic Mapping */
     --color-bg-body: var(--bg-body);
     --color-bg-surface: var(--bg-surface);
     --color-bg-surface-2: var(--bg-surface-2);
+    --color-bg-primary: var(--bg-primary);
+    --color-bg-footer: var(--bg-footer);
 
     --color-text-main: var(--text-main);
     --color-text-muted: var(--text-muted);
+    --color-text-tertiary: var(--text-tertiary);
 
     --color-accent: var(--color-accent);
+    --color-accent-light: color-mix(in srgb, var(--color-accent) 80%, white);
     --color-border: var(--color-border);
 
-    /* Legacy mappings for backward compatibility if needed, 
-     but ideally we update components */
-    --color-brand-navy: var(--bg-body);
-    --color-brand-cyan: var(--color-accent);
+    --color-btn-primary: var(--btn-primary-bg);
+    --color-btn-primary-text: var(--btn-primary-text);
+    --color-btn-secondary: var(--btn-secondary-bg);
+    --color-btn-secondary-text: var(--btn-secondary-text);
 
-    --font-sans: "Montserrat", sans-serif;
+    /* Extended Color Utilities */
+    --color-success: #22c55e;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+    --color-info: #3b82f6;
+
+    /* Spacing Scale (Tailwind defaults + custom) */
+    --spacing-gutter: 1.5rem;
+    --spacing-section: 4rem;
+
+    /* Typography Scale */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.25rem;
+    --text-xl: 1.5rem;
+    --text-2xl: 1.875rem;
+    --text-3xl: 2.25rem;
+
+    --text-h1: 80px;
+    --text-h2: 54px;
+    --text-h3: 34px;
+    --text-h4: 22px;
+
+    /* Line Heights */
+    --line-height-tight: 1.2;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.75;
+
+    /* Border Radius */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+
+    /* Transitions */
+    --duration-fast: 150ms;
+    --duration-normal: 300ms;
+    --duration-slow: 500ms;
+    --timing-function-ease-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Global Styles */
+/* =========================================
+   4. GLOBAL BASE STYLES
+   ========================================= */
 body {
     background-color: var(--bg-body);
     color: var(--text-main);
     font-family: var(--font-sans);
-    transition: background-color 0.3s ease, color 0.3s ease;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    /* Transition only for mode switching, not initial load where classes are set early */
+    transition: background-color 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
+        color 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     overflow-x: hidden;
+    min-height: 100vh;
 }
 
-/* Typography Defaults */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1 {
+    font-size: var(--fs-h1);
+    line-height: var(--lh-h1);
     font-weight: 700;
-    letter-spacing: -0.025em;
+    font-family: var(--font-heading);
+}
+
+h2 {
+    font-size: var(--fs-h2);
+    line-height: var(--lh-h2);
+    font-weight: 700;
+    font-family: var(--font-heading);
+}
+
+h3 {
+    font-size: var(--fs-h3);
+    line-height: var(--lh-h3);
+    font-weight: 700;
+    font-family: var(--font-heading);
+}
+
+h4 {
+    font-size: var(--fs-h4);
+    line-height: var(--lh-h4);
+    font-weight: 700;
+    font-family: var(--font-heading);
+}
+
+.subtitle-1 {
+    font-size: var(--fs-subtitle-1);
+    line-height: var(--lh-subtitle-1);
+    font-family: var(--font-sans);
+}
+
+.subtitle-2 {
+    font-size: var(--fs-subtitle-2);
+    line-height: var(--lh-subtitle-2);
+    font-family: var(--font-sans);
 }
 
 a {
+    color: inherit;
+    text-decoration: none;
     transition: color 0.2s;
 }
 
-
-/* Von Patrick Zugefügt */
-
-/* =================================================================
-   Meteorite Theme - Vollständige Farbpalette
-   ================================================================= */
-.theme-meteorite {
-    /* --- Core Colors --- */
-    --core-purple: #4e21e7;
-    --core-meteorite: #433f65;
-    --core-green-free: #0da49a;
-    --core-blue-pro: #334eff;
-    --core-red-insights: #ee485f;
-
-    /* --- Highlighting Colors --- */
-    --highlight-purple: #7383f5;
-    --highlight-meteorite: #c2befa;
-    --highlight-green-free: #48b0b2;
-    --highlight-blue-pro-alt: #7fb5a8;
-    --highlight-blue-pro: #80b8f2;
-    --highlight-red-alt: #fa9de7;
-    --highlight-red: #ff60ee;
-
-    /* --- Gradient Colors --- */
-    --gradient-purple-light: #2b1f99;
-    --gradient-purple-dark: #0c082f;
-    --gradient-green-light: #3c8499;
-    --gradient-green-dark: #002039;
-    --gradient-blue-light: #3c6e99;
-    --gradient-blue-dark: #08103f;
-    --gradient-red-light: #6d2954;
-    --gradient-red-dark: #0f0523;
-
-    /* --- Light and Dark Colors --- */
-    --purple-light: #ede8fd;
-    --purple-dark: #0c082f;
-    --green-free-light: #e6f6f5;
-    --green-free-dark: #002039;
-    --blue-pro-light: #eaedff;
-    --blue-pro-dark: #08103f;
-    --red-insights-light: #feecef;
-    --red-insights-dark: #0f0523;
-
-    /* --- Derived Colors --- */
-    --bg-secondary-derived: #1a154a;
-    --bg-tertiary-derived: #2b1f99;
-    --chat-bubble-assistant-bg: #0c082f;
-    --accent-hover-derived: #5c71ff;
-    --default-hover-derived: #5b587d;
-    --danger-hover-derived: #f46d7e;
-    --success-hover-derived: #3db6af;
-    --overlay-derived: rgba(12, 8, 47, 0.8);
-
-    /* --- Semantic Mapping --- */
-    --bg-primary: radial-gradient(farthest-side at top,
-            var(--gradient-purple-light),
-            var(--gradient-purple-dark));
-    --bg-secondary: #08051e;
-    /* Deepest purple for sidebar & inputs */
-    --bg-tertiary: #161245;
-    /* Slightly lighter for card backgrounds */
-    --chat-bubble-bg: var(--chat-bubble-assistant-bg);
-    --chat-messages-bg: var(--gradient-purple-dark);
-    --scrollbar-thumb: var(--bg-tertiary);
-    --scrollbar-track: var(--bg-secondary);
-    --text-primary: var(--purple-light);
-    --text-secondary: var(--highlight-meteorite);
-    --text-tertiary: var(--core-meteorite);
-    --border-color: #2b1f99;
-    /* Sharper borders for better separation */
-    --accent-color: var(--core-blue-pro);
-    --accent-color-hover: var(--accent-hover-derived);
-    --success-color: var(--core-green-free);
-    --danger-color: var(--core-red-insights);
-    --warning-color: var(--highlight-red-alt);
-    --shadow-tooltip: 0 30px 90px -20px rgba(12, 8, 47, 0.5);
-
-    /* --- Button Colors --- */
-    --btn-default-bg: var(--core-meteorite);
-    --btn-default-hover-bg: var(--default-hover-derived);
-    --btn-default-text: var(--purple-light);
-    --btn-danger-bg: var(--core-red-insights);
-    --btn-danger-hover-bg: var(--danger-hover-derived);
-    --btn-danger-text: var(--purple-light);
-    --btn-accent-bg: var(--core-blue-pro);
-    --btn-accent-hover-bg: var(--accent-hover-derived);
-    --btn-accent-text: var(--purple-light);
-    --btn-success-bg: var(--core-green-free);
-    --btn-success-hover-bg: var(--success-hover-derived);
-    --btn-success-text: var(--purple-light);
-
-    /* --- Toggle Colors --- */
-    --toggle-bg-off: var(--core-meteorite);
-    --toggle-bg-on: var(--core-blue-pro);
-    --toggle-circle-bg: var(--purple-light);
-    --toggle-circle-bg-on: var(--purple-light);
-
-    /* --- Overlay --- */
-    --overlay-color: var(--overlay-derived);
+a:hover {
+    color: var(--color-accent);
 }
 
+/* =========================================
+   4.1 BRAND BUTTONS (SEOPress Style)
+   ========================================= */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.75rem 2rem;
+    background-color: var(--btn-primary-bg);
+    color: var(--btn-primary-text) !important;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 4px 14px 0 rgba(var(--core-primary), 0.39);
+}
 
-/* =================================================================
-   Steel Theme - Vollständige Farbpalette
-   ================================================================= */
-.theme-steel {
-    /* --- Core Colors --- */
-    --core-purple: #4e21e7;
-    --core-meteorite: #433f65;
-    --core-green-free: #0da49a;
-    --core-blue-pro: #334eff;
-    --core-red-insights: #ee485f;
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(var(--core-primary), 0.23);
+    filter: brightness(1.1);
+    color: var(--btn-primary-text) !important;
+}
 
-    /* --- Highlighting Colors --- */
-    --highlight-purple: #7383f5;
-    --highlight-meteorite: #c2befa;
-    --highlight-green-free: #48b0b2;
-    --highlight-blue-pro-alt: #7fb5a8;
-    --highlight-blue-pro: #80b8f2;
-    --highlight-red-alt: #fa9de7;
-    --highlight-red: #ff60ee;
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.75rem 2rem;
+    background-color: var(--bg-surface-2);
+    color: var(--color-accent) !important;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
 
-    /* --- Gradient Colors --- */
-    --gradient-purple-light: #2b1f99;
-    --gradient-purple-dark: #0c082f;
-    --gradient-green-light: #3c8499;
-    --gradient-green-dark: #002039;
-    --gradient-blue-light: #3c6e99;
-    --gradient-blue-dark: #08103f;
-    --gradient-red-light: #6d2954;
-    --gradient-red-dark: #0f0523;
+.btn-secondary:hover {
+    background-color: var(--color-accent);
+    color: #ffffff !important;
+    transform: translateY(-2px);
+}
 
-    /* --- Light and Dark Colors --- */
-    --purple-light: #ede8fd;
-    --purple-dark: #0c082f;
-    --green-free-light: #e6f6f5;
-    --green-free-dark: #002039;
-    --blue-pro-light: #eaedff;
-    --blue-pro-dark: #08103f;
-    --red-insights-light: #feecef;
-    --red-insights-dark: #0f0523;
+/* =========================================
+   4.2 LAYOUT UTILITIES
+   ========================================= */
+.section-white {
+    background-color: #ffffff;
+    color: #433f65;
+}
 
-    /* --- Derived Colors --- */
-    --bg-secondary-derived: #1a2a6c;
-    --bg-tertiary-derived: #3c6e99;
-    --chat-bubble-assistant-bg: #08103f;
-    --accent-hover-derived: #5c71ff;
-    --default-hover-derived: #5b587d;
-    --danger-hover-derived: #f46d7e;
-    --success-hover-derived: #3db6af;
-    --overlay-derived: rgba(8, 16, 63, 0.8);
+.section-alt {
+    background-color: #f8f9fb;
+    color: #433f65;
+}
 
-    /* --- Semantic Mapping --- */
-    --bg-primary: radial-gradient(farthest-side at top,
-            var(--gradient-blue-light),
-            var(--gradient-blue-dark));
-    --bg-secondary: #05081a;
-    /* Deepest blue for sidebar & inputs */
-    --bg-tertiary: #0f173d;
-    /* Slightly lighter for card backgrounds */
-    --chat-bubble-bg: var(--chat-bubble-assistant-bg);
-    --chat-messages-bg: var(--gradient-blue-dark);
-    --scrollbar-thumb: var(--bg-tertiary);
-    --scrollbar-track: var(--bg-secondary);
-    --text-primary: var(--blue-pro-light);
-    --text-secondary: var(--highlight-blue-pro);
-    --text-tertiary: var(--core-meteorite);
-    --border-color: #1a2a6c;
-    /* Sharper borders for better separation */
-    --accent-color: var(--core-blue-pro);
-    --accent-color-hover: var(--accent-hover-derived);
-    --success-color: var(--core-green-free);
-    --danger-color: var(--core-red-insights);
-    --warning-color: var(--highlight-red-alt);
-    --shadow-tooltip: 0 30px 90px -20px rgba(8, 16, 63, 0.5);
+[data-mode="dark"] .section-white {
+    background-color: var(--bg-surface);
+    color: var(--text-main);
+}
 
-    /* --- Button Colors --- */
-    --btn-default-bg: var(--core-meteorite);
-    --btn-default-hover-bg: var(--default-hover-derived);
-    --btn-default-text: var(--blue-pro-light);
-    --btn-danger-bg: var(--core-red-insights);
-    --btn-danger-hover-bg: var(--danger-hover-derived);
-    --btn-danger-text: var(--blue-pro-light);
-    --btn-accent-bg: var(--core-blue-pro);
-    --btn-accent-hover-bg: var(--accent-hover-derived);
-    --btn-accent-text: var(--blue-pro-light);
-    --btn-success-bg: var(--core-green-free);
-    --btn-success-hover-bg: var(--success-hover-derived);
-    --btn-success-text: var(--blue-pro-light);
+[data-mode="dark"] .section-alt {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+}
 
-    /* --- Toggle Colors --- */
-    --toggle-bg-off: var(--core-meteorite);
-    --toggle-bg-on: var(--core-blue-pro);
-    --toggle-circle-bg: var(--blue-pro-light);
-    --toggle-circle-bg-on: var(--blue-pro-light);
+.prose {
+    color: var(--text-main);
+    max-width: 65ch;
+}
 
-    /* --- Overlay --- */
-    --overlay-color: var(--overlay-derived);
+.prose h1,
+.prose h2,
+.prose h3 {
+    color: var(--text-main);
+}
+
+.prose a {
+    color: var(--color-accent);
+    text-decoration: underline;
+}
+
+/* =========================================
+   5. BRAND PROSE (Blog/Article Content)
+   ========================================= */
+.prose-brand {
+    font-family: var(--font-sans);
+    line-height: var(--lh-body);
+    font-size: var(--fs-body);
+}
+
+.prose-brand h2 {
+    font-size: var(--fs-h3);
+    line-height: var(--lh-h3);
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-main);
+    font-family: var(--font-heading);
+    font-weight: 800;
+}
+
+.prose-brand h3 {
+    font-size: var(--fs-h4);
+    line-height: var(--lh-h4);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+    font-family: var(--font-heading);
+    font-weight: 700;
+}
+
+.prose-brand p {
+    margin-bottom: 1.5rem;
+    color: var(--text-muted);
+}
+
+.prose-brand a {
+    color: var(--color-accent);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+    text-decoration-color: color-mix(in srgb, var(--color-accent), transparent 70%);
+    transition: all 0.2s;
+}
+
+.prose-brand a:hover {
+    text-decoration-color: var(--color-accent);
+}
+
+.prose-brand blockquote {
+    border-left: 4px solid var(--color-accent);
+    padding-left: 1.5rem;
+    font-style: italic;
+    font-size: 1.25rem;
+    margin: 2.5rem 0;
+    color: var(--text-main);
+}
+
+.prose-brand ul,
+.prose-brand ol {
+    margin-bottom: 2rem;
+    padding-left: 1.5rem;
+}
+
+.prose-brand li {
+    margin-bottom: 0.75rem;
+    color: var(--text-muted);
+}
+
+.prose-brand li::marker {
+    color: var(--color-accent);
+    font-weight: 800;
+}
+
+.prose-brand img {
+    border-radius: 1.5rem;
+    margin: 3rem 0;
+    border: 1px solid var(--color-border-color);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.prose-brand hr {
+    border: 0;
+    height: 1px;
+    background: var(--color-border-color);
+    margin: 4rem 0;
+    opacity: 0.5;
+}
+
+.prose-brand strong {
+    color: var(--text-main);
+    font-weight: 700;
 }

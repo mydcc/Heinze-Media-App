@@ -1,6 +1,7 @@
 <script lang="ts">
     let { data } = $props();
-    let { page } = data;
+    // Use derived to access destructured values
+    let page = $derived(data.page);
 </script>
 
 <svelte:head>

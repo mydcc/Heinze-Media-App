@@ -1,15 +1,25 @@
 <script lang="ts">
-    import { themeState } from "$lib/state/theme.svelte";
-    import { onMount } from "svelte";
+    import SEOHead from "$lib/components/SEOHead.svelte";
+    import type { SEOConfig } from "$lib/seo/schema";
     import AdminGuard from "$lib/components/AdminGuard.svelte";
 
-    // Set category to 'free' (Green Accent)
-    $effect(() => {
-        themeState.setCategory("free");
-        // Reset on cleanup/navigation if needed, but usually next page sets its own
-        return () => themeState.setCategory("default");
-    });
+    const seoConfig: SEOConfig = {
+        title: "Free E-Book: Ultimate SEO Checklist | HEINZE MEDIA",
+        description:
+            "Kostenlos herunterladen: Der ultimative SEO-Leitfaden für XR, Metaverse und 3D Web Projekte.",
+        keywords: ["Free E-Book", "SEO", "Checklist", "Guide", "XR SEO"],
+        url: "https://heinze.media/offer/free-ebook",
+        type: "website",
+        image: "https://heinze.media/og-ebook.png",
+        author: "HEINZE MEDIA",
+    };
 </script>
+
+<SEOHead config={seoConfig} />
+
+<svelte:head>
+    <title>{seoConfig.title}</title>
+</svelte:head>
 
 <AdminGuard>
     <div class="relative overflow-hidden pt-20 pb-32">

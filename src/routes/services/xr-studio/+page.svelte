@@ -1,13 +1,31 @@
 <script lang="ts">
-    import { themeState } from "$lib/state/theme.svelte";
+    import SEOHead from "$lib/components/SEOHead.svelte";
+    import type { SEOConfig } from "$lib/seo/schema";
     import AdminGuard from "$lib/components/AdminGuard.svelte";
 
-    // Set category to 'pro' (Blue Accent)
-    $effect(() => {
-        themeState.setCategory("pro");
-        return () => themeState.setCategory("default");
-    });
+    const seoConfig: SEOConfig = {
+        title: "XR Studio Pro | Enterprise Solutions | HEINZE MEDIA",
+        description:
+            "Future-Ready XR Studios für Enterprise. Professionelle Virtual Production, immersive Kundenerlebnisse und Metaverse-Integration für Unternehmen.",
+        keywords: [
+            "XR Studio",
+            "Virtual Production",
+            "Enterprise XR",
+            "Immersive",
+            "Digital Experience",
+        ],
+        url: "https://heinze.media/services/xr-studio",
+        type: "website",
+        image: "https://heinze.media/og-xr-studio.png",
+        author: "HEINZE MEDIA",
+    };
 </script>
+
+<SEOHead config={seoConfig} />
+
+<svelte:head>
+    <title>{seoConfig.title}</title>
+</svelte:head>
 
 <AdminGuard>
     <div class="pt-20 pb-32">

@@ -1,10 +1,32 @@
 <script lang="ts">
+    import SEOHead from "$lib/components/SEOHead.svelte";
+    import type { SEOConfig } from "$lib/seo/schema";
+
     let { data } = $props();
-    let { post } = data;
+    // Use derived to access destructured values
+    let post = $derived(data.post);
+
+    // Generate SEO config for work/case study
+    const seoConfig: SEOConfig = {
+        title: `${post.title} | Case Study | HEINZE MEDIA`,
+        description:
+            post.description || `Entdecken Sie das Projekt ${post.title}`,
+        keywords: (post.categories as string[]) || [
+            "XR",
+            "Case Study",
+            "Portfolio",
+        ],
+        url: `https://heinze.media/work/${post.slug}`,
+        type: "website",
+        image: post.image || "https://heinze.media/og-work.png",
+        author: "HEINZE MEDIA",
+    };
 </script>
 
+<SEOHead config={seoConfig} />
+
 <svelte:head>
-    <title>{post.title} | Work</title>
+    <title>{seoConfig.title}</title>
 </svelte:head>
 
 <div class="pt-24 pb-12 bg-brand-navy">

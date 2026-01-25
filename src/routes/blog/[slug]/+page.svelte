@@ -1,11 +1,35 @@
 <script lang="ts">
+    import SEOHead from "$lib/components/SEOHead.svelte";
+    import { JSONLDBuilder } from "$lib/seo/schema";
+    import type { SEOConfig } from "$lib/seo/schema";
+
     let { data } = $props();
-    // destructure post from data
-    let { post } = data;
+    // Use derived to access destructured values
+    let post = $derived(data.post);
+
+    // Generate SEO config for blog post
+    const seoConfig: SEOConfig = {
+        title: `${post.title} | HEINZE MEDIA Blog`,
+        description: post.description || post.title,
+        keywords: (post as any).tags || [
+            "XR",
+            "Metaverse",
+            "3D Web",
+            "Digital",
+        ],
+        url: `https://heinze.media/blog/${post.slug}`,
+        type: "article",
+        image: post.image || "https://heinze.media/og-blog.png",
+        author: (post as any).author || "HEINZE MEDIA",
+        publishDate: post.date,
+        modifiedDate: (post as any).modified_date || post.date,
+    };
 </script>
 
+<SEOHead config={seoConfig} />
+
 <svelte:head>
-    <title>{post.title} | Heinze Media</title>
+    <title>{seoConfig.title}</title>
 </svelte:head>
 
 <article class="min-h-screen">

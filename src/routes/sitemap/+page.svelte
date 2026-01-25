@@ -1,12 +1,29 @@
 <script lang="ts">
+    import SEOHead from "$lib/components/SEOHead.svelte";
+    import type { SEOConfig } from "$lib/seo/schema";
     import { sitemapData } from "$lib/data/sitemap";
     import { adminState } from "$lib/state/admin.svelte";
+
+    const seoConfig: SEOConfig = {
+        title: "Sitemap | HEINZE MEDIA",
+        description:
+            "Vollständige Sitemap und Navigation aller Seiten von HEINZE MEDIA",
+        url: "https://heinze.media/sitemap",
+        type: "website",
+        author: "HEINZE MEDIA",
+    };
 
     // Derived list of visible routes
     let visibleRoutes = $derived(
         sitemapData.filter((route) => route.public || adminState.isAdmin),
     );
 </script>
+
+<SEOHead config={seoConfig} />
+
+<svelte:head>
+    <title>{seoConfig.title}</title>
+</svelte:head>
 
 <div class="pt-32 pb-20">
     <div class="container mx-auto px-6 max-w-4xl">
