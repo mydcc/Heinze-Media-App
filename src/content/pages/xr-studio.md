@@ -7,5 +7,3 @@ slug: "xr-studio"
 ---
 
 <p>W,A,S,D to move, P-Key for Selfie Mode, M-Key for Messages, U+I Key to share Links, R-Key to focus the mouse.</p>
-
-<a href="/e-learning">e-learning</a>
