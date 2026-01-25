@@ -1,7 +1,7 @@
 ---
 title: "Terms"
-date: "2024-04-28T11:15:28.000Z"
+date: "Sun, 28 Apr 2024 11:15:28 +0000"
 slug: "terms-and-conditions"
-type: "page"
 ---
 
+<!-- wp:complianztc/terms-conditions {"title":"Terms and Conditions","selectedDocument":"terms-conditions"} /-->

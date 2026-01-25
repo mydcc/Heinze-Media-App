@@ -1,3 +1,11 @@
+<script>
+    import { themeState } from "$lib/state/theme.svelte";
+
+    $effect(() => {
+        themeState.setCategory("default");
+    });
+</script>
+
 <svelte:head>
     <title>Heinze Media | Metaverse, XR & 3D Web Apps</title>
 </svelte:head>

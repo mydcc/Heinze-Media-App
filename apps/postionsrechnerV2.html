@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Positionsgrößen-Rechner Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/decimal.js@10.3.1/decimal.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f172a; --bg-secondary: #1e293b; --bg-tertiary: #334155;
+            --text-primary: #e2e8f0; --text-secondary: #94a3b8; --border-color: #475569;
+            --accent-color: #38bdf8; --accent-color-hover: #0ea5e9;
+            --success-color: #22c55e; --danger-color: #ef4444; --warning-color: #facc15;
+            --shadow-tooltip: 0 30px 90px -20px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--border-color);
+        }
+        .light-theme {
+            --bg-primary: #f1f5f9; --bg-secondary: #ffffff; --bg-tertiary: #e2e8f0;
+            --text-primary: #1e293b; --text-secondary: #64748b; --border-color: #cbd5e1;
+            --shadow-tooltip: 0 30px 90px -20px rgba(0, 0, 0, 0.1), 0 0 0 1px var(--border-color);
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-primary); color: var(--text-primary); transition: background-color 0.3s, color 0.3s; position: relative; }
+        .calculator-wrapper { background-color: var(--bg-secondary); }
+        .input-field { background-color: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary); }
+        .input-field:disabled { background-color: var(--bg-secondary); cursor: not-allowed; opacity: 0.7; }
+        .input-field.invalid { border-color: var(--danger-color); box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger-color) 40%, transparent); }
+        .tp-percent.locked-input { background-color: var(--bg-primary); cursor: not-allowed; }
+        .section-header { background-color: var(--bg-tertiary); padding: 0.5rem 1rem; border-radius: 0.375rem; margin-bottom: 1rem; font-weight: 600; color: var(--text-primary); display: flex; justify-content: space-between; align-items: center; }
+        .result-group { background-color: var(--bg-primary); padding: 1rem; border-radius: 0.5rem; margin-top: 1.5rem; }
+        .result-item { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; padding: 0.75rem 0; border-bottom: 1px solid var(--bg-tertiary); }
+        .result-item:last-child { border-bottom: none; }
+        .result-label { color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem; margin-right: 1rem; }
+        .result-value { color: var(--text-primary); font-weight: 600; text-align: right; word-break: break-all; flex-grow: 1; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        
+        .trade-type-switch button { padding: 0.5rem 1rem; border-radius: 0.375rem; transition: all 0.2s ease-in-out; border: 1px solid transparent; }
+        .trade-type-switch button.active { font-weight: 700; }
+        .trade-type-switch button.long.active { background-color: #166534; border-color: var(--success-color); color: white; }
+        .trade-type-switch button.short.active { background-color: #991b1b; border-color: var(--danger-color); color: white; }
+        .trade-type-switch button:not(.active) { background-color: var(--bg-tertiary); color: var(--text-primary); }
+        .trade-type-switch { background-color: var(--bg-tertiary); }
+
+        .tooltip { position: relative; display: inline-block; cursor: pointer; }
+        .tooltip .tooltiptext { visibility: hidden; width: 220px; background-color: var(--bg-tertiary); color: var(--text-primary); text-align: center; border-radius: 6px; padding: 5px; position: absolute; z-index: 10; bottom: 125%; left: 50%; margin-left: -110px; opacity: 0; transition: opacity 0.3s; font-size: 0.8rem; font-weight: 400; }
+        .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+        .tooltip-icon { width: 1rem; height: 1rem; border-radius: 99px; background-color: var(--border-color); color: var(--text-primary); font-size: 0.7rem; text-align: center; line-height: 1rem; }
+        .copy-btn, .price-fetch-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; transition: color 0.2s; }
+        .copy-btn:hover, .price-fetch-btn:hover { color: var(--success-color); }
+        .copy-feedback, .save-feedback { color: var(--success-color); font-size: 0.8rem; visibility: hidden; opacity: 0; transition: all 0.3s; }
+        .visual-bar-container { background-color: var(--bg-primary); padding: 2.5rem 1rem 2.5rem 1rem; /* Increased padding for labels */ border-radius: 0.5rem; margin-top: 1.5rem; position: relative; }
+        .visual-bar { height: 1.5rem; position: relative; display: flex; border-radius: 0.375rem; overflow: visible; /* Changed to visible */ background-color: var(--bg-tertiary); }
+        .loss-zone { background-color: var(--danger-color); position: absolute; height: 100%;}
+        .gain-zone { background-color: var(--success-color); position: absolute; height: 100%;}
+        .bar-marker { position: absolute; top: -0.25rem; bottom: -0.25rem; width: 20px; /* Erhöhter Hover-Bereich */ display: flex; flex-direction: column; align-items: center; cursor: pointer; transform: translateX(-50%); /* Zentriert den breiteren Marker */ }
+        .bar-marker::before { content: ''; position: absolute; left: 50%; transform: translateX(-50%); width: 4px; /* Visuelle Linie */ height: 100%; background-color: var(--text-primary); }
+        .bar-marker span { position: absolute; font-size: 0.75rem; background-color: var(--bg-tertiary); padding: 0.1rem 0.3rem; border-radius: 0.25rem; white-space: nowrap; }
+        .bar-marker:not(.entry-marker) span { bottom: 100%; margin-bottom: 0.25rem; box-shadow: var(--shadow-tooltip); } /* SL and TP markers above */
+        .entry-marker span { top: 100%; margin-top: 0.25rem; } /* Entry marker below */
+        .tp-tooltip { position: absolute; background-color: var(--bg-tertiary); color: var(--text-primary); padding: 0.5rem; border-radius: 0.5rem; font-size: 0.8rem; white-space: nowrap; z-index: 60; visibility: hidden; opacity: 0; transition: opacity 0.2s, visibility 0.2s; pointer-events: none; transform: translateX(-50%); box-shadow: var(--shadow-tooltip); }
+        .tp-tooltip::before { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 5px solid var(--bg-tertiary); }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 50; visibility: hidden; opacity: 0; transition: all 0.3s ease-in-out; }
+        .modal-content { background-color: var(--bg-secondary); padding: 2rem; border-radius: 1rem; max-width: 90vw; max-height: 90vh; overflow-y: auto; }
+        .journal-table { width: 100%; border-collapse: collapse; }
+        .journal-table th, .journal-table td { padding: 0.75rem; border: 1px solid var(--border-color); text-align: left; font-size: 0.875rem; }
+        .journal-table th { background-color: var(--bg-tertiary); }
+        .notes-cell {
+            max-width: 200px; /* Verhindert, dass die Spalte zu breit wird */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .notes-cell.expanded {
+            white-space: pre-wrap;
+            overflow: visible;
+            text-overflow: clip;
+            max-width: 400px; /* Erlaubt mehr Breite im ausgeklappten Zustand */
+        }
+        .journal-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0.5rem; margin-bottom: 1.5rem; }
+.stat-card { background-color: var(--bg-primary); padding: 0.75rem; border-radius: 0.5rem; text-align: center; }
+.stat-value { font-size: 1.25rem; font-weight: 700; }
+.stat-label { font-size: 0.75rem; color: var(--text-secondary); }
+        .suggestion-item { background-color: var(--bg-secondary); padding: 0.5rem 1rem; cursor: pointer; color: var(--text-primary); }
+        .suggestion-item:hover { background-color: var(--accent-color); color: #ffffff; }
+
+        
+
+        
+    .prose h3 { margin-top: 1.5em; margin-bottom: 0.5em; font-size: 1.25rem; font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3em;}
+        .prose p { margin-bottom: 1em; line-height: 1.6; }
+        .prose ul { list-style-type: disc; margin-left: 1.5em; margin-bottom: 1em; }
+        .prose li { margin-bottom: 0.5em; }
+        .prose strong { color: var(--text-primary); font-weight: 600; }
+        .prose code { background-color: var(--bg-tertiary); padding: 0.2em 0.4em; margin: 0; font-size: 85%; border-radius: 3px; }
+
+        
+
+        
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <script>
+        // Apply theme immediately to prevent FOUC
+        (function() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            if (theme === 'light') {
+                document.body.classList.add('light-theme');
+            }
+        })();
+    </script>
+
+    <!-- HAUPT-CONTAINER -->
+    <main class="w-full max-w-4xl mx-auto calculator-wrapper rounded-2xl shadow-2xl p-6 sm:p-8 fade-in">
+        
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold">Trading Dashboard</h1>
+            <div class="flex items-center gap-2">
+                <select id="preset-loader" class="input-field px-3 py-2 rounded-md text-sm"><option value="">Preset laden...</option></select>
+                <button id="save-preset-btn" class="text-sm bg-slate-700 hover:bg-slate-600 text-white font-bold p-2 rounded-lg" title="Aktuelle Eingaben als Preset speichern">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="pointer-events-none" viewBox="0 0 16 16"><path d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09z"/></svg>
+                </button>
+                <button id="delete-preset-btn" class="text-sm bg-red-800 hover:bg-red-700 text-white font-bold p-2 rounded-lg" title="Ausgewähltes Preset löschen" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="pointer-events-none" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5zM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06zm3 0l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06zm3 .5a.5.5 0 0 0-1 0v8.5a.5.5 0 0 0 1 0v-8.5z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                </button>
+                <button id="theme-switcher" class="text-sm bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-lg">☀️</button>
+                <button id="reset-btn" class="text-sm bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-lg">Reset</button>
+                <button id="view-journal-btn" class="text-sm bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-4 rounded-lg">Journal</button>
+            </div>
+        </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+            <!-- LINKE SPALTE -->
+            <div>
+                <h2 class="section-header" id="trade-type-label">Allgemein</h2>
+                <div class="grid grid-cols-1 gap-4 mb-4">
+                    <div class="trade-type-switch p-1 rounded-lg flex" role="radiogroup" aria-labelledby="trade-type-label">
+                        <button id="btn-long" class="long w-1/2 active" role="radio" aria-checked="true">Long</button>
+                        <button id="btn-short" class="short w-1/2" role="radio" aria-checked="false">Short</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="leverage" class="input-field w-full h-full px-4 py-2 rounded-md" placeholder="Hebel (z.B. 10x)" value="1">
+                        <input type="number" id="fees" class="input-field w-full px-4 py-2 rounded-md" placeholder="Gebühren pro Trade (%)" value="0.1">
+                    </div>
+                </div>
+                
+                <h2 class="section-header !mt-6">Portfolio</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="number" id="accountSize" class="input-field w-full px-4 py-2 rounded-md" placeholder="Konto Guthaben">
+                    <input type="number" id="riskPercentage" class="input-field w-full px-4 py-2 rounded-md" placeholder="Risiko je Trade (%)">
+                </div>
+            </div>
+            
+            <!-- RECHTE SPALTE -->
+            <div>
+                <h2 class="section-header">Trade Setup</h2>
+                <div class="relative mb-4">
+                    <input type="text" id="symbol" class="input-field w-full px-4 py-2 rounded-md pr-10" placeholder="Symbol (z.B. BTCUSDT)" autocomplete="off">
+                    <button id="price-fetch-btn" class="price-fetch-btn absolute top-1/2 right-2 -translate-y-1/2" title="Live-Preis holen">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8.5 5.5a.5.5 0 0 0-1 0v3.354l-1.46-1.47a.5.5 0 0 0-.708.708l2.146 2.147a.5.5 0 0 0 .708 0l2.146-2.147a.5.5 0 0 0-.708-.708L8.5 8.854V5.5z"/><path d="M8 16a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm7-8a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg>
+                    </button>
+                    <div id="symbol-suggestions" class="absolute top-full left-0 w-full rounded-md shadow-lg mt-1 hidden overflow-hidden border border-[var(--border-color)] z-20"></div>
+                </div>
+                <input type="number" id="entryPrice" class="input-field w-full px-4 py-2 rounded-md mb-4" placeholder="Kaufpreis">
+                
+                <div class="p-2 rounded-lg mb-4" style="background-color: var(--bg-tertiary);">
+                    <div class="flex justify-end mb-2">
+                        <label class="flex items-center cursor-pointer"><span class="mr-2 text-sm">ATR Stop-Loss</span><input type="checkbox" id="use-atr-sl" class="sr-only peer" role="switch" aria-checked="false"><div class="relative w-11 h-6 bg-slate-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div></label>
+                    </div>
+                    <div id="manual-sl-group"><input type="number" id="stopLossPrice" class="input-field w-full px-4 py-2 rounded-md" placeholder="Manueller Stopp Loss"></div>
+                    <div id="atr-sl-group" class="hidden grid grid-cols-2 gap-2"><input type="number" id="atrValue" class="input-field w-full px-4 py-2 rounded-md" placeholder="ATR Wert"><input type="number" id="atrMultiplier" class="input-field w-full px-4 py-2 rounded-md" placeholder="Multiplikator" value="1.5"></div>
+                    <div id="atr-formula-display" class="text-center text-xs text-sky-300 mt-2 hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <section class="mt-4 md:col-span-2">
+            <h2 class="section-header">
+                <span>Take-Profit Ziele (Partiell)</span>
+                <div class="flex items-center gap-2">
+                    <div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Hier sehen Sie die berechneten Kennzahlen für jeden Ihrer partiellen Take-Profit-Ziele. Jedes Ziel zeigt den anteiligen Gewinn, das Risiko-Rendite-Verhältnis, die prozentuale Preisänderung, die Rendite auf das eingesetzte Kapital und das Volumen des Teilverkaufs.</span></div>
+                    <button id="add-tp-btn" class="text-sky-400 hover:text-sky-300" title="Weiteres Ziel hinzufügen" tabindex="-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+                    </button>
+                </div>
+            </h2>
+            <div id="take-profit-list" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Dynamische TP-Ziele werden hier eingefügt -->
+            </div>
+        </section>
+
+        <div id="error-message" class="text-red-400 text-center text-sm font-medium mt-4 hidden md:col-span-2"></div>
+
+        <!-- ERGEBNISSE -->
+        <section id="results" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-x-8">
+            <!-- LINKE ERGEBNISSE -->
+            <div>
+                <div class="result-group">
+                    <h2 class="section-header">Zusammenfassung</h2>
+                    <div class="result-item">
+                        <span class="result-label">
+                            Positionsgröße
+                            <button id="lock-position-size-btn" class="copy-btn ml-2" title="Positionsgröße sperren/entsperren">
+                                <svg class="lock-icon-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-4 0H8V6c0-2.21 1.79-4 4-4s4 1.79 4 4v2z"/></svg>
+                                <svg class="lock-icon-closed hidden" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
+                            </button>
+                            <button id="copy-btn" class="copy-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg></button>
+                            <span id="copy-feedback" class="copy-feedback">Kopiert!</span>
+                        </span>
+                        <span id="positionSize" class="result-value text-lg text-green-400"></span>
+                    </div>
+                    <div class="result-item"><span class="result-label">Max. Verlust (Netto)<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Der maximale Betrag, den Sie bei diesem Trade verlieren können, einschließlich aller Gebühren, wenn Ihr Stop-Loss erreicht wird.</span></div></span><span id="netLoss" class="result-value text-red-400"></span></div>
+                    <div class="result-item"><span class="result-label">Benötigte Margin<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Das Kapital, das von Ihrem Konto für diesen Trade blockiert wird (Order Volumen / Hebel).</span></div></span><span id="requiredMargin" class="result-value"></span></div>
+                    <div class="result-item">
+                        <span class="result-label">Gesch. Liquidationspreis
+                            <div class="tooltip">
+                                <div class="tooltip-icon">?</div>
+                                <span class="tooltiptext">Geschätzter Preis, bei dem Ihre Position liquidiert wird. Basiert auf einer Standardformel und kann je nach Börse variieren.</span>
+                            </div>
+                        </span>
+                        <span id="liquidationPrice" class="result-value text-warning-color"></span>
+                    </div>
+                    <div class="result-item"><span class="result-label">Break-Even Preis<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Der Kurs, bei dem Ihr Trade unter Berücksichtigung der Gebühren null Gewinn/Verlust macht.</span></div></span><span id="breakEvenPrice" class="result-value text-sky-400"></span></div>
+                </div>
+                <div id="total-metrics-group" class="result-group">
+                    <h2 class="section-header">Gesamt-Trade Metriken<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Übersicht über die wichtigsten Kennzahlen für den gesamten Trade, unter Berücksichtigung aller Teilverkäufe.</span></div></h2>
+                    <div class="result-item"><span class="result-label">Risiko pro Trade (Währung)<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Der absolute Geldbetrag, den Sie bei diesem Trade maximal riskieren, basierend auf Ihrem Kontoguthaben und dem eingestellten Risiko in Prozent.</span></div></span><span id="riskAmountCurrency" class="result-value text-red-400"></span></div>
+                    <div class="result-item"><span class="result-label">Gesamte Gebühren<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Die geschätzten Gesamtkosten (Einstiegs- und Ausstiegsgebühren) für diesen Trade.</span></div></span><span id="totalFees" class="result-value"></span></div>
+                    <div class="result-item"><span class="result-label">Max. potenzieller Gewinn<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Der maximale Netto-Gewinn, der erzielt werden könnte, wenn die gesamte Position zum besten Take-Profit-Ziel geschlossen würde.</span></div></span><span id="maxPotentialProfit" class="result-value text-green-400"></span></div>
+                    <div class="result-item"><span class="result-label">Gewichtetes R/R<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Das durchschnittliche Chance-Risiko-Verhältnis unter Berücksichtigung aller Teilverkäufe.</span></div></span><span id="totalRR" class="result-value"></span></div>
+                    <div class="result-item"><span class="result-label">Gesamt Netto-Gewinn<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Der kumulierte Netto-Gewinn aus allen Teilverkäufen, abzüglich aller Gebühren.</span></div></span><span id="totalNetProfit" class="result-value text-green-400"></span></div>
+                    <div class="result-item"><span class="result-label">Verkaufte Position<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Der Gesamtprozentsatz der ursprünglichen Positionsgröße, der über alle Take-Profit-Ziele hinweg verkauft wird.</span></div></span><span id="totalPercentSold" class="result-value"></span></div>
+                </div>
+            </div>
+            <!-- RECHTE ERGEBNISSE (TPs)-->
+            <div id="tp-results-container">
+                <!-- Individuelle TP-Ergebnisse werden hier eingefügt -->
+            </div>
+            <div id="visual-bar-container" class="visual-bar-container md:col-span-2"><h2 class="section-header text-center !mb-4">Trade Visualisierung</h2><div id="visual-bar" class="visual-bar"></div><div id="tp-tooltip" class="tp-tooltip"></div></div>
+            <footer class="md:col-span-2">
+                <textarea id="tradeNotes" class="input-field w-full px-4 py-2 rounded-md mb-4" rows="2" placeholder="Notizen zum Trade..."></textarea>
+                <div class="flex items-center gap-4">
+                    <button id="save-journal-btn" class="w-full bg-sky-600 hover:bg-sky-500 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg">Trade zum Journal hinzufügen</button>
+                    <button id="show-dashboard-readme-btn" class="bg-slate-600 hover:bg-slate-500 text-white font-bold p-3 rounded-lg" title="Anleitung für das Dashboard anzeigen">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="pointer-events-none bi bi-book" viewBox="0 0 16 16">
+                            <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.492-3.287.981V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.51.555 3.597 1.466v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.492-3.287.981V2.687z"/>
+                        </svg>
+                    </button>
+                    <span id="save-feedback" class="save-feedback">Gespeichert!</span>
+                </div>
+            </footer>
+        </section>
+    </div>
+    
+    </main>
+    
+    <!-- JOURNAL MODAL -->
+    <div id="journal-modal" class="modal-overlay">
+        <div class="modal-content w-full h-full max-w-6xl">
+             <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Trade Journal</h2><button id="close-journal-btn" class="text-3xl">&times;</button></div>
+             
+             <div id="journal-stats" class="journal-stats"></div>
+             
+             <div class="flex gap-4 my-4"><input type="text" id="journal-search" class="input-field w-full px-3 py-2 rounded-md" placeholder="Symbol suchen..."><select id="journal-filter" class="input-field px-3 py-2 rounded-md"><option value="all">Alle</option><option value="Open">Offen</option><option value="Won">Gewonnen</option><option value="Lost">Verloren</option></select></div>
+
+            <div class="max-h-[calc(100vh-20rem)] overflow-auto">
+                <table id="journal-table" class="journal-table">
+                    <thead><tr><th>Datum</th><th>Symbol</th><th>Typ</th><th>Einstieg</th><th>SL</th><th>R/R</th><th>Status</th><th>Notizen</th><th>Aktion</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            
+            <h3 class="text-xl font-bold mt-6 mb-4">Performance pro Symbol</h3>
+            <div id="symbol-performance-stats" class="max-h-48 overflow-y-auto border border-[var(--border-color)] rounded-md p-2">
+                <table class="journal-table w-full">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Trades</th>
+                            <th>Gewinn %</th>
+                            <th>Gesamt P/L</th>
+                        </tr>
+                    </thead>
+                    <tbody id="symbol-performance-table-body">
+                        <!-- Symbol performance will be rendered here -->
+                    </tbody>
+                </table>
+            </div>
+             <div class="flex items-center gap-4 mt-4">
+                <button id="export-csv-btn" class="bg-green-700 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2" title="Als CSV exportieren">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+                    <span>Exportieren</span>
+                </button>
+                <input type="file" id="import-csv-input" accept=".csv" class="hidden"/>
+                <button id="import-csv-btn" class="bg-blue-700 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2" title="CSV importieren">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 4.146a.5.5 0 0 0-.708 0L4.5 6.854a.5.5 0 1 0 .708.708L7.5 5.707V14.5a.5.5 0 0 0 1 0V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3z"/></svg>
+                    <span>Importieren</span>
+                </button>
+                <button id="clear-journal-btn" class="bg-red-800 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2" title="Ganzes Journal leeren">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5zM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06zm3 0l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06zm3 .5a.5.5 0 0 0-1 0v8.5a.5.5 0 0 0 1 0v-8.5z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                    <span>Alles löschen</span>
+                </button>
+                 <button id="show-journal-readme-btn" class="bg-slate-600 hover:bg-slate-500 text-white font-bold p-2.5 rounded-lg" title="Anleitung für das Journal anzeigen">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="pointer-events-none bi bi-book" viewBox="0 0 16 16">
+                        <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.492-3.287.981V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.51.555 3.597 1.466v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.492-3.287.981V2.687z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Utility function for debouncing
+    function debounce(func, delay) {
+        let timeout;
+        return function(...args) {
+            const context = this;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), delay);
+        };
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        const CONSTANTS = {
+            TRADE_TYPE_LONG: 'long', TRADE_TYPE_SHORT: 'short',
+            LOCAL_STORAGE_SETTINGS_KEY: 'cryptoCalculatorSettings', LOCAL_STORAGE_JOURNAL_KEY: 'tradeJournal',
+            LOCAL_STORAGE_PRESETS_KEY: 'cryptoCalculatorPresets', // New key for presets
+            LOCAL_STORAGE_THEME_KEY: 'theme',
+            STATUS_INVALID: 'INVALID', STATUS_INCOMPLETE: 'INCOMPLETE', STATUS_VALID: 'VALID',
+            SUGGESTED_SYMBOLS: ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'SUIUSDT', 'LINKUSDT', 'ONDOUSDT', 'TAOUSDT', 'KASUSDT', 'HYPEUSDT', 'AAVEUSDT'],
+        };
+
+        const state = {
+            tradeType: CONSTANTS.TRADE_TYPE_LONG,
+            currentTradeData: {},
+            isPositionSizeLocked: false,
+            lockedPositionSize: null
+        };
+
+        const dom = {
+            body: document.body,
+            inputs: {
+                accountSize: document.getElementById('accountSize'), riskPercentage: document.getElementById('riskPercentage'),
+                entryPrice: document.getElementById('entryPrice'), stopLossPrice: document.getElementById('stopLossPrice'),
+                leverage: document.getElementById('leverage'), fees: document.getElementById('fees'),
+                symbol: document.getElementById('symbol'), atrValue: document.getElementById('atrValue'),
+                atrMultiplier: document.getElementById('atrMultiplier'), useAtrSl: document.getElementById('use-atr-sl'),
+                tradeNotes: document.getElementById('tradeNotes'),
+            },
+            buttons: {
+                btnLong: document.getElementById('btn-long'), btnShort: document.getElementById('btn-short'),
+                copyBtn: document.getElementById('copy-btn'), saveJournalBtn: document.getElementById('save-journal-btn'),
+                viewJournalBtn: document.getElementById('view-journal-btn'), closeJournalBtn: document.getElementById('close-journal-btn'),
+                clearJournalBtn: document.getElementById('clear-journal-btn'), resetBtn: document.getElementById('reset-btn'),
+                themeSwitcher: document.getElementById('theme-switcher'), priceFetchBtn: document.getElementById('price-fetch-btn'),
+                exportCsvBtn: document.getElementById('export-csv-btn'),
+                importCsvBtn: document.getElementById('import-csv-btn'),
+                importCsvInput: document.getElementById('import-csv-input'),
+                addTpBtn: document.getElementById('add-tp-btn'),
+                savePresetBtn: document.getElementById('save-preset-btn'),
+                presetLoader: document.getElementById('preset-loader'),
+                deletePresetBtn: document.getElementById('delete-preset-btn'),
+                lockPositionSizeBtn: document.getElementById('lock-position-size-btn'),
+                showDashboardReadmeBtn: document.getElementById('show-dashboard-readme-btn'),
+                showJournalReadmeBtn: document.getElementById('show-journal-readme-btn'),
+            },
+            results: {
+                positionSize: document.getElementById('positionSize'), requiredMargin: document.getElementById('requiredMargin'),
+                netLoss: document.getElementById('netLoss'), liquidationPrice: document.getElementById('liquidationPrice'), breakEvenPrice: document.getElementById('breakEvenPrice'),
+                totalRR: document.getElementById('totalRR'), totalNetProfit: document.getElementById('totalNetProfit'),
+                totalPercentSold: document.getElementById('totalPercentSold'),
+                riskAmountCurrency: document.getElementById('riskAmountCurrency'),
+                totalFees: document.getElementById('totalFees'),
+                maxPotentialProfit: document.getElementById('maxPotentialProfit'),
+                tpResultsContainer: document.getElementById('tp-results-container'),
+            },
+            ui: {
+                errorMessageDiv: document.getElementById('error-message'), copyFeedback: document.getElementById('copy-feedback'), 
+                saveFeedback: document.getElementById('save-feedback'), visualBar: document.getElementById('visual-bar'),
+                manualSlGroup: document.getElementById('manual-sl-group'), atrSlGroup: document.getElementById('atr-sl-group'),
+                atrFormulaDisplay: document.getElementById('atr-formula-display'),
+                journalModal: document.getElementById('journal-modal'), journalTableBody: document.querySelector('#journal-table tbody'),
+                journalStats: document.getElementById('journal-stats'), journalSearch: document.getElementById('journal-search'),
+                journalFilter: document.getElementById('journal-filter'),
+                totalMetricsGroup: document.getElementById('total-metrics-group'),
+                symbolSuggestions: document.getElementById('symbol-suggestions'),
+                tpList: document.getElementById('take-profit-list'),
+                tpTooltip: document.getElementById('tp-tooltip'),
+                customModalOverlay: document.getElementById('custom-modal-overlay'),
+                customModalContent: document.getElementById('custom-modal-content'),
+                customModalTitle: document.getElementById('custom-modal-title'),
+                customModalMessage: document.getElementById('custom-modal-message'),
+                customModalInput: document.getElementById('custom-modal-input'),
+                customModalButtons: document.getElementById('custom-modal-buttons'),
+                symbolPerformanceTableBody: document.getElementById('symbol-performance-table-body'),
+            }
+        };
+
+        const modalManager = {
+            _resolve: null,
+            _reject: null,
+
+            show(title, message, type, defaultValue = '') {
+                return new Promise((resolve, reject) => {
+                    this._resolve = resolve;
+                    this._reject = reject;
+
+                    dom.ui.customModalTitle.textContent = title;
+                    dom.ui.customModalMessage.innerHTML = message; // Use innerHTML to render HTML content
+                    dom.ui.customModalInput.value = defaultValue;
+                    dom.ui.customModalButtons.innerHTML = '';
+
+                    if (type === 'prompt') {
+                        dom.ui.customModalInput.classList.remove('hidden');
+                        const okBtn = document.createElement('button');
+                        okBtn.textContent = 'OK';
+                        okBtn.classList.add('bg-sky-600', 'hover:bg-sky-500', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded-lg');
+                        okBtn.onclick = () => this._handleModalConfirm(dom.ui.customModalInput.value);
+                        dom.ui.customModalButtons.appendChild(okBtn);
+                    } else if (type === 'confirm') {
+                        dom.ui.customModalInput.classList.add('hidden');
+                        const yesBtn = document.createElement('button');
+                        yesBtn.textContent = 'Ja';
+                        yesBtn.classList.add('bg-red-600', 'hover:bg-red-500', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded-lg');
+                        yesBtn.onclick = () => this._handleModalConfirm(true);
+                        dom.ui.customModalButtons.appendChild(yesBtn);
+
+                        const noBtn = document.createElement('button');
+                        noBtn.textContent = 'Nein';
+                        noBtn.classList.add('bg-slate-600', 'hover:bg-slate-500', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded-lg');
+                        noBtn.onclick = () => this._handleModalConfirm(false);
+                        dom.ui.customModalButtons.appendChild(noBtn);
+                    } else { // alert
+                        dom.ui.customModalInput.classList.add('hidden');
+                        const okBtn = document.createElement('button');
+                        okBtn.textContent = 'OK';
+                        okBtn.classList.add('bg-sky-600', 'hover:bg-sky-500', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded-lg');
+                        okBtn.onclick = () => this._handleModalConfirm(true);
+                        dom.ui.customModalButtons.appendChild(okBtn);
+                    }
+
+                    dom.ui.customModalOverlay.style.visibility = 'visible';
+                    dom.ui.customModalOverlay.style.opacity = '1';
+                });
+            },
+
+            _handleModalConfirm(result) {
+                dom.ui.customModalOverlay.style.visibility = 'hidden';
+                dom.ui.customModalOverlay.style.opacity = '0';
+                if (this._resolve) {
+                    this._resolve(result);
+                }
+                this._reset();
+            },
+
+            _reset() {
+                this._resolve = null;
+                this._reject = null;
+                dom.ui.customModalInput.classList.add('hidden');
+            }
+        };
+
+        const uiManager = {
+            showError(message, invalidFields = []) {
+                dom.ui.errorMessageDiv.textContent = message;
+                dom.ui.errorMessageDiv.classList.remove('hidden');
+                Object.values(dom.inputs).forEach(input => input.classList.remove('invalid'));
+                invalidFields.forEach(fieldName => dom.inputs[fieldName]?.classList.add('invalid'));
+            },
+            hideError() {
+                dom.ui.errorMessageDiv.textContent = '';
+                dom.ui.errorMessageDiv.classList.add('hidden');
+                Object.values(dom.inputs).forEach(input => input.classList.remove('invalid'));
+            },
+            clearResults() {
+                Object.values(dom.results).forEach(el => {
+                    if (el.id === 'tp-results-container') el.innerHTML = '';
+                    else el.textContent = '-';
+                });
+                dom.ui.visualBar.innerHTML = '';
+                dom.ui.atrFormulaDisplay.classList.add('hidden');
+                dom.buttons.saveJournalBtn.disabled = true;
+                dom.ui.totalMetricsGroup.classList.add('hidden');
+            },
+            updateVisualBar(values, targets) {
+                dom.ui.visualBar.innerHTML = '';
+                const validTargetPrices = targets.map(t => t.price).filter(p => p.greaterThan(0));
+                const allPrices = [values.entryPrice, values.stopLossPrice, ...validTargetPrices];
+                const highestPrice = Decimal.max(...allPrices);
+                const lowestPrice = Decimal.min(...allPrices);
+                const totalRange = highestPrice.minus(lowestPrice);
+                if (totalRange.lessThanOrEqualTo(0)) return;
+
+                const slPos = (values.stopLossPrice.minus(lowestPrice)).dividedBy(totalRange).times(100);
+                const entryPos = (values.entryPrice.minus(lowestPrice)).dividedBy(totalRange).times(100);
+                
+                let zonesHTML = state.tradeType === CONSTANTS.TRADE_TYPE_LONG
+                    ? `<div class="loss-zone" style="left: ${slPos}%; width:${entryPos - slPos}%;"></div><div class="gain-zone" style="left: ${entryPos}%; width:${100 - entryPos}%;"></div>`
+                    : `<div class="gain-zone" style="left: 0; width:${entryPos}%;"></div><div class="loss-zone" style="left: ${entryPos}%; width:${slPos - entryPos}%;"></div>`;
+                
+                let markersHTML = `<div class="bar-marker" style="left: ${slPos}%"><span>SL</span></div><div class="bar-marker entry-marker" style="left: ${entryPos}%"><span>Einstieg</span></div>`;
+                
+                targets.forEach((tp, i) => {
+                    if ((state.tradeType === CONSTANTS.TRADE_TYPE_LONG && tp.price > values.entryPrice) || (state.tradeType === CONSTANTS.TRADE_TYPE_SHORT && tp.price < values.entryPrice)) {
+                        const tpPos = ((tp.price - lowestPrice) / totalRange) * 100;
+                        markersHTML += `<div class="bar-marker tp-marker" style="left: ${tpPos}%" data-tp-index="${i}"><span>TP${i+1}</span></div>`;
+                    }
+                });
+                dom.ui.visualBar.innerHTML = zonesHTML + markersHTML;
+            },
+            createTpResultElement(tpIndex, rr, netProfit, percentSold, priceChangePercent, returnOnCapital, partialVolume) {
+                const rrColor = rr.greaterThanOrEqualTo(2) ? 'text-green-400' : rr.greaterThanOrEqualTo(1.5) ? 'text-yellow-400' : 'text-red-400';
+                const priceChangeColor = priceChangePercent.greaterThan(0) ? 'text-green-400' : priceChangePercent.lessThan(0) ? 'text-red-400' : '';
+                const returnOnCapitalColor = returnOnCapital.greaterThan(0) ? 'text-green-400' : returnOnCapital.lessThan(0) ? 'text-red-400' : '';
+                return `<div class="result-group !mt-0 md:!mt-6"><h2 class="section-header">Take Profit ${tpIndex} (${percentSold}%)</h2><div class="result-item"><span class="result-label">Risk/Reward Ratio</span><span class="result-value ${rrColor}">${rr.toFixed(2)}</span></div><div class="result-item"><span class="result-label">Netto-Gewinn<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Der geschätzte Gewinn für diesen spezifischen Teilverkauf, nach Abzug der anteiligen Gebühren.</span></div></span><span class="result-value text-green-400">+${netProfit.toFixed(2)}</span></div><div class="result-item"><span class="result-label">Preisänderung<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Die prozentuale Preisbewegung vom Einstiegspreis bis zu diesem Take-Profit-Ziel.</span></div></span><span class="result-value ${priceChangeColor}">${priceChangePercent.toFixed(2)}%</span></div><div class="result-item"><span class="result-label">Rendite auf Kapital<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Der prozentuale Gewinn im Verhältnis zum anteiligen, gebundenen Kapital (Margin) für diesen Teilverkauf.</span></div></span><span class="result-value ${returnOnCapitalColor}">${returnOnCapital.toFixed(2)}%</span></div><div class="result-item"><span class="result-label">Teilverkauf Volumen<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Die Menge der Einheiten (z.B. BTC, ETH), die bei diesem Take-Profit-Ziel verkauft werden.</span></div></span><span class="result-value">${partialVolume.toFixed(4)}</span></div></div>`;
+            },
+            toggleAtrInputs(shouldCalculate = true) {
+                dom.ui.manualSlGroup.classList.toggle('hidden', dom.inputs.useAtrSl.checked);
+                dom.ui.atrSlGroup.classList.toggle('hidden', !dom.inputs.useAtrSl.checked);
+                dom.inputs.stopLossPrice.disabled = dom.inputs.useAtrSl.checked;
+                dom.inputs.stopLossPrice.value = '';
+                dom.inputs.useAtrSl.setAttribute('aria-checked', dom.inputs.useAtrSl.checked);
+                if (shouldCalculate) app.calculateAndDisplay();
+            },
+            setTradeType(type, shouldCalculate = true) {
+                state.tradeType = type;
+                dom.buttons.btnLong.classList.toggle('active', type === CONSTANTS.TRADE_TYPE_LONG);
+                dom.buttons.btnShort.classList.toggle('active', type === CONSTANTS.TRADE_TYPE_SHORT);
+                if (shouldCalculate) app.calculateAndDisplay();
+            },
+            showFeedback(element, duration = 2000) {
+                element.style.visibility = 'visible';
+                element.style.opacity = '1';
+                setTimeout(() => { element.style.visibility = 'hidden'; element.style.opacity = '0'; }, duration);
+            },
+            setTheme(theme) {
+                dom.body.classList.toggle('light-theme', theme === 'light');
+                dom.buttons.themeSwitcher.textContent = theme === 'light' ? '🌙' : '☀️';
+                try {
+                    localStorage.setItem(CONSTANTS.LOCAL_STORAGE_THEME_KEY, theme);
+                } catch (e) {
+                    console.warn("Could not save theme to localStorage.", e);
+                }
+            },
+            updateSymbolSuggestions(suggestions) {
+                dom.ui.symbolSuggestions.innerHTML = '';
+                if (suggestions.length === 0) {
+                    dom.ui.symbolSuggestions.classList.add('hidden');
+                    return;
+                }
+                suggestions.forEach(symbol => {
+                    const item = document.createElement('div');
+                    item.textContent = symbol;
+                    item.classList.add('suggestion-item');
+                    dom.ui.symbolSuggestions.appendChild(item);
+                });
+                dom.ui.symbolSuggestions.classList.remove('hidden');
+            }
+        };
+
+        const calculator = {
+            getAndValidateInputs() {
+                const values = {};
+                for (const key in dom.inputs) {
+                    const input = dom.inputs[key];
+                    if (input.type === 'checkbox') values[key] = input.checked;
+                    else if (input.type === 'text') values[key] = input.value;
+                    else values[key] = new Decimal(input.value || 0);
+                }
+                
+                dom.ui.atrFormulaDisplay.classList.add('hidden');
+                if (values.useAtrSl) {
+                    if (values.entryPrice.greaterThan(0) && values.atrValue.greaterThan(0) && values.atrMultiplier.greaterThan(0)) {
+                        const operator = state.tradeType === CONSTANTS.TRADE_TYPE_LONG ? '-' : '+';
+                        values.stopLossPrice = state.tradeType === CONSTANTS.TRADE_TYPE_LONG
+                            ? values.entryPrice.minus(values.atrValue.times(values.atrMultiplier))
+                            : values.entryPrice.plus(values.atrValue.times(values.atrMultiplier));
+                        dom.ui.atrFormulaDisplay.innerHTML = `SL = ${values.entryPrice.toFixed(4)} ${operator} (${values.atrValue} × ${values.atrMultiplier}) = ${values.stopLossPrice.toFixed(4)}`;
+                        dom.ui.atrFormulaDisplay.classList.remove('hidden');
+                    } else { return { status: CONSTANTS.STATUS_INCOMPLETE }; }
+                }
+                
+                if (values.accountSize.lessThanOrEqualTo(0) || values.riskPercentage.lessThanOrEqualTo(0) || values.entryPrice.lessThanOrEqualTo(0) || values.stopLossPrice.lessThanOrEqualTo(0)) {
+                    return { status: CONSTANTS.STATUS_INCOMPLETE };
+                }
+
+                if (state.tradeType === CONSTANTS.TRADE_TYPE_LONG && values.entryPrice.lessThanOrEqualTo(values.stopLossPrice)) {
+                    return { status: CONSTANTS.STATUS_INVALID, message: "Long: Stop-Loss muss unter dem Kaufpreis liegen.", fields: ['stopLossPrice', 'entryPrice'] };
+                }
+                if (state.tradeType === CONSTANTS.TRADE_TYPE_SHORT && values.entryPrice.greaterThanOrEqualTo(values.stopLossPrice)) {
+                    return { status: CONSTANTS.STATUS_INVALID, message: "Short: Stop-Loss muss über dem Verkaufspreis liegen.", fields: ['stopLossPrice', 'entryPrice'] };
+                }
+                
+                const targets = [];
+                const tpRows = dom.ui.tpList.querySelectorAll('.tp-row');
+                tpRows.forEach(row => {
+                    const priceInput = row.querySelector('.tp-price');
+                    const percentInput = row.querySelector('.tp-percent');
+                    targets.push({
+                        price: new Decimal(priceInput.value || 0),
+                        percent: new Decimal(percentInput.value || 0),
+                    });
+                });
+
+                const totalPercent = targets.reduce((sum, t) => sum.plus(t.percent), new Decimal(0));
+                if (totalPercent.greaterThan(100)) {
+                    return { status: CONSTANTS.STATUS_INVALID, message: `Die Summe der Verkaufsprozente (${totalPercent.toFixed(0)}%) darf 100% nicht überschreiten.`, fields: [] };
+                }
+
+                return { status: CONSTANTS.STATUS_VALID, data: { ...values, targets, totalPercentSold: totalPercent } };
+            },
+            calculateBaseMetrics(values) {
+                const riskAmount = values.accountSize.times(values.riskPercentage.dividedBy(100));
+                const riskPerUnit = values.entryPrice.minus(values.stopLossPrice).abs();
+                if (riskPerUnit <= 0) {
+                    return { status: CONSTANTS.STATUS_INVALID, message: "Stop-Loss muss einen gültigen Abstand zum Einstiegspreis haben.", fields: ['stopLossPrice', 'entryPrice'] };
+                }
+
+                const positionSize = riskAmount.dividedBy(riskPerUnit);
+                const orderVolume = positionSize.times(values.entryPrice);
+                const requiredMargin = orderVolume.dividedBy(values.leverage);
+                const entryFee = orderVolume.times(values.fees.dividedBy(100));
+                const slExitFee = positionSize.times(values.stopLossPrice).times(values.fees.dividedBy(100));
+                const netLoss = riskAmount.plus(entryFee).plus(slExitFee);
+                
+                const feeFactor = values.fees.dividedBy(100);
+                const breakEvenPrice = state.tradeType === CONSTANTS.TRADE_TYPE_LONG
+                    ? values.entryPrice.times(new Decimal(1).plus(feeFactor)).dividedBy(new Decimal(1).minus(feeFactor))
+                    : values.entryPrice.times(new Decimal(1).minus(feeFactor)).dividedBy(new Decimal(1).plus(feeFactor));
+
+                const liquidationPrice = state.tradeType === CONSTANTS.TRADE_TYPE_LONG
+                    ? values.entryPrice.times(new Decimal(1).minus(new Decimal(1).dividedBy(values.leverage)))
+                    : values.entryPrice.times(new Decimal(1).plus(new Decimal(1).dividedBy(values.leverage)));
+                
+                return { positionSize, requiredMargin, netLoss, breakEvenPrice, liquidationPrice, entryFee, riskAmount };
+            },
+            calculateIndividualTp(tpPrice, baseMetrics, values, tpPercent) {
+                const { positionSize, netLoss, requiredMargin, riskAmount } = baseMetrics;
+                const gainPerUnit = new Decimal(tpPrice).minus(values.entryPrice).abs();
+                
+                const positionPart = positionSize.times(tpPercent.dividedBy(100));
+                const grossProfitPart = gainPerUnit.times(positionPart);
+                const tpExitFeePart = positionPart.times(new Decimal(tpPrice)).times(values.fees.dividedBy(100));
+                const entryFeePart = positionPart.times(values.entryPrice).times(values.fees.dividedBy(100));
+
+                const netProfit = grossProfitPart.minus(entryFeePart).minus(tpExitFeePart);
+                
+                const riskForPart = riskAmount.times(tpPercent.dividedBy(100));
+                const riskRewardRatio = riskForPart.greaterThan(0) ? netProfit.dividedBy(riskForPart) : new Decimal(0);
+
+                // New metrics
+                const priceChangePercent = values.entryPrice.greaterThan(0)
+                    ? (tpPrice.minus(values.entryPrice)).dividedBy(values.entryPrice).times(100)
+                    : new Decimal(0);
+
+                const returnOnCapital = requiredMargin.greaterThan(0) && tpPercent.greaterThan(0)
+                    ? netProfit.dividedBy(requiredMargin.times(tpPercent.dividedBy(100))).times(100)
+                    : new Decimal(0);
+
+                const partialVolume = positionPart;
+
+                return { netProfit, riskRewardRatio, priceChangePercent, returnOnCapital, partialVolume };
+            },
+            calculateTotalMetrics(targets, baseMetrics, values) {
+                const { positionSize, netLoss, entryFee, riskAmount } = baseMetrics;
+                let totalNetProfit = new Decimal(0);
+                let weightedRRSum = new Decimal(0);
+                let totalFees = entryFee; // Start with entry fee
+                let maxPotentialProfit = new Decimal(0);
+
+                targets.forEach(tp => {
+                    if (tp.price > 0 && tp.percent > 0) {
+                        const gainPerUnit = new Decimal(tp.price).minus(values.entryPrice).abs();
+                        const positionPart = positionSize.times(new Decimal(tp.percent).dividedBy(100));
+                        const grossProfitPart = gainPerUnit.times(positionPart);
+                        const tpExitFee = positionPart.times(new Decimal(tp.price)).times(values.fees.dividedBy(100));
+                        const entryFeePart = positionPart.times(values.entryPrice).times(values.fees.dividedBy(100));
+                        const netProfitPart = grossProfitPart.minus(entryFeePart).minus(tpExitFee);
+                        
+                        totalNetProfit = totalNetProfit.plus(netProfitPart);
+                        totalFees = totalFees.plus(tpExitFee).plus(entryFeePart); // Add fees for this partial sale
+
+                        if (netLoss > 0) {
+                            const riskForPart = netLoss.times(new Decimal(tp.percent).dividedBy(100));
+                            const rrPart = netProfitPart.dividedBy(riskForPart);
+                            weightedRRSum = weightedRRSum.plus(rrPart.times(new Decimal(tp.percent).dividedBy(100)));
+                        }
+                    }
+                });
+                
+                // Calculate Max Potential Profit (if 100% sold at highest TP)
+                const validTpPrices = targets.filter(t => t.price.greaterThan(0)).map(t => t.price);
+                if (validTpPrices.length > 0) {
+                    const highestTpPrice = values.tradeType === CONSTANTS.TRADE_TYPE_LONG
+                        ? Decimal.max(...validTpPrices)
+                        : Decimal.min(...validTpPrices);
+                    
+                    const gainPerUnitFull = highestTpPrice.minus(values.entryPrice).abs();
+                    const grossProfitFull = gainPerUnitFull.times(positionSize);
+                    const exitFeeFull = positionSize.times(highestTpPrice).times(values.fees.dividedBy(100));
+                    const entryFeeFull = positionSize.times(values.entryPrice).times(values.fees.dividedBy(100));
+                    maxPotentialProfit = grossProfitFull.minus(entryFeeFull).minus(exitFeeFull);
+                }
+
+                const totalRR = values.totalPercentSold.greaterThan(0) ? weightedRRSum.dividedBy(values.totalPercentSold.dividedBy(100)) : new Decimal(0);
+                return { totalNetProfit, totalRR, totalFees, maxPotentialProfit, riskAmount };
+            }
+        };
+
+        const app = {
+            init() {
+                this.addEventListeners();
+                this.loadSettings();
+                this.populatePresetLoader();
+                this.calculateAndDisplay();
+            },
+            getJournal: () => {
+                try {
+                    const d = localStorage.getItem(CONSTANTS.LOCAL_STORAGE_JOURNAL_KEY) || '[]';
+                    const parsedData = JSON.parse(d);
+                    if (!Array.isArray(parsedData)) return [];
+
+                    return parsedData.map(trade => {
+                        const newTrade = { ...trade };
+                        // Convert relevant numeric fields to Decimal objects
+                        const numericFields = ['accountSize', 'riskPercentage', 'entryPrice', 'stopLossPrice', 'leverage', 'fees', 'atrValue', 'atrMultiplier', 'totalRR', 'totalNetProfit', 'netLoss', 'riskAmount', 'totalFees', 'maxPotentialProfit'];
+                        numericFields.forEach(field => {
+                            if (typeof newTrade[field] === 'number' || typeof newTrade[field] === 'string') {
+                                newTrade[field] = new Decimal(newTrade[field] || 0);
+                            }
+                        });
+                        // Convert targets prices and percents to Decimal
+                        if (newTrade.targets && Array.isArray(newTrade.targets)) {
+                            newTrade.targets = newTrade.targets.map(tp => ({
+                                price: new Decimal(tp.price || 0),
+                                percent: new Decimal(tp.percent || 0),
+                                isLocked: tp.isLocked // Keep boolean as is
+                            }));
+                        }
+                        return newTrade;
+                    });
+                } catch (e) {
+                    console.warn("Could not load journal from localStorage.", e);
+                    return [];
+                }
+            },
+            saveJournal: (d) => { 
+                try {
+                    localStorage.setItem(CONSTANTS.LOCAL_STORAGE_JOURNAL_KEY, JSON.stringify(d));
+                } catch (e) { 
+                    console.warn("Could not save journal to localStorage.", e);
+                    uiManager.showError("Fehler beim Speichern des Journals.");
+                }
+            },
+            render() {
+                const journalData = this.getJournal();
+                const searchTerm = dom.ui.journalSearch.value.toLowerCase();
+                const filterStatus = dom.ui.journalFilter.value;
+
+                const filteredData = journalData.filter(trade => {
+                    const matchesSearch = trade.symbol.toLowerCase().includes(searchTerm);
+                    const matchesFilter = filterStatus === 'all' || trade.status === filterStatus;
+                    return matchesSearch && matchesFilter;
+                });
+
+                dom.ui.journalTableBody.innerHTML = '';
+                filteredData.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(trade => {
+                    const row = document.createElement('tr');
+                    const typeDisplay = trade.tradeType.charAt(0).toUpperCase() + trade.tradeType.slice(1);
+                    const typeColor = trade.tradeType === CONSTANTS.TRADE_TYPE_LONG ? 'text-green-400' : 'text-red-400';
+                    const rr = (new Decimal(trade.totalRR || 0)).toFixed(2);
+                    const rrColor = new Decimal(rr).greaterThanOrEqualTo(2) ? 'text-green-400' : new Decimal(rr).greaterThanOrEqualTo(1.5) ? 'text-yellow-400' : 'text-red-400';
+                    const notes = trade.notes || '';
+
+                    row.innerHTML = `
+                        <td>${new Date(trade.date).toLocaleString('de-DE', {day:'2-digit', month: '2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit'})}</td>
+                        <td>${trade.symbol || '-'}</td><td class="${typeColor}">${typeDisplay}</td>
+                        <td>${trade.entryPrice.toFixed(4)}</td><td>${trade.stopLossPrice.toFixed(4)}</td>
+                        <td class="${rrColor}">${rr}</td>
+                        <td><select class="status-select input-field p-1" data-id="${trade.id}"><option value="Open" ${trade.status === 'Open' ? 'selected' : ''}>Offen</option><option value="Won" ${trade.status === 'Won' ? 'selected' : ''}>Gewonnen</option><option value="Lost" ${trade.status === 'Lost' ? 'selected' : ''}>Verloren</option></select></td>
+                        <td class="notes-cell" title="Klicken zum Ausklappen">${notes}</td>
+                        <td class="text-center"><button class="delete-trade-btn text-red-500 hover:text-red-400 p-1 rounded-full" data-id="${trade.id}" title="Diesen Eintrag löschen"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button></td>`;
+                    dom.ui.journalTableBody.appendChild(row);
+                });
+                this.renderStats(journalData);
+            },
+            renderStats(journalData) {
+                
+
+                const closedTrades = journalData.filter(t => t.status === 'Won' || t.status === 'Lost');
+                const sortedClosedTrades = [...closedTrades].sort((a, b) => new Date(a.date) - new Date(b.date));
+                const wonTrades = closedTrades.filter(t => t.status === 'Won');
+                const lostTrades = closedTrades.filter(t => t.status === 'Lost');
+                const totalTrades = closedTrades.length;
+                const winRate = totalTrades > 0 ? (wonTrades.length / totalTrades) * 100 : 0;
+                
+                const totalProfit = wonTrades.reduce((sum, t) => sum.plus(new Decimal(t.totalNetProfit || 0)), new Decimal(0));
+                const totalLoss = lostTrades.reduce((sum, t) => sum.plus(new Decimal(t.netLoss || 0)), new Decimal(0));
+                const profitFactor = totalLoss.greaterThan(0) ? totalProfit.dividedBy(totalLoss) : totalProfit.greaterThan(0) ? new Decimal(Infinity) : new Decimal(0);
+                
+                const avgRR = totalTrades > 0 ? closedTrades.reduce((sum, t) => sum.plus(new Decimal(t.totalRR || 0)), new Decimal(0)).dividedBy(totalTrades) : new Decimal(0);
+
+                const avgProfit = wonTrades.length > 0 ? totalProfit.dividedBy(wonTrades.length) : new Decimal(0);
+                const avgLoss = lostTrades.length > 0 ? totalLoss.dividedBy(lostTrades.length) : new Decimal(0);
+
+                const avgWin = wonTrades.length > 0 ? totalProfit.dividedBy(wonTrades.length) : new Decimal(0);
+                const avgLossOnly = lostTrades.length > 0 ? totalLoss.dividedBy(lostTrades.length) : new Decimal(0);
+                const winLossRatio = avgLossOnly.greaterThan(0) ? avgWin.dividedBy(avgLossOnly) : new Decimal(0);
+
+                const largestProfit = wonTrades.length > 0 ? Decimal.max(...wonTrades.map(t => new Decimal(t.totalNetProfit || 0))) : new Decimal(0);
+                const largestLoss = lostTrades.length > 0 ? Decimal.max(...lostTrades.map(t => new Decimal(t.netLoss || 0))) : new Decimal(0);
+
+                // Average R-Multiple
+                let totalRMultiples = new Decimal(0);
+                let tradesWithRisk = 0;
+                closedTrades.forEach(trade => {
+                    if (trade.riskAmount && trade.riskAmount.greaterThan(0)) {
+                        const tradeNetProfit = new Decimal(trade.totalNetProfit || 0);
+                        const tradeNetLoss = new Decimal(trade.netLoss || 0);
+                        let rMultiple = new Decimal(0);
+
+                        if (trade.status === 'Won') {
+                            rMultiple = tradeNetProfit.dividedBy(trade.riskAmount);
+                        } else if (trade.status === 'Lost') {
+                            rMultiple = tradeNetLoss.dividedBy(trade.riskAmount).times(-1); // Negative for losses
+                        }
+                        totalRMultiples = totalRMultiples.plus(rMultiple);
+                        tradesWithRisk++;
+                    }
+                });
+                const avgRMultiple = tradesWithRisk > 0 ? totalRMultiples.dividedBy(tradesWithRisk) : new Decimal(0);
+
+                // Max Drawdown and Recovery Factor
+                let cumulativeProfit = new Decimal(0);
+                let peakEquity = new Decimal(0);
+                let maxDrawdown = new Decimal(0);
+
+                sortedClosedTrades.forEach(trade => {
+                    if (trade.status === 'Won') {
+                        cumulativeProfit = cumulativeProfit.plus(new Decimal(trade.totalNetProfit || 0));
+                    } else if (trade.status === 'Lost') {
+                        cumulativeProfit = cumulativeProfit.minus(new Decimal(trade.netLoss || 0));
+                    }
+                    
+                    if (cumulativeProfit.greaterThan(peakEquity)) {
+                        peakEquity = cumulativeProfit;
+                    }
+                    const drawdown = peakEquity.minus(cumulativeProfit);
+                    if (drawdown.greaterThan(maxDrawdown)) {
+                        maxDrawdown = drawdown;
+                    }
+                });
+
+                const recoveryFactor = maxDrawdown.greaterThan(0) ? cumulativeProfit.dividedBy(maxDrawdown) : new Decimal(0);
+
+                // Expectancy
+                const lossRate = totalTrades > 0 ? (lostTrades.length / totalTrades) : 0;
+                const expectancy = (new Decimal(winRate).dividedBy(100).times(avgProfit)).minus(new Decimal(lossRate).times(avgLoss));
+
+                // Long/Short Breakdown
+                let totalProfitLong = new Decimal(0);
+                let totalLossLong = new Decimal(0);
+                let totalProfitShort = new Decimal(0);
+                let totalLossShort = new Decimal(0);
+
+                closedTrades.forEach(trade => {
+                    const tradeProfit = new Decimal(trade.totalNetProfit || 0);
+                    const tradeLoss = new Decimal(trade.netLoss || 0);
+
+                    if (trade.tradeType === CONSTANTS.TRADE_TYPE_LONG) {
+                        if (trade.status === 'Won') {
+                            totalProfitLong = totalProfitLong.plus(tradeProfit);
+                        } else if (trade.status === 'Lost') {
+                            totalLossLong = totalLossLong.plus(tradeLoss);
+                        }
+                    } else if (trade.tradeType === CONSTANTS.TRADE_TYPE_SHORT) {
+                        if (trade.status === 'Won') {
+                            totalProfitShort = totalProfitShort.plus(tradeProfit);
+                        } else if (trade.status === 'Lost') {
+                            totalLossShort = totalLossShort.plus(tradeLoss);
+                        }
+                    }
+                });
+
+                // Streaks
+                let longestWinningStreak = 0;
+                let currentWinningStreak = 0;
+                let longestLosingStreak = 0;
+                let currentLosingStreak = 0;
+                let currentStreakText = 'N/A';
+
+                for (let i = 0; i < sortedClosedTrades.length; i++) {
+                    const trade = sortedClosedTrades[i];
+                    if (trade.status === 'Won') {
+                        currentWinningStreak++;
+                        currentLosingStreak = 0; // Reset losing streak
+                        if (currentWinningStreak > longestWinningStreak) {
+                            longestWinningStreak = currentWinningStreak;
+                        }
+                    } else if (trade.status === 'Lost') {
+                        currentLosingStreak++;
+                        currentWinningStreak = 0; // Reset winning streak
+                        if (currentLosingStreak > longestLosingStreak) {
+                            longestLosingStreak = currentLosingStreak;
+                        }
+                    }
+                }
+
+                // Determine current streak based on the very last closed trade
+                if (sortedClosedTrades.length > 0) {
+                    let tempCurrentWinningStreak = 0;
+                    let tempCurrentLosingStreak = 0;
+
+                    for (let i = sortedClosedTrades.length - 1; i >= 0; i--) {
+                        const trade = sortedClosedTrades[i];
+                        if (trade.status === 'Won') {
+                            if (tempCurrentLosingStreak > 0) break; // Streak broken
+                            tempCurrentWinningStreak++;
+                        } else if (trade.status === 'Lost') {
+                            if (tempCurrentWinningStreak > 0) break; // Streak broken
+                            tempCurrentLosingStreak++;
+                        } else {
+                            // If the last trade is 'Open', we look at the one before it
+                            // Or if we encounter an 'Open' trade in the middle of a streak, it breaks the streak for calculation purposes
+                            if (tempCurrentWinningStreak > 0 || tempCurrentLosingStreak > 0) break;
+                        }
+                    }
+
+                    if (tempCurrentWinningStreak > 0) {
+                        currentStreakText = `+${tempCurrentWinningStreak}`;
+                    } else if (tempCurrentLosingStreak > 0) {
+                        currentStreakText = `-${tempCurrentLosingStreak}`;
+                    }
+                }
+
+
+                const stats = [
+                    { label: 'Abgeschl. Trades', value: totalTrades, tooltip: 'Die Gesamtzahl aller abgeschlossenen (gewonnen oder verlorenen) Trades.' },
+                    { label: 'Trefferquote', value: `${winRate.toFixed(1)}%`, tooltip: 'Der prozentuale Anteil der gewinnbringenden Trades an allen abgeschlossenen Trades.' },
+                    { label: 'Profit Faktor', value: profitFactor === Infinity ? '∞' : profitFactor.toFixed(2), tooltip: 'Das Verhältnis von Bruttogewinn zu Bruttoverlust. Ein Wert größer als 1 bedeutet, dass die Gewinne die Verluste übersteigen.' },
+                    { label: 'Erwartungswert', value: expectancy.toFixed(2), tooltip: 'Der durchschnittliche Betrag, den Sie pro Trade zu gewinnen oder zu verlieren erwarten. Ein positiver Wert deutet auf eine profitable Strategie hin.' },
+                    { label: 'Durchschn. R-Multiple', value: avgRMultiple.toFixed(2), tooltip: 'Der durchschnittliche Gewinn oder Verlust ausgedrückt als Vielfaches des ursprünglichen Risikos (R). Ein Wert von 1.5 bedeutet einen durchschnittlichen Gewinn von 1.5x des Risikos.' },
+                    { label: 'Durchschn. R/R', value: avgRR.toFixed(2), tooltip: 'Das durchschnittliche Chance-Risiko-Verhältnis über alle abgeschlossenen Trades.' },
+                    { label: 'Durchschn. Gewinn', value: avgWin.toFixed(2), tooltip: 'Der durchschnittliche Gewinnbetrag nur für alle gewonnenen Trades.' },
+                    { label: 'Durchschn. Verlust', value: avgLossOnly.toFixed(2), tooltip: 'Der durchschnittliche Verlustbetrag nur für alle verlorenen Trades.' },
+                    { label: 'Gewinn/Verlust Verhältnis', value: winLossRatio.toFixed(2), tooltip: 'Das Verhältnis vom durchschnittlichen Gewinn zum durchschnittlichen Verlust. Zeigt, wie viel größer die Gewinne im Vergleich zu den Verlusten sind.' },
+                    { label: 'Größter Gewinn', value: largestProfit.toFixed(2), tooltip: 'Der höchste Einzelgewinn aus allen abgeschlossenen Trades.' },
+                    { label: 'Größter Verlust', value: largestLoss.toFixed(2), tooltip: 'Der höchste Einzelverlust aus allen abgeschlossenen Trades.' },
+                    { label: 'Max. Drawdown', value: maxDrawdown.toFixed(2), tooltip: 'Der größte prozentuale oder absolute Rückgang des Kapitals von einem Höchststand. Misst das größte finanzielle Tief Ihrer Strategie.' },
+                    { label: 'Recovery Faktor', value: recoveryFactor.toFixed(2), tooltip: 'Das Verhältnis vom Gesamtnettogewinn zum maximalen Drawdown. Ein hoher Wert deutet auf eine gute Erholungsfähigkeit der Strategie hin.' },
+                    { label: 'Aktuelle Serie', value: currentStreakText, tooltip: 'Die aktuelle ununterbrochene Serie von Gewinnen (+) oder Verlusten (-).' },
+                    { label: 'Längste Gewinnserie', value: longestWinningStreak, tooltip: 'Die längste ununterbrochene Serie von Gewinntrades in Folge.' },
+                    { label: 'Längste Verlustserie', value: longestLosingStreak, tooltip: 'Die längste ununterbrochene Serie von Verlusttrades in Folge.' },
+                    { label: 'Long Gewinn', value: totalProfitLong.toFixed(2), tooltip: 'Der kumulierte Nettogewinn aus allen abgeschlossenen Long-Trades.' },
+                    { label: 'Long Verlust', value: totalLossLong.toFixed(2), tooltip: 'Der kumulierte Nettoverlust aus allen abgeschlossenen Long-Trades.' },
+                    { label: 'Short Gewinn', value: totalProfitShort.toFixed(2), tooltip: 'Der kumulierte Nettogewinn aus allen abgeschlossenen Short-Trades.' },
+                    { label: 'Short Verlust', value: totalLossShort.toFixed(2), tooltip: 'Der kumulierte Nettoverlust aus allen abgeschlossenen Short-Trades.' },
+                ];
+                dom.ui.journalStats.innerHTML = stats.map(s => `<div class="stat-card"><div class="stat-value">${s.value}</div><div class="stat-label tooltip">${s.label}<span class="tooltiptext !w-56">${s.tooltip}</span></div></div>`).join('');
+
+                // Render Symbol Performance
+                const symbolPerformance = {};
+                closedTrades.forEach(trade => {
+                    if (!symbolPerformance[trade.symbol]) {
+                        symbolPerformance[trade.symbol] = {
+                            totalTrades: 0,
+                            wonTrades: 0,
+                            totalProfitLoss: new Decimal(0)
+                        };
+                    }
+                    symbolPerformance[trade.symbol].totalTrades++;
+                    if (trade.status === 'Won') {
+                        symbolPerformance[trade.symbol].wonTrades++;
+                        symbolPerformance[trade.symbol].totalProfitLoss = symbolPerformance[trade.symbol].totalProfitLoss.plus(new Decimal(trade.totalNetProfit || 0));
+                    } else if (trade.status === 'Lost') {
+                        symbolPerformance[trade.symbol].totalProfitLoss = symbolPerformance[trade.symbol].totalProfitLoss.minus(new Decimal(trade.netLoss || 0));
+                    }
+                });
+
+                dom.ui.symbolPerformanceTableBody.innerHTML = '';
+                for (const symbol in symbolPerformance) {
+                    const data = symbolPerformance[symbol];
+                    const winRateSymbol = data.totalTrades > 0 ? (data.wonTrades / data.totalTrades) * 100 : 0;
+                    const profitLossColor = data.totalProfitLoss.greaterThan(0) ? 'text-green-400' : data.totalProfitLoss.lessThan(0) ? 'text-red-400' : '';
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${symbol}</td>
+                        <td>${data.totalTrades}</td>
+                        <td>${winRateSymbol.toFixed(1)}%</td>
+                        <td class="${profitLossColor}">${data.totalProfitLoss.toFixed(2)}</td>
+                    `;
+                    dom.ui.symbolPerformanceTableBody.appendChild(row);
+                }
+            },
+            addTrade() {
+                if (!state.currentTradeData.positionSize || state.currentTradeData.positionSize.lessThanOrEqualTo(0)) { uiManager.showError("Kann keinen ungültigen Trade speichern."); return; }
+                const journalData = this.getJournal();
+                const notes = dom.inputs.tradeNotes.value;
+                journalData.push({ ...state.currentTradeData, notes, id: Date.now(), date: new Date().toISOString(), riskAmount: state.currentTradeData.riskAmount });
+                this.saveJournal(journalData);
+                uiManager.showFeedback(dom.ui.saveFeedback);
+            },
+            updateTradeStatus(id, newStatus) {
+                const journalData = this.getJournal();
+                const tradeIndex = journalData.findIndex(t => t.id == id);
+                if (tradeIndex !== -1) { journalData[tradeIndex].status = newStatus; this.saveJournal(journalData); this.renderStats(journalData); }
+            },
+            deleteTrade(id) { const d = this.getJournal().filter(t => t.id != id); this.saveJournal(d); this.render(); },
+            async clear() { if (await modalManager.show("Journal leeren", "Möchten Sie wirklich das gesamte Journal unwiderruflich löschen?", "confirm")) { this.saveJournal([]); this.render(); } },
+            async importFromCSV(file) {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const text = e.target.result;
+                    const lines = text.split('\n').filter(line => line.trim() !== '');
+                    if (lines.length === 0) {
+                        uiManager.showError("Die CSV-Datei ist leer.");
+                        return;
+                    }
+
+                    const headers = lines[0].split(',').map(h => h.trim());
+                    const requiredHeaders = ['ID', 'Datum', 'Uhrzeit', 'Symbol', 'Typ', 'Status', 'Konto Guthaben', 'Risiko %', 'Hebel', 'Gebuehren %', 'Einstieg', 'Stop Loss', 'Gewichtetes R/R', 'Gesamt Netto-Gewinn', 'Risiko pro Trade (Waehrung)', 'Gesamte Gebuehren', 'Max. potenzieller Gewinn'];
+                    const missingHeaders = requiredHeaders.filter(rh => !headers.includes(rh));
+
+                    if (missingHeaders.length > 0) {
+                        uiManager.showError(`Fehlende Spalten in der CSV-Datei: ${missingHeaders.join(', ')}. Bitte stellen Sie sicher, dass die Datei korrekt formatiert ist.`);
+                        return;
+                    }
+
+                    const newJournalEntries = [];
+                    for (let i = 1; i < lines.length; i++) {
+                        const values = lines[i].split(',');
+                        if (values.length !== headers.length) {
+                            uiManager.showError(`Fehler in Zeile ${i + 1}: Ungültige Spaltenanzahl.`);
+                            continue;
+                        }
+
+                        const entry = {};
+                        headers.forEach((header, index) => {
+                            entry[header] = values[index];
+                        });
+
+                        try {
+                            const tradeDate = new Date(`${entry['Datum']} ${entry['Uhrzeit']}`);
+                            if (isNaN(tradeDate)) {
+                                throw new Error('Ungültiges Datumsformat');
+                            }
+
+                            const targets = [];
+                            // Assuming TP1 Price, TP1 %, TP2 Price, TP2 %, TP3 Price, TP3 % are present
+                            for (let j = 1; j <= 3; j++) {
+                                const tpPrice = entry[`TP${j} Preis`];
+                                const tpPercent = entry[`TP${j} %`];
+                                if (tpPrice && tpPercent) {
+                                    targets.push({
+                                        price: new Decimal(tpPrice),
+                                        percent: new Decimal(tpPercent),
+                                        isLocked: false // Assuming imported TPs are not locked by default
+                                    });
+                                }
+                            }
+
+                            newJournalEntries.push({
+                                id: parseInt(entry['ID']),
+                                date: tradeDate.toISOString(),
+                                symbol: entry['Symbol'],
+                                tradeType: entry['Typ'].toLowerCase(),
+                                status: entry['Status'],
+                                accountSize: new Decimal(entry['Konto Guthaben']),
+                                riskPercentage: new Decimal(entry['Risiko %']),
+                                leverage: new Decimal(entry['Hebel']),
+                                fees: new Decimal(entry['Gebuehren %']),
+                                entryPrice: new Decimal(entry['Einstieg']),
+                                stopLossPrice: new Decimal(entry['Stop Loss']),
+                                totalRR: new Decimal(entry['Gewichtetes R/R']),
+                                totalNetProfit: new Decimal(entry['Gesamt Netto-Gewinn']),
+                                riskAmount: new Decimal(entry['Risiko pro Trade (Waehrung)']),
+                                totalFees: new Decimal(entry['Gesamte Gebuehren']),
+                                maxPotentialProfit: new Decimal(entry['Max. potenzieller Gewinn']),
+                                notes: entry['Notizen'] ? entry['Notizen'].replace(/""/g, '"') : '', // Unescape quotes
+                                targets: targets
+                            });
+                        } catch (parseError) {
+                            uiManager.showError(`Fehler beim Parsen von Zeile ${i + 1}: ${parseError.message}`);
+                            continue;
+                        }
+                    }
+
+                    if (newJournalEntries.length > 0) {
+                        const currentJournal = this.getJournal();
+                        const combinedJournal = [...currentJournal, ...newJournalEntries];
+                        this.saveJournal(combinedJournal);
+                        this.render();
+                        uiManager.showFeedback(dom.ui.saveFeedback);
+                    } else {
+                        uiManager.showError("Keine gültigen Einträge zum Importieren gefunden.");
+                    }
+                };
+                reader.readAsText(file);
+            },
+            exportToCSV() {
+                const journalData = this.getJournal();
+                if (journalData.length === 0) {
+                    uiManager.showError("Journal ist leer, nichts zu exportieren.");
+                    return;
+                }
+                const headers = ['ID', 'Datum', 'Uhrzeit', 'Symbol', 'Typ', 'Status', 'Konto Guthaben', 'Risiko %', 'Hebel', 'Gebuehren %', 'Einstieg', 'Stop Loss', 'Gewichtetes R/R', 'Gesamt Netto-Gewinn', 'Risiko pro Trade (Waehrung)', 'Gesamte Gebuehren', 'Max. potenzieller Gewinn', 'TP1 Preis', 'TP1 %', 'TP2 Preis', 'TP2 %', 'TP3 Preis', 'TP3 %', 'Notizen'];
+                const rows = journalData.map(trade => {
+                    const date = new Date(trade.date);
+                    // Sanitize notes for CSV: escape quotes and remove newlines
+                    const notes = trade.notes ? `"${trade.notes.replace(/"/g, '""').replace(/\n/g, ' ')}"` : ''; 
+                    return [
+                        trade.id,
+                        date.toLocaleDateString('de-DE'),
+                        date.toLocaleTimeString('de-DE'),
+                        trade.symbol, trade.tradeType, trade.status,
+                        (new Decimal(trade.accountSize || 0)).toFixed(2), (new Decimal(trade.riskPercentage || 0)).toFixed(2), (new Decimal(trade.leverage || 0)).toFixed(2), (new Decimal(trade.fees || 0)).toFixed(2), (new Decimal(trade.entryPrice || 0)).toFixed(4), (new Decimal(trade.stopLossPrice || 0)).toFixed(4),
+                        (new Decimal(trade.totalRR || 0)).toFixed(2), (new Decimal(trade.totalNetProfit || 0)).toFixed(2),
+                        (new Decimal(trade.riskAmount || 0)).toFixed(2), (new Decimal(trade.totalFees || 0)).toFixed(2), (new Decimal(trade.maxPotentialProfit || 0)).toFixed(2),
+                        (new Decimal(trade.targets[0]?.price || 0)).toFixed(4), (new Decimal(trade.targets[0]?.percent || 0)).toFixed(2),
+                        (new Decimal(trade.targets[1]?.price || 0)).toFixed(4), (new Decimal(trade.targets[1]?.percent || 0)).toFixed(2),
+                        (new Decimal(trade.targets[2]?.price || 0)).toFixed(4), (new Decimal(trade.targets[2]?.percent || 0)).toFixed(2),
+                        notes
+                    ].join(',');
+                });
+
+                let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + rows.join("\n");
+                
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "TradeJournal.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            },
+            
+            
+            
+            getInputsAsObject() {
+                return {
+                    accountSize: dom.inputs.accountSize.value,
+                    riskPercentage: dom.inputs.riskPercentage.value,
+                    leverage: dom.inputs.leverage.value,
+                    fees: dom.inputs.fees.value,
+                    tradeType: state.tradeType,
+                    useAtrSl: dom.inputs.useAtrSl.checked,
+                    atrMultiplier: dom.inputs.atrMultiplier.value,
+                    symbol: dom.inputs.symbol.value,
+                    targets: this.getTargetsFromUI(),
+                };
+            },
+            calculateAndDisplay() {
+                uiManager.hideError();
+                let validationResult = calculator.getAndValidateInputs();
+
+                if (validationResult.status !== CONSTANTS.STATUS_VALID) {
+                    if(validationResult.status === CONSTANTS.STATUS_INVALID) uiManager.showError(validationResult.message, validationResult.fields);
+                    uiManager.clearResults();
+                    return;
+                }
+
+                let values = validationResult.data;
+                let baseMetrics;
+
+                if (state.isPositionSizeLocked && state.lockedPositionSize) {
+                    const riskPerUnit = values.entryPrice.minus(values.stopLossPrice).abs();
+                    if (riskPerUnit.lessThanOrEqualTo(0)) {
+                        uiManager.showError("Stop-Loss muss einen gültigen Abstand zum Einstiegspreis haben.", ['stopLossPrice', 'entryPrice']);
+                        return;
+                    }
+                    const riskAmount = riskPerUnit.times(state.lockedPositionSize);
+                    const newRiskPercentage = riskAmount.dividedBy(values.accountSize).times(100);
+                    
+                    dom.inputs.riskPercentage.value = newRiskPercentage.toFixed(2);
+                    values.riskPercentage = newRiskPercentage; // Update values for subsequent calculations
+                    
+                    // Re-validate with the new risk percentage
+                    validationResult = calculator.getAndValidateInputs();
+                    values = validationResult.data;
+                    baseMetrics = calculator.calculateBaseMetrics(values);
+                    baseMetrics.positionSize = state.lockedPositionSize; // Ensure locked size is used
+
+                } else {
+                    baseMetrics = calculator.calculateBaseMetrics(values);
+                }
+
+                if (!baseMetrics || baseMetrics.positionSize.lessThanOrEqualTo(0)) { 
+                    uiManager.clearResults(); 
+                    // If unlocking and results are invalid, ensure lock is visually off
+                    if (!state.isPositionSizeLocked) {
+                        this.togglePositionSizeLock(false);
+                    }
+                    return; 
+                }
+
+                dom.buttons.saveJournalBtn.disabled = false;
+                dom.results.positionSize.textContent = `${baseMetrics.positionSize.toFixed(4)}`;
+                dom.results.requiredMargin.textContent = `${baseMetrics.requiredMargin.toFixed(2)}`;
+                dom.results.netLoss.textContent = `-${baseMetrics.netLoss.toFixed(2)}`;
+                const dp = values.entryPrice.decimalPlaces();
+                dom.results.liquidationPrice.textContent = `${baseMetrics.liquidationPrice.toFixed(dp)}`;
+                dom.results.breakEvenPrice.textContent = `${baseMetrics.breakEvenPrice.toFixed(dp)}`;
+                
+                const calculatedTpDetails = [];
+                dom.results.tpResultsContainer.innerHTML = '';
+                values.targets.forEach((tp, index) => {
+                    if (tp.price > 0) {
+                        const { netProfit, riskRewardRatio, priceChangePercent, returnOnCapital, partialVolume } = calculator.calculateIndividualTp(tp.price, baseMetrics, values, tp.percent);
+                        if ((state.tradeType === 'long' && tp.price > values.entryPrice) || (state.tradeType === 'short' && tp.price < values.entryPrice)) {
+                           dom.results.tpResultsContainer.innerHTML += uiManager.createTpResultElement(index + 1, riskRewardRatio, netProfit, tp.percent, priceChangePercent, returnOnCapital, partialVolume);
+                           calculatedTpDetails.push({ index: index, netProfit: netProfit, riskRewardRatio: riskRewardRatio, priceChangePercent: priceChangePercent, returnOnCapital: returnOnCapital, partialVolume: partialVolume });
+                        }
+                    }
+                });
+
+                if (values.totalPercentSold > 0) {
+                    const totalMetrics = calculator.calculateTotalMetrics(values.targets, baseMetrics, values);
+                    dom.results.totalRR.textContent = totalMetrics.totalRR.toFixed(2);
+                    dom.results.totalNetProfit.textContent = `+${totalMetrics.totalNetProfit.toFixed(2)}`;
+                    dom.results.totalPercentSold.textContent = `${values.totalPercentSold}%`;
+                    dom.results.riskAmountCurrency.textContent = `-${totalMetrics.riskAmount.toFixed(2)}`;
+                    dom.results.totalFees.textContent = `${totalMetrics.totalFees.toFixed(2)}`;
+                    dom.results.maxPotentialProfit.textContent = `+${totalMetrics.maxPotentialProfit.toFixed(2)}`;
+                    dom.ui.totalMetricsGroup.classList.remove('hidden');
+                    state.currentTradeData = { ...values, ...baseMetrics, ...totalMetrics, tradeType: state.tradeType, status: 'Open', calculatedTpDetails: calculatedTpDetails, riskAmount: baseMetrics.riskAmount };
+                } else {
+                    dom.ui.totalMetricsGroup.classList.add('hidden');
+                    state.currentTradeData = { ...values, ...baseMetrics, totalRR: 0, totalNetProfit: 0, tradeType: state.tradeType, status: 'Open', calculatedTpDetails: calculatedTpDetails, riskAmount: baseMetrics.riskAmount };
+                }
+                
+                uiManager.updateVisualBar(values, values.targets);
+                this.saveSettings();
+            },
+            saveSettings() {
+                try {
+                    const settings = this.getInputsAsObject();
+                    localStorage.setItem(CONSTANTS.LOCAL_STORAGE_SETTINGS_KEY, JSON.stringify(settings));
+                } catch (e) {
+                    console.warn("Could not save settings to localStorage.", e);
+                }
+            },
+            async savePreset() {
+                const presetName = await modalManager.show("Preset speichern", "Gebe einen Namen für dein Preset ein:", "prompt");
+                if (!presetName) return;
+
+                try {
+                    const currentSettings = this.getInputsAsObject();
+                    let presets = JSON.parse(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_PRESETS_KEY) || '{}');
+
+                    if (presets[presetName]) {
+                        const overwrite = await modalManager.show("Preset überschreiben?", `Das Preset "${presetName}" existiert schon. Möchtest Du es überschreiben?`, "confirm");
+                        if (!overwrite) {
+                            return; // User cancelled
+                        }
+                    }
+
+                    presets[presetName] = currentSettings;
+                    localStorage.setItem(CONSTANTS.LOCAL_STORAGE_PRESETS_KEY, JSON.stringify(presets));
+                    uiManager.showFeedback(dom.ui.saveFeedback);
+                    this.populatePresetLoader();
+                } catch (e) {
+                    console.warn("Could not save preset to localStorage.", e);
+                    uiManager.showError("Preset konnte nicht gespeichert werden.");
+                }
+            },
+            async deletePreset() {
+                const presetName = dom.buttons.presetLoader.value;
+                if (!presetName) {
+                    uiManager.showError("Bitte wähle ein Preset zum Löschen aus.");
+                    return;
+                }
+
+                const confirmDelete = await modalManager.show("Preset löschen", `Möchte Du das Preset "${presetName}" wirklich löschen?`, "confirm");
+                if (!confirmDelete) return;
+
+                try {
+                    let presets = JSON.parse(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_PRESETS_KEY) || '{}');
+                    delete presets[presetName];
+                    localStorage.setItem(CONSTANTS.LOCAL_STORAGE_PRESETS_KEY, JSON.stringify(presets));
+                    this.populatePresetLoader();
+                    this.resetAllInputs(); // Reset inputs after deletion
+                    uiManager.showFeedback(dom.ui.saveFeedback); // Re-use save feedback for simplicity
+                } catch (e) {
+                    console.warn("Could not delete preset from localStorage.", e);
+                    uiManager.showError("Preset konnte nicht gelöscht werden.");
+                }
+            },
+            loadPreset(presetName) {
+                if (!presetName) return;
+                try {
+                    const presets = JSON.parse(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_PRESETS_KEY) || '{}');
+                    const preset = presets[presetName];
+
+                    if (preset) {
+                        // Apply general settings
+                        Object.keys(preset).forEach(key => {
+                            if (key === 'targets') {
+                                // Handled separately below
+                            } else if (dom.inputs[key]) {
+                                if (dom.inputs[key].type === 'checkbox') dom.inputs[key].checked = preset[key];
+                                else dom.inputs[key].value = preset[key]; // Use preset[key] directly, not new Decimal(preset[key] || 0)
+                            }
+                        });
+                        uiManager.setTradeType(preset.tradeType || CONSTANTS.TRADE_TYPE_LONG, false);
+                        dom.inputs.useAtrSl.checked = preset.useAtrSl;
+                        dom.inputs.symbol.value = preset.symbol || ''; // Load symbol from preset
+                        uiManager.toggleAtrInputs(false);
+                        if (dom.inputs.symbol.value) {
+                            this.fetchPrice(); // Automatically fetch price if symbol is present
+                        }
+
+                        // Clear existing TP rows and add preset targets
+                        dom.ui.tpList.innerHTML = '';
+                        if (preset.targets && preset.targets.length > 0) {
+                            preset.targets.forEach(tp => {
+                                const price = new Decimal(tp.price || 0);
+                                const percent = new Decimal(tp.percent || 0);
+                                this.addTakeProfitRow(price, percent, tp.isLocked);
+                            });
+                        } else {
+                            // If preset has no targets, add default three
+                            this.addTakeProfitRow();
+                            this.addTakeProfitRow();
+                            this.addTakeProfitRow();
+                        }
+                        this.calculateAndDisplay();
+                    } else {
+                        uiManager.showError("Preset nicht gefunden!");
+                    }
+                } catch (e) {
+                    console.warn("Could not load preset from localStorage.", e);
+                    uiManager.showError("Preset konnte nicht geladen werden.");
+                }
+            },
+            populatePresetLoader() {
+                try {
+                    const presets = JSON.parse(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_PRESETS_KEY) || '{}');
+                    dom.buttons.presetLoader.innerHTML = '<option value="">Preset laden...</option>'; // Reset dropdown
+                    for (const name in presets) {
+                        const option = document.createElement('option');
+                        option.value = name;
+                        option.textContent = name;
+                        dom.buttons.presetLoader.appendChild(option);
+                    }
+                    dom.buttons.deletePresetBtn.disabled = !dom.buttons.presetLoader.value; // Disable if no preset selected
+                } catch (e) {
+                    console.warn("Could not populate presets from localStorage.", e);
+                }
+            },
+            loadSettings() {
+                try {
+                    const settingsJSON = localStorage.getItem(CONSTANTS.LOCAL_STORAGE_SETTINGS_KEY);
+                    if (!settingsJSON) {
+                        // If no settings, add default TPs
+                        this.addTakeProfitRow(); 
+                        this.addTakeProfitRow(); 
+                        this.addTakeProfitRow(); 
+                        return;
+                    }
+                    const settings = JSON.parse(settingsJSON);
+                    if (settings) {
+                        Object.keys(settings).forEach(key => {
+                            if (key === 'targets') {
+                                if (settings.targets && Array.isArray(settings.targets)) {
+                                    settings.targets.forEach(tp => {
+                                        const price = new Decimal(tp.price || 0);
+                                        const percent = new Decimal(tp.percent || 0);
+                                        this.addTakeProfitRow(price, percent, tp.isLocked);
+                                    });
+                                }
+                            } else if (dom.inputs[key]) {
+                                if (dom.inputs[key].type === 'checkbox') dom.inputs[key].checked = settings[key];
+                                else dom.inputs[key].value = settings[key];
+                            }
+                        });
+                        uiManager.setTradeType(settings.tradeType || CONSTANTS.TRADE_TYPE_LONG, false);
+                        uiManager.toggleAtrInputs(false);
+                    }
+                } catch (e) { 
+                    console.warn("Could not load settings from localStorage.", e);
+                }
+                 // Final check: If no targets were loaded for any reason, create the default three
+                if (dom.ui.tpList.children.length === 0) {
+                    this.addTakeProfitRow(); 
+                    this.addTakeProfitRow(); 
+                    this.addTakeProfitRow(); 
+                }
+            },
+            resetAllInputs() {
+                const defaultValues = {
+                    accountSize: '', riskPercentage: '', entryPrice: '', stopLossPrice: '',
+                    symbol: '', atrValue: '',
+                    leverage: '', fees: '', atrMultiplier: '1.5', 
+                    useAtrSl: false,
+                    tradeNotes: '',
+                };
+                for (const key in defaultValues) {
+                    if (dom.inputs[key]) {
+                         if (dom.inputs[key].type === 'checkbox') dom.inputs[key].checked = defaultValues[key];
+                         else dom.inputs[key].value = defaultValues[key];
+                    }
+                }
+
+                // Clear and reset TP list
+                dom.ui.tpList.innerHTML = '';
+                this.addTakeProfitRow();
+                this.addTakeProfitRow();
+                this.addTakeProfitRow();
+
+                uiManager.setTradeType(CONSTANTS.TRADE_TYPE_LONG, false);
+                uiManager.toggleAtrInputs(true);
+            },
+            async fetchPrice() {
+                const symbol = dom.inputs.symbol.value.toUpperCase().replace('/', '');
+                if (!symbol) { uiManager.showError("Bitte geben Sie ein Symbol ein."); return; }
+                
+                dom.buttons.priceFetchBtn.classList.add('animate-spin');
+                try {
+                    const response = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+                    if (!response.ok) throw new Error(`Symbol nicht gefunden oder API-Fehler (${response.status})`);
+                    const data = await response.json();
+                    dom.inputs.entryPrice.value = new Decimal(data.price);
+                    this.calculateAndDisplay();
+                } catch (error) {
+                    uiManager.showError(error.message);
+                } finally {
+                    dom.buttons.priceFetchBtn.classList.remove('animate-spin');
+                }
+            },
+
+            addEventListeners() {
+                Object.values(dom.inputs).forEach(i => i.addEventListener('input', () => this.debouncedCalculate()));
+                dom.buttons.btnLong.addEventListener('click', () => uiManager.setTradeType(CONSTANTS.TRADE_TYPE_LONG));
+                dom.buttons.btnShort.addEventListener('click', () => uiManager.setTradeType(CONSTANTS.TRADE_TYPE_SHORT));
+                dom.inputs.useAtrSl.addEventListener('change', () => uiManager.toggleAtrInputs(true));
+                dom.buttons.resetBtn.addEventListener('click', () => this.resetAllInputs());
+                dom.buttons.themeSwitcher.addEventListener('click', () => {
+                    const newTheme = dom.body.classList.contains('light-theme') ? 'dark' : 'light';
+                    uiManager.setTheme(newTheme);
+                });
+                dom.buttons.priceFetchBtn.addEventListener('click', () => this.fetchPrice());
+                dom.buttons.addTpBtn.addEventListener('click', () => this.addTakeProfitRow());
+
+                dom.ui.tpList.addEventListener('click', (e) => {
+                    const removeBtn = e.target.closest('.remove-tp-btn');
+                    const lockBtn = e.target.closest('.lock-tp-btn');
+
+                    if (removeBtn) {
+                        removeBtn.closest('.tp-row').remove();
+                        this.updateTpLabels(); // Re-number labels
+                        this.calculateAndDisplay();
+                    } else if (lockBtn) {
+                        const percentInput = lockBtn.closest('.tp-row').querySelector('.tp-percent');
+                        const lockOpenIcon = lockBtn.querySelector('.lock-icon-open');
+                        const lockClosedIcon = lockBtn.querySelector('.lock-icon-closed');
+
+                        if (percentInput.disabled) {
+                            percentInput.disabled = false;
+                            percentInput.classList.remove('locked-input');
+                            lockOpenIcon.classList.remove('hidden');
+                            lockClosedIcon.classList.add('hidden');
+                        } else {
+                            percentInput.disabled = true;
+                            percentInput.classList.add('locked-input');
+                            lockOpenIcon.classList.add('hidden');
+                            lockClosedIcon.classList.remove('hidden');
+                        }
+                        this.calculateAndDisplay(); // Recalculate after locking/unlocking
+                    }
+                });
+
+                dom.ui.tpList.addEventListener('input', (e) => {
+                    if (e.target.classList.contains('tp-percent')) {
+                        this.adjustTpPercentages(e.target);
+                    }
+                    this.calculateAndDisplay();
+                });
+
+                dom.buttons.copyBtn.addEventListener('click', () => {
+                    const text = dom.results.positionSize.textContent;
+                    if (!text || text === '-') return;
+                    navigator.clipboard.writeText(text).then(() => uiManager.showFeedback(dom.ui.copyFeedback)).catch(() => uiManager.showError('Fehler beim Kopieren'));
+                });
+                
+                dom.buttons.viewJournalBtn.addEventListener('click', () => { this.render(); dom.ui.journalModal.style.visibility = 'visible'; dom.ui.journalModal.style.opacity = '1'; });
+                dom.buttons.closeJournalBtn.addEventListener('click', () => { dom.ui.journalModal.style.visibility = 'hidden'; dom.ui.journalModal.style.opacity = '0'; });
+                dom.buttons.saveJournalBtn.addEventListener('click', () => this.addTrade());
+                dom.buttons.clearJournalBtn.addEventListener('click', () => this.clear());
+                dom.buttons.exportCsvBtn.addEventListener('click', () => this.exportToCSV());
+                dom.buttons.importCsvBtn.addEventListener('click', () => dom.buttons.importCsvInput.click());
+                dom.buttons.importCsvInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        this.importFromCSV(file);
+                    }
+                });
+                
+                dom.buttons.savePresetBtn.addEventListener('click', () => this.savePreset());
+                dom.buttons.presetLoader.addEventListener('change', (e) => {
+                    this.loadPreset(e.target.value);
+                    dom.buttons.deletePresetBtn.disabled = !e.target.value; // Enable/disable delete button
+                });
+                dom.buttons.deletePresetBtn.addEventListener('click', () => this.deletePreset());
+                dom.buttons.lockPositionSizeBtn.addEventListener('click', () => this.togglePositionSizeLock());
+                dom.buttons.showDashboardReadmeBtn.addEventListener('click', () => this.showReadme('dashboard'));
+                dom.buttons.showJournalReadmeBtn.addEventListener('click', () => this.showReadme('journal'));
+                
+                dom.ui.journalTableBody.addEventListener('change', e => { if (e.target.classList.contains('status-select')) this.updateTradeStatus(e.target.dataset.id, e.target.value); });
+                dom.ui.journalTableBody.addEventListener('click', e => {
+                    const deleteBtn = e.target.closest('.delete-trade-btn');
+                    if (deleteBtn) {
+                        this.deleteTrade(deleteBtn.dataset.id);
+                    }
+                    if (e.target.classList.contains('notes-cell')) {
+                        e.target.classList.toggle('expanded');
+                    }
+                });
+                dom.ui.journalSearch.addEventListener('input', () => this.render());
+                dom.ui.journalFilter.addEventListener('change', () => this.render());
+
+                // Symbol Autocomplete
+                dom.inputs.symbol.addEventListener('input', () => {
+                    const query = dom.inputs.symbol.value.toUpperCase();
+                    if (query.length === 0) {
+                        uiManager.updateSymbolSuggestions([]);
+                        return;
+                    }
+                    const filtered = CONSTANTS.SUGGESTED_SYMBOLS.filter(s => s.startsWith(query));
+                    uiManager.updateSymbolSuggestions(filtered);
+                });
+
+                dom.ui.symbolSuggestions.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('suggestion-item')) {
+                        dom.inputs.symbol.value = e.target.textContent;
+                        uiManager.updateSymbolSuggestions([]);
+                        this.fetchPrice(); // Auto-fetch price
+                        this.calculateAndDisplay();
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!dom.inputs.symbol.parentElement.contains(e.target)) {
+                        dom.ui.symbolSuggestions.classList.add('hidden');
+                    }
+                });
+
+                dom.ui.visualBar.addEventListener('mouseover', (e) => {
+                    const tpMarker = e.target.closest('.tp-marker');
+                    if (tpMarker) {
+                        const tpIndex = parseInt(tpMarker.dataset.tpIndex);
+                        const tpDetails = state.currentTradeData.calculatedTpDetails[tpIndex];
+                        if (tpDetails) {
+                            const rrColor = tpDetails.riskRewardRatio >= 2 ? 'text-green-400' : tpDetails.riskRewardRatio >= 1.5 ? 'text-yellow-400' : 'text-red-400';
+                            dom.ui.tpTooltip.innerHTML = `
+                                <div>Netto-Gewinn: <span class="text-green-400">+${tpDetails.netProfit.toFixed(2)}</span></div>
+                                <div>R/R: <span class="${rrColor}">${tpDetails.riskRewardRatio.toFixed(2)}</span></div>
+                            `;
+                            
+                            const barContainerRect = dom.ui.visualBar.parentElement.getBoundingClientRect();
+                            const markerRect = tpMarker.getBoundingClientRect();
+                            const tooltipWidth = dom.ui.tpTooltip.offsetWidth;
+                            const tooltipHeight = dom.ui.tpTooltip.offsetHeight;
+
+                            let leftPos = (markerRect.left - barContainerRect.left) + (markerRect.width / 2); // Mittelpunkt des Markers relativ zum Container
+                            
+                            // Jetzt den Tooltip so positionieren, dass sein Mittelpunkt bei leftPos liegt
+                            // und dann klemmen, um sicherzustellen, dass er nicht über die Ränder des Containers hinausgeht.
+                            // Die left-Eigenschaft des Tooltips ist sein Mittelpunkt wegen transform: translateX(-50%)
+                            leftPos = Math.max(tooltipWidth / 2, leftPos); // Nicht links über den Rand hinaus
+                            leftPos = Math.min(leftPos, barContainerRect.width - (tooltipWidth / 2)); // Nicht rechts über den Rand hinaus
+
+                            let topPos = (markerRect.top - barContainerRect.top) - tooltipHeight - 38; // Adjusted from -10 to -38
+
+                            dom.ui.tpTooltip.style.left = `${leftPos}px`;
+                            dom.ui.tpTooltip.style.top = `${topPos}px`;
+                            dom.ui.tpTooltip.style.visibility = 'visible';
+                            dom.ui.tpTooltip.style.opacity = '1';
+                        }
+                    }
+                });
+
+                dom.ui.visualBar.addEventListener('mouseout', (e) => {
+                    if (e.target.closest('.tp-marker')) {
+                        dom.ui.tpTooltip.style.visibility = 'hidden';
+                        dom.ui.tpTooltip.style.opacity = '0';
+                    }
+                });
+            },
+            togglePositionSizeLock(forceState) {
+                const shouldBeLocked = forceState !== undefined ? forceState : !state.isPositionSizeLocked;
+
+                if (shouldBeLocked && (!state.currentTradeData.positionSize || state.currentTradeData.positionSize.lessThanOrEqualTo(0))) {
+                    uiManager.showError("Positionsgröße kann nicht gesperrt werden, solange sie ungültig ist.");
+                    return;
+                }
+
+                state.isPositionSizeLocked = shouldBeLocked;
+                dom.inputs.riskPercentage.disabled = state.isPositionSizeLocked;
+                
+                const lockOpenIcon = dom.buttons.lockPositionSizeBtn.querySelector('.lock-icon-open');
+                const lockClosedIcon = dom.buttons.lockPositionSizeBtn.querySelector('.lock-icon-closed');
+                lockOpenIcon.classList.toggle('hidden', state.isPositionSizeLocked);
+                lockClosedIcon.classList.toggle('hidden', !state.isPositionSizeLocked);
+
+                if (state.isPositionSizeLocked) {
+                    state.lockedPositionSize = state.currentTradeData.positionSize;
+                    dom.inputs.riskPercentage.classList.add('locked-input');
+                } else {
+                    state.lockedPositionSize = null;
+                    dom.inputs.riskPercentage.classList.remove('locked-input');
+                }
+                this.calculateAndDisplay();
+            },
+            addTakeProfitRow(price, percent, isLocked = false) {
+                const tpCount = dom.ui.tpList.children.length + 1;
+                const newRow = document.createElement('div');
+                newRow.classList.add('tp-row', 'flex', 'items-center', 'gap-2', 'p-2', 'rounded-lg');
+                newRow.style.backgroundColor = 'var(--bg-tertiary)';
+
+                const priceValue = (price instanceof Decimal && price.greaterThan(0)) ? price.toFixed(4) : '';
+                const percentValue = (percent instanceof Decimal && percent.greaterThan(0)) ? percent.toFixed(0) : '';
+
+
+                newRow.innerHTML = `
+                    <div class="flex-grow">
+                        <label class="tp-label text-xs text-slate-400">Ziel ${tpCount}</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" class="tp-price input-field w-full px-4 py-2 rounded-md" placeholder="Preis" value="${priceValue}">
+                            <input type="number" class="tp-percent input-field w-full px-4 py-2 rounded-md ${isLocked ? 'locked-input' : ''}" placeholder="%" value="${percentValue}" data-tp-index="${tpCount}" ${isLocked ? 'disabled' : ''}>
+                        </div>
+                    </div>
+                    <button class="lock-tp-btn text-slate-400 hover:text-sky-400 p-1 self-center" title="Prozentsatz sperren/entsperren" tabindex="-1">
+                        <svg class="lock-icon-open ${isLocked ? 'hidden' : ''}" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-4 0H8V6c0-2.21 1.79-4 4-4s4 1.79 4 4v2z"/></svg>
+                        <svg class="lock-icon-closed ${isLocked ? '' : 'hidden'}" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
+                    </button>
+                    <button class="remove-tp-btn text-red-500 hover:text-red-400 p-1 self-center" title="Dieses Ziel entfernen" tabindex="-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="pointer-events-none" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                    </button>
+                `;
+                dom.ui.tpList.appendChild(newRow);
+            },
+            updateTpLabels() {
+                const tpRows = dom.ui.tpList.querySelectorAll('.tp-row');
+                tpRows.forEach((row, index) => {
+                    const label = row.querySelector('.tp-label');
+                    if (label) {
+                        label.textContent = `Ziel ${index + 1}`;
+                    }
+                });
+            },
+            getTargetsFromUI() {
+                const targets = [];
+                const tpRows = dom.ui.tpList.querySelectorAll('.tp-row');
+                tpRows.forEach(row => {
+                    const priceInput = row.querySelector('.tp-price');
+                    const percentInput = row.querySelector('.tp-percent');
+                    targets.push({
+                        price: new Decimal(priceInput.value || 0),
+                        percent: new Decimal(percentInput.value || 0),
+                        isLocked: percentInput.disabled // Store lock status
+                    });
+                });
+                return targets;
+            },
+            adjustTpPercentages(changedInput) {
+                const tpInputs = Array.from(dom.ui.tpList.querySelectorAll('.tp-percent'));
+                let sumOfLocked = new Decimal(0);
+                const unlockedInputs = [];
+
+                tpInputs.forEach(input => {
+                    if (input.disabled) {
+                        sumOfLocked = sumOfLocked.plus(new Decimal(input.value || 0));
+                    } else {
+                        unlockedInputs.push(input);
+                    }
+                });
+
+                let remainingPercent = new Decimal(100).minus(sumOfLocked);
+
+                if (remainingPercent.lessThan(0)) {
+                    uiManager.showError("Gesamter gesperrter Prozentsatz überschreitet 100%. Bitte anpassen.");
+                    unlockedInputs.forEach(input => { if (input !== changedInput) input.value = '0'; });
+                    this.calculateAndDisplay();
+                    return;
+                } else {
+                    uiManager.hideError();
+                }
+
+                if (unlockedInputs.length > 0 && !changedInput.disabled) {
+                    let changedValue = new Decimal(changedInput.value || 0);
+
+                    // Cap the changed value to the remaining percentage
+                    if (changedValue.greaterThan(remainingPercent)) {
+                        changedValue = remainingPercent;
+                        changedInput.value = changedValue.toFixed(0);
+                    }
+
+                    const otherUnlockedInputs = unlockedInputs.filter(i => i !== changedInput);
+                    const sumToDistribute = remainingPercent.minus(changedValue);
+
+                    if (otherUnlockedInputs.length > 0) {
+                        const distributedPercent = sumToDistribute.dividedBy(otherUnlockedInputs.length);
+                        otherUnlockedInputs.forEach(input => {
+                            input.value = distributedPercent.greaterThan(0) ? distributedPercent.toFixed(0) : '0';
+                        });
+                    }
+                }
+                
+                // Final check to correct rounding errors and ensure total is exactly 100
+                let finalTotal = new Decimal(0);
+                tpInputs.forEach(input => {
+                    finalTotal = finalTotal.plus(new Decimal(input.value || 0));
+                });
+
+                const difference = new Decimal(100).minus(finalTotal);
+                if (!difference.isZero() && unlockedInputs.length > 0) {
+                    // Add the difference to the last unlocked input that was not the one the user just changed, if possible
+                    let lastInputToAdjust = unlockedInputs.filter(i => i !== changedInput).pop() || unlockedInputs.pop();
+                     if (lastInputToAdjust) {
+                        const adjustedValue = new Decimal(lastInputToAdjust.value || 0).plus(difference);
+                        lastInputToAdjust.value = adjustedValue.toFixed(0);
+                    }
+                }
+
+                this.calculateAndDisplay();
+            },
+            showReadme(type) {
+                let title, content;
+                if (type === 'dashboard') {
+                    title = "Anleitung: Trading Dashboard";
+                    content = `
+                        <div class="prose">
+                            <h3>Grundlagen</h3>
+                            <p>Dieses Dashboard hilft dir, die richtige <strong>Positionsgröße</strong> für deine Trades zu berechnen, basierend auf deinem Kontostand und deinem Risikomanagement. Es funktioniert für Long- (steigende Kurse) und Short-Trades (fallende Kurse).</p>
+                            
+                            <h3>Eingabefelder</h3>
+                            <ul>
+                                <li><strong>Hebel:</strong> Der Multiplikator für dein eingesetztes Kapital (Margin). Ein Hebel von 10x bedeutet, dass du mit 100€ Margin eine Position im Wert von 1000€ kontrollieren kannst.</li>
+                                <li><strong>Gebühren pro Trade (%):</strong> Die prozentualen Kosten, die deine Börse für das Öffnen und Schließen einer Position berechnet.</li>
+                                <li><strong>Konto Guthaben:</strong> Dein gesamtes verfügbares Kapital auf der Börse.</li>
+                                <li><strong>Risiko je Trade (%):</strong> Wie viel Prozent deines Kontos du bereit bist, bei diesem einen Trade maximal zu verlieren. <strong>Dies ist der wichtigste Wert für dein Risikomanagement!</strong></li>
+                                <li><strong>Symbol:</strong> Das Handelspaar (z.B. BTCUSDT). Du kannst den Live-Preis über den Button daneben abrufen.</li>
+                                <li><strong>Kaufpreis (Entry):</strong> Der Preis, zu dem du die Position eröffnen möchtest.</li>
+                                <li><strong>Stop-Loss (SL):</strong> Der Preis, bei dem deine Position automatisch verkauft wird, um Verluste zu begrenzen.</li>
+                                <li><strong>Take-Profit (TP):</strong> Ziele, bei denen du Teile deiner Position mit Gewinn verkaufen möchtest. Du kannst mehrere TP-Ziele hinzufügen.</li>
+                            </ul>
+
+                            <h3>Schlüsselergebnisse</h3>
+                            <ul>
+                                <li><strong>Positionsgröße:</strong> Die Menge der Währung (z.B. wie viel BTC), die du kaufen/verkaufen musst, um genau dein festgelegtes Risiko (in %) zu riskieren.</li>
+                                <li><strong>Max. Verlust (Netto):</strong> Der maximale Geldbetrag, den du verlierst, wenn dein Stop-Loss erreicht wird (inklusive Gebühren). Dieser Betrag sollte deinem Risiko in % entsprechen.</li>
+                                <li><strong>Benötigte Margin:</strong> Das Kapital, das auf deinem Konto für diesen Trade blockiert wird (<code>Order-Volumen / Hebel</code>).</li>
+                                <li><strong>Gesch. Liquidationspreis:</strong> Eine <strong>Schätzung</strong>, bei welchem Preis die Börse deine Position zwangsliquidiert, weil deine Margin aufgebraucht ist.</li>
+                                <li><strong>Gewichtetes R/R:</strong> Das durchschnittliche Chance-Risiko-Verhältnis über alle deine Take-Profit-Ziele. Ein Wert von 2 bedeutet, du erwartest, im Durchschnitt doppelt so viel zu gewinnen, wie du riskierst.</li>
+                            </ul>
+                        </div>
+                    `;
+                } else if (type === 'journal') {
+                    title = "Anleitung: Trade Journal";
+                    content = `
+                        <div class="prose">
+                            <h3>Zweck des Journals</h3>
+                            <p>Ein Trade Journal ist das wichtigste Werkzeug, um deine Trading-Performance objektiv zu analysieren und Muster in deinem Verhalten zu erkennen. Indem du jeden Trade dokumentierst, kannst du aus Fehlern lernen und deine Strategie systematisch verbessern.</p>
+
+                            <h3>Bedienung</h3>
+                            <ul>
+                                <li><strong>Trade hinzufügen:</strong> Plane einen Trade im Dashboard und klicke auf "Trade zum Journal hinzufügen".</li>
+                                <li><strong>Status aktualisieren:</strong> Jeder Trade ist anfangs "Offen". Ändere den Status zu "Gewonnen" oder "Verloren", sobald der Trade abgeschlossen ist. Die Statistiken werden nur für abgeschlossene Trades berechnet.</li>
+                                <li><strong>Notizen:</strong> Klicke auf eine Notiz, um sie vollständig anzuzeigen. Nutze dies, um deine Gedanken, Emotionen oder den Grund für den Trade festzuhalten.</li>
+                                <li><strong>Import/Export:</strong> Du kannst dein gesamtes Journal als CSV-Datei sichern oder eine bestehende CSV-Datei importieren.</li>
+                            </ul>
+
+                            <h3>Performance-Statistiken erklärt</h3>
+                            <ul>
+                                <li><strong>Trefferquote:</strong> Zeigt, wie viel Prozent deiner Trades du gewinnst. Eine hohe Trefferquote allein ist nicht aussagekräftig, sie muss im Kontext des R/R-Verhältnisses betrachtet werden.</li>
+                                <li><strong>Profit Faktor:</strong> Berechnet sich aus <code>Gesamtgewinn / Gesamtverlust</code>. Ein Wert über 1.0 bedeutet, dass deine Strategie profitabel ist. Ein Wert von 2.0 bedeutet, dass du für jeden Euro Verlust zwei Euro Gewinn machst.</li>
+                                <li><strong>Erwartungswert:</strong> Zeigt den durchschnittlichen Gewinn (oder Verlust), den du pro Trade erwarten kannst. Ein positiver Wert ist essenziell für langfristigen Erfolg.</li>
+                                <li><strong>Max. Drawdown:</strong> Der größte prozentuale Verlust deines Kontos von einem Hochpunkt. Diese Kennzahl ist entscheidend, um das Risiko deiner Strategie zu verstehen.</li>
+                                <li><strong>Recovery Faktor:</strong> Misst die Fähigkeit deiner Strategie, sich von Drawdowns zu erholen (<code>Gesamtgewinn / Max. Drawdown</code>). Ein hoher Wert ist erstrebenswert.</li>
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                // Directly inject the HTML content into the message element
+                modalManager.show(title, content, 'alert');
+            }
+        };
+        app.init();
+    });
+    </script>
+        <div id="custom-modal-overlay" class="modal-overlay">
+        <div id="custom-modal-content" class="modal-content">
+            <h3 id="custom-modal-title" class="text-xl font-bold mb-4"></h3>
+            <div id="custom-modal-message" class="mb-4 max-h-[70vh] overflow-y-auto pr-2"></div>
+            <input type="text" id="custom-modal-input" class="input-field w-full px-3 py-2 rounded-md mb-4 hidden" placeholder="Eingabe...">
+            <div id="custom-modal-buttons" class="flex justify-end gap-4"></div>
+        </div>
+    </div>
+</body>
+</html>

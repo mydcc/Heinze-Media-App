@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktives RSI & Fibonacci Trading Tutorial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Visualization & Content Choices:
+        - Grundlagen & RSI: Text. Goal: Introduce core concepts, RSI issues, divergence solution.
+        - Reguläre Div: Text + Chart.js. Goal: Illustrate pattern. Interaction: Static chart view.
+        - Versteckte Div: Text + Chart.js. Goal: Illustrate pattern. Interaction: Static chart view.
+        - Trendline Break Div: Text + Improved HTML/CSS diagram of Neckline break. Goal: Illustrate concept clearly. Interaction: Static diagram view.
+        - Fibonacci: Textual explanation. Goal: Explain tool usage and rules.
+        - Allg. Handelsregeln: Bulleted text. Goal: Summarize key principles.
+        - FAQ: Q&A format text. Goal: Address common queries.
+        - Glossar: Definition list. Goal: Clarify key trading terms.
+        CONFIRMATION: NO SVG/Mermaid. Chart.js for divergence examples. Structured HTML/CSS for Trendline Break diagram. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tabs button { transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out; }
+        .tabs button.active { border-color: #0284c7; color: #0284c7; background-color: #e0f2fe; font-weight: 600; }
+        .tabs button:hover:not(.active) { background-color: #f0f9ff; border-color: #7dd3fc; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        h1 { margin-bottom: 0.5rem; }
+        h2 { font-size: 1.875rem; line-height: 2.25rem; font-weight: 700; margin-bottom: 1.25rem; color: #0d9488; border-bottom: 2px solid #ccfbf1; padding-bottom: 0.5rem; }
+        h3 { font-size: 1.5rem; line-height: 2rem; font-weight: 600; margin-top: 2rem; margin-bottom: 1rem; color: #0ea5e9; }
+        h4 { font-size: 1.125rem; line-height: 1.75rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #0c4a6e; }
+        p, li { line-height: 1.75; color: #334155; }
+        .card { background-color: white; border-radius: 0.75rem; padding: 2rem; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.1); margin-bottom: 2rem; }
+        .glossary-term { font-weight: 700; color: #0d9488; }
+        .rules-list li { margin-bottom: 0.75rem; padding-left: 1.25rem; position: relative; }
+        .rules-list li::before { content: "🔹"; position: absolute; left: 0; top: 0.125rem; color: #38bdf8; font-size: 0.8em; }
+        
+        .diagram-container-outer { border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1.5rem; background-color: #f8fafc; margin-top: 1.5rem; }
+        .diagram-chart-area { border: 1px solid #cbd5e1; padding: 1rem; position: relative; height: 180px; background-color: white; border-radius: 0.375rem; margin-bottom: 0.5rem;}
+        .diagram-line { position: absolute; background-color: #3b82f6; height: 2px;}
+        .diagram-rsi-line { position: absolute; background-color: #f97316; height: 2px;}
+        .diagram-neckline { position: absolute; border-top: 2px dashed #10b981; }
+        .diagram-rsi-neckline { position: absolute; border-top: 2px dashed #f59e0b; }
+        .diagram-break-indicator { position: absolute; width: 3px; background-color: #ef4444; }
+        .diagram-text-label { position: absolute; font-size: 0.7rem; color: #4b5563; background-color: rgba(255,255,255,0.7); padding: 1px 3px; border-radius: 2px;}
+        .chart-title-label { position: absolute; top: 4px; left: 8px; font-size: 0.8rem; font-weight: 500; color: #475569; background-color: rgba(248, 250, 252, 0.8); padding: 2px 5px; border-radius: 4px;}
+
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-700 antialiased">
+    <div class="container mx-auto px-4 py-8 sm:px-6 lg:px-8 max-w-5xl">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-sky-700 tracking-tight">Interaktives RSI & Fibonacci Trading Tutorial</h1>
+            <p class="mt-2 text-lg text-slate-600">Vertiefen Sie Ihr Wissen über Trading-Strategien.</p>
+        </header>
+
+        <div class="tabs mb-8 bg-white p-2 rounded-xl shadow-lg flex flex-wrap justify-center gap-x-2 gap-y-2 sticky top-0 z-50">
+            <button class="tab-button px-3 py-2 sm:px-4 sm:py-2.5 font-medium text-xs sm:text-sm border-b-2 border-transparent hover:border-sky-500 hover:text-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 rounded-md" onclick="openTab(event, 'grundlagen')">Grundlagen & RSI</button>
+            <button class="tab-button px-3 py-2 sm:px-4 sm:py-2.5 font-medium text-xs sm:text-sm border-b-2 border-transparent hover:border-sky-500 hover:text-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 rounded-md" onclick="openTab(event, 'regulaere_div')">Reguläre Div.</button>
+            <button class="tab-button px-3 py-2 sm:px-4 sm:py-2.5 font-medium text-xs sm:text-sm border-b-2 border-transparent hover:border-sky-500 hover:text-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 rounded-md" onclick="openTab(event, 'versteckte_div')">Versteckte Div.</button>
+            <button class="tab-button px-3 py-2 sm:px-4 sm:py-2.5 font-medium text-xs sm:text-sm border-b-2 border-transparent hover:border-sky-500 hover:text-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 rounded-md" onclick="openTab(event, 'trendline_break_div')">Trendline Break</button>
+            <button class="tab-button px-3 py-2 sm:px-4 sm:py-2.5 font-medium text-xs sm:text-sm border-b-2 border-transparent hover:border-sky-500 hover:text-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 rounded-md" onclick="openTab(event, 'fibonacci')">Fibonacci</button>
+            <button class="tab-button px-3 py-2 sm:px-4 sm:py-2.5 font-medium text-xs sm:text-sm border-b-2 border-transparent hover:border-sky-500 hover:text-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 rounded-md" onclick="openTab(event, 'allgemeine_regeln')">Allg. Regeln</button>
+            <button class="tab-button px-3 py-2 sm:px-4 sm:py-2.5 font-medium text-xs sm:text-sm border-b-2 border-transparent hover:border-sky-500 hover:text-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 rounded-md" onclick="openTab(event, 'faq')">FAQ</button>
+            <button class="tab-button px-3 py-2 sm:px-4 sm:py-2.5 font-medium text-xs sm:text-sm border-b-2 border-transparent hover:border-sky-500 hover:text-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 rounded-md" onclick="openTab(event, 'glossar')">Glossar</button>
+        </div>
+
+        <main>
+            <div id="grundlagen" class="tab-content card">
+                <h2>Grundlagen & RSI</h2>
+                <p class="mb-6">Dieser Abschnitt führt in die fundamentalen Konzepte des regelbasierten Tradings ein, erklärt den RSI-Indikator und beleuchtet, warum das Trading von Divergenzen dem reinen Achten auf überkaufte/überverkaufte Bereiche überlegen ist. Objektive Regeln sind der Schlüssel zum Erfolg.</p>
+                
+                <h3>1. Objektive Regeln und Indikatoren für profitables Trading</h3>
+                <p>Profitables Trading erfordert objektive, messbare und wiederholbare Regeln sowie den Einsatz spezifischer Indikatoren und Muster. Ohne ein solches Fundament ist Trading oft nicht nachhaltig erfolgreich.</p>
+                <h4>1.1 Wichtige Indikatoren und Tools:</h4>
+                <ul class="list-disc pl-5 mb-4 rules-list">
+                    <li><strong>RSI (Relative Strength Index):</strong> Ein Top-Indikator zur Messung von Geschwindigkeit und Stärke von Preisänderungen. Die effektivste Nutzung erfolgt über Divergenzen, nicht durch simples Achten auf Überkauft-/Überverkauft-Levels, was besonders in Trends zu Verlusten führen kann.</li>
+                    <li><strong>21er EMA (Exponential Moving Average):</strong> Ein weiterer führender Indikator, oft als wichtiger Filter oder "Wand" (potenzieller Abprallbereich) genutzt. Eine bullische Kerze sollte z.B. nicht direkt unter der 21er EMA schließen.</li>
+                    <li><strong>8er SMA (Simple Moving Average) auf dem RSI:</strong> Eine auf 8 Perioden eingestellte gelbe Linie im RSI-Chart. Die Nähe des RSI zum 8er SMA oder ein Cross gilt als wichtiger Filter ("Game Changer"). Bei großem Abstand sollte der Trade vermieden werden.</li>
+                    <li><strong>Fibonacci Retracement/Expansion/Extension:</strong> Basieren auf mathematischen Verhältnissen und helfen, wahrscheinliche Reaktionszonen (Support/Resistance) oder Zielbereiche zu identifizieren.</li>
+                </ul>
+                <h4>1.2 Wichtige Muster und Setups (oft in Kombination mit Indikatoren):</h4>
+                 <ul class="list-disc pl-5 mb-4 rules-list">
+                    <li><strong>RSI Divergenzen:</strong> Eine Divergenz ist eine Diskrepanz zwischen Preis- und RSI-Hochs/Tiefs. Drei Arten: Regulär (Trendumkehr), Versteckt (Trendfortsetzung), Trendline Break (fortgeschritten, bei Chartmustern).</li>
+                    <li><strong>Chartmuster:</strong> Z.B. Head and Shoulders, Double Top/Bottom, Tower Top/Bottom, Side by Side.</li>
+                    <li><strong>Kerzenmuster:</strong> Z.B. Hammer, Abendstern, Tweezer Top.</li>
+                    <li><strong>Fibonacci Levels:</strong> Golden Pocket (0.5-0.618) und 786 Level sind oft Schlüsselbereiche für Pullbacks und Einstiege.</li>
+                </ul>
+                
+                <h3>2. Bedeutung von objektiven Regeln und Filtern beim Traden von RSI-Divergenzen</h3>
+                <p>Objektive Regeln und Filter sind beim Trading, insbesondere von RSI-Divergenzen, entscheidend für:</p>
+                <ul class="list-disc pl-5 mb-4 rules-list">
+                    <li><strong>Objektivität und Wiederholbarkeit:</strong> Sie ermöglichen messbares, wiederholbares Trading.</li>
+                    <li><strong>Vermeidung schlechter Setups:</strong> Sie helfen, ungeeignete Trades zu identifizieren.</li>
+                    <li><strong>Systematisches Trading:</strong> Sie bieten ein klares Regelwerk.</li>
+                    <li><strong>Erhöhte Wahrscheinlichkeit:</strong> Sie verbessern die statistische Chance eines Setups.</li>
+                    <li><strong>Selbstvertrauen:</strong> Testen und konsequente Anwendung stärken das Vertrauen.</li>
+                </ul>
+                
+                <h3>3. Problematik des Tradings überkaufter/überverkaufter RSI-Bereiche und der Vorteil von Divergenzen</h3>
+                <p>Das alleinige Traden von überkauften (>70) oder überverkauften (<30) RSI-Bereichen ist oft problematisch und verlustreich.</p>
+                <h4>3.1 Problem des Tradings von Extremwerten:</h4>
+                <ul class="list-disc pl-5 mb-4 rules-list">
+                    <li>Viele Trader sehen RSI >70 als Verkaufs- und <30 als Kaufsignal. Dies ist meist falsch.</li>
+                    <li>In Trendmärkten kann der RSI lange in Extrembereichen bleiben. Gegen den Trend zu handeln, nur weil der RSI extrem ist, führt oft zu Verlusten.</li>
+                    <li>Trading der Extremwerte in Seitwärtsphasen ist möglich, aber die Identifikation einer echten Seitwärtsphase ist oft erst im Nachhinein sicher.</li>
+                </ul>
+                <h4>3.2 Der Handel mit Divergenzen als verbesserte Strategie:</h4>
+                <p>Die Arbeit mit Divergenzen ist die beste Art, den RSI zu nutzen. Eine Divergenz ist eine Diskrepanz zwischen Preis- und RSI-Hochs/Tiefs und liefert spezifischere Informationen über das Momentum als reine Extremlevel.</p>
+                 <ul class="list-disc pl-5 mb-4 rules-list">
+                    <li><strong>Reguläre Divergenz (Trendumkehr):</strong> Bärisch (Preis HH, RSI LH), Bullisch (Preis LL, RSI HL).</li>
+                    <li><strong>Versteckte Divergenz (Trendfortsetzung):</strong> Bullisch (Preis HL, RSI LL), Bärisch (Preis LH, RSI HH).</li>
+                    <li><strong>Trendline Break Divergenz:</strong> Fortgeschritten, bei Chartmustern. RSI bricht Muster-Neckline vor Preis.</li>
+                </ul>
+                 <h4>3.3 Fazit zum Vorteil von Divergenzen:</h4>
+                <p>Divergenzhandel ist überlegen, da er nicht auf irreführende Extremlevel in Trends reagiert, sondern die Beziehung zwischen Preis und Momentum analysiert. Dies liefert spezifischere Signale und bietet einen "extra Edge".</p>
+            </div>
+
+            <div id="regulaere_div" class="tab-content card">
+                <h2>Reguläre RSI Divergenz</h2>
+                <p class="mb-6">Die reguläre Divergenz ist ein Trendumkehrmuster. Sie deutet auf eine mögliche Abschwächung des aktuellen Trends und eine bevorstehende Umkehr hin. Es gibt bullische und bärische Varianten.</p>
+                
+                <h3>4.1 Reguläre RSI Divergenz (Regular Divergence)</h3>
+                <ul class="list-disc pl-5 mb-4 rules-list">
+                    <li><strong>Funktion:</strong> Trendumkehrmuster.</li>
+                    <li><strong>Definition & Konstellationen:</strong>
+                        <ul class="list-disc pl-5 mt-2">
+                            <li><strong>Bärisch:</strong> Am Trendende oben. Preis bildet höheres Hoch, RSI ein tieferes Hoch. Ideal: Erstes RSI-Hoch >70/80, zweites <70. Eine U-Form im Preis ist besser als eine V-Form. Oft mit Abendstern, Tower Top, Side by Side gesucht.</li>
+                            <li><strong>Bullisch:</strong> Am Trendende unten. Preis bildet tieferes Tief, RSI ein höheres Tief. Zweites Preistief muss tiefer/gleich tief sein. Oft mit Tower Bottom, Side by Side gesucht.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Regeln/Tipps:</strong> Einstiegskerze nicht zu groß. Ablehnungskerze sollte Docht zeigen. Nur letzte Hochs/Tiefs vergleichen.</li>
+                </ul>
+                <div class="grid md:grid-cols-2 gap-8 mt-8">
+                    <div>
+                        <h4>Beispiel: Bärische Reguläre Divergenz</h4>
+                        <div class="chart-container bg-slate-50 p-3 rounded-lg shadow-inner">
+                            <canvas id="bearishRegularDivChart"></canvas>
+                        </div>
+                        <p class="text-sm mt-2 text-center text-slate-600">Preis bildet höheres Hoch (HH), RSI tieferes Hoch (LH).</p>
+                    </div>
+                    <div>
+                        <h4>Beispiel: Bullische Reguläre Divergenz</h4>
+                        <div class="chart-container bg-slate-50 p-3 rounded-lg shadow-inner">
+                            <canvas id="bullishRegularDivChart"></canvas>
+                        </div>
+                        <p class="text-sm mt-2 text-center text-slate-600">Preis bildet tieferes Tief (LL), RSI höheres Tief (HL).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="versteckte_div" class="tab-content card">
+                <h2>Versteckte RSI Divergenz</h2>
+                <p class="mb-6">Die versteckte Divergenz ist ein Trendfortsetzungsmuster. Sie signalisiert, dass der bestehende Trend nach einem Pullback wahrscheinlich fortgesetzt wird und ist oft schwieriger zu erkennen als die reguläre Divergenz.</p>
+
+                <h3>4.2 Versteckte RSI Divergenz (Hidden Divergence)</h3>
+                 <ul class="list-disc pl-5 mb-4 rules-list">
+                    <li><strong>Funktion:</strong> Trendfortsetzungsmuster, oft schwieriger zu erkennen.</li>
+                    <li><strong>Definition & Konstellationen:</strong>
+                         <ul class="list-disc pl-5 mt-2">
+                            <li><strong>Bullisch:</strong> Im Aufwärtstrend. Preis bildet höheres Tief, RSI ein tieferes Tief. Signalisiert schwächeres Abwärtsmomentum im Pullback.</li>
+                            <li><strong>Bärisch:</strong> Im Abwärtstrend. Preis bildet tieferes Hoch, RSI ein höheres Hoch. Signalisiert zu viel Käuferschwung im Pullback.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Regeln/Tipps:</strong> Einstiegskerze nicht zu groß. RSI nahe 8er SMA oder Cross. Abstand zu "Busstopps" (21er EMA, S/R, Order Blocks). Kombination mit Fibonacci (Golden Pocket, 786, 382) und passenden Price Action Patterns.</li>
+                </ul>
+                <div class="grid md:grid-cols-2 gap-8 mt-8">
+                    <div>
+                        <h4>Beispiel: Bullische Versteckte Divergenz</h4>
+                        <div class="chart-container bg-slate-50 p-3 rounded-lg shadow-inner">
+                            <canvas id="bullishHiddenDivChart"></canvas>
+                        </div>
+                        <p class="text-sm mt-2 text-center text-slate-600">Preis bildet höheres Tief (HL), RSI tieferes Tief (LL).</p>
+                    </div>
+                    <div>
+                        <h4>Beispiel: Bärische Versteckte Divergenz</h4>
+                        <div class="chart-container bg-slate-50 p-3 rounded-lg shadow-inner">
+                            <canvas id="bearishHiddenDivChart"></canvas>
+                        </div>
+                        <p class="text-sm mt-2 text-center text-slate-600">Preis bildet tieferes Hoch (LH), RSI höheres Hoch (HH).</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="trendline_break_div" class="tab-content card">
+                <h2>Trendline Break Divergenz</h2>
+                <p class="mb-6">Die Trendline Break Divergenz ist eine fortgeschrittene Strategie, die in Verbindung mit spezifischen Chartmustern genutzt wird. Sie signalisiert einen potenziellen Trade-Einstieg, bevor der Preis die entscheidende Neckline des Musters durchbricht.</p>
+
+                <h3>4.3 Trendline Break Divergenz (Fortgeschrittene Strategie)</h3>
+                <p>Als "dritte" oder "geheime" Divergenz ist sie fortgeschritten, aber teils leichter als die versteckte. Sie ist wenig bekannt.</p>
+                <ul class="list-disc pl-5 mb-4 rules-list">
+                    <li><strong>Funktion:</strong> Tritt bei Chartmustern (Head and Shoulders, Inverted H&S, Double Top/Bottom) auf und ermöglicht oft früheren Einstieg.</li>
+                    <li><strong>Definition der Neckline:</strong>
+                         <ul class="list-disc pl-5 mt-2">
+                            <li>H&S / Inverted H&S: Linie durch Tiefs/Hochs zwischen Schultern und Kopf.</li>
+                            <li>Double Bottom/Top: Höchster Punkt zwischen Tiefs / tiefster Punkt zwischen Hochs.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Mechanismus:</strong> RSI bricht seine (oft horizontale) Neckline, *bevor* der Preis seine Neckline bricht.</li>
+                    <li><strong>Vorteile:</strong> Früherer Einstieg, potenziell besserer Risk-Reward.</li>
+                    <li><strong>Regeln/Tipps:</strong> Chartmuster muss klar sein. Gilt als ca. 60/40 Setup. Dient auch als zusätzliche Bestätigung des Chartmusters.</li>
+                </ul>
+                <div class="mt-6 p-4 diagram-container-outer">
+                    <h4 class="font-semibold text-sky-700 mb-4 text-center">Schematische Darstellung: Trendline Break Divergenz (Head & Shoulders Top)</h4>
+                    <div class="chart-area-wrapper">
+                        <div class="diagram-chart-area">
+                            <div class="chart-title-label">Preis-Chart (Beispiel H&S Top)</div>
+                            <div class="diagram-line" style="left: 10%; top: 70%; width: 15%; transform: rotate(-45deg);"></div>
+                            <div class="diagram-line" style="left: 25%; top: 48%; width: 15%; transform: rotate(45deg);"></div>
+                            <div class="diagram-line" style="left: 40%; top: 70%; width: 15%; transform: rotate(-60deg);"></div>
+                            <div class="diagram-line" style="left: 55%; top: 30%; width: 15%; transform: rotate(60deg);"></div>
+                            <div class="diagram-line" style="left: 70%; top: 70%; width: 12%; transform: rotate(-40deg);"></div>
+                            <div class="diagram-line" style="left: 82%; top: 52%; width: 15%; transform: rotate(55deg);"></div>
+                            
+                            <div class="diagram-neckline" style="top: 70%; left: 10%; width: 75%;"></div>
+                            <div class="diagram-text-label" style="top: 72%; left: 45%;">Preis Neckline</div>
+                            
+                            <div class="diagram-break-indicator" style="left: 90%; top: 70%; height: 20%;"></div>
+                            <div class="diagram-text-label" style="left: 88%; top: 92%; color: #ef4444;">Preis Break</div>
+                        </div>
+                        <div class="diagram-chart-area">
+                             <div class="chart-title-label">RSI-Chart</div>
+                            <div class="diagram-rsi-line" style="left: 10%; top: 50%; width: 15%; transform: rotate(-15deg);"></div>
+                            <div class="diagram-rsi-line" style="left: 25%; top: 43%; width: 15%; transform: rotate(25deg);"></div>
+                            <div class="diagram-rsi-line" style="left: 40%; top: 55%; width: 15%; transform: rotate(-35deg);"></div>
+                            <div class="diagram-rsi-line" style="left: 55%; top: 38%; width: 15%; transform: rotate(45deg);"></div>
+                            <div class="diagram-rsi-line" style="left: 70%; top: 60%; width: 10%; transform: rotate(-65deg);"></div>
+
+
+                            <div class="diagram-rsi-neckline" style="top: 60%; left: 10%; width: 65%;"></div>
+                             <div class="diagram-text-label" style="top: 62%; left: 35%; color: #f59e0b;">RSI Neckline</div>
+
+                            <div class="diagram-break-indicator" style="left: 75%; top: 60%; height: 30%;"></div>
+                            <div class="diagram-text-label" style="left: 72%; top: 92%; color: #ef4444;">RSI Break (früh)</div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-center mt-3 text-slate-500">Hinweis: Stark vereinfachte Darstellung. Blaue Linien = Preisbewegung, Orange Linien = RSI-Bewegung. Grüne gestrichelte Linie = Preis-Neckline, Orange gestrichelte Linie = RSI-Neckline. Rote Linie = Breakout-Punkt.</p>
+                </div>
+            </div>
+
+            <div id="fibonacci" class="tab-content card">
+                <h2>Fibonacci-Analyse im Trading</h2>
+                <p class="mb-6">Fibonacci-Tools wie Retracement, Extension und Expansion sind mächtige Instrumente zur Identifizierung potenzieller Umkehrpunkte, Pullback-Zonen und Zielbereiche. Dieser Abschnitt vergleicht ihre Anwendung und wie sie mit anderen Setups kombiniert werden können.</p>
+                
+                <h3>6. Fibonacci-Analyse im Detail: Retracement vs. Extension/Expansion</h3>
+                <p>Fibonacci-Tools dienen unterschiedlichen, aber komplementären Zwecken zur Identifizierung von Umkehr- oder Zielbereichen.</p>
+                <h4>6.1. Fibonacci Retracement</h4>
+                <ul class="list-disc pl-5 mb-4 rules-list">
+                    <li><strong>Zweck:</strong> Identifiziert potenzielle Reaktionszonen (Support/Resistance) bei Pullbacks innerhalb eines Trends.</li>
+                    <li><strong>Anwendung:</strong> Im Abwärtstrend von Hoch zu Tief ziehen, im Aufwärtstrend von Tief zu Hoch; stets letzte signifikante Punkte nutzen.</li>
+                    <li><strong>Wichtige Levels:</strong> Golden Pocket (0.5-0.618) und 786 (oft bei Bitcoin, "letzte Eisenbahn") sind Top-Levels. 382 in starken Trends mit Retest/21er EMA. 0.5 ("Equilibrium") weniger primär. 236 meiden (schlechter Risk-Reward).</li>
+                    <li><strong>Regeln/Filter:</strong> Level muss berührt werden (Docht/Körper), aber nicht vom Kerzenkörper durchschnitten werden, sonst invalide.</li>
+                    <li><strong>Kombinationen:</strong> Sehr gut mit versteckter bullischer Divergenz (an 618, 382, 786), Golden Pocket + Retest/Divergenz/Price Action, LSOB + Golden Pocket + Hammer, Bull/Bear Flags (Bounce an Golden Pocket/786).</li>
+                </ul>
+
+                <h4>6.2. Fibonacci Extension und Expansion</h4>
+                 <ul class="list-disc pl-5 mb-4 rules-list">
+                    <li><strong>Zweck:</strong> Identifiziert primär Zielbereiche (Targets) und potenzielle Trendwenden. Kann auch für Stop-Loss-Platzierung helfen.</li>
+                    <li><strong>Anwendung:</strong> Drei Punkte. Expansion (Tief-Hoch-PullbackTief) oft bei flachen/unsauberen Pullbacks, Extension (Tief-Hoch-PullbackTief) bei sauberen Retracements. Wahl ist Präferenz.</li>
+                    <li><strong>Regeln/Filter:</strong> Levels müssen berührt, aber nicht vom Kerzenkörper durchschnitten werden. Auf Reaktion warten.</li>
+                    <li><strong>Kombinationen:</strong> Mit Umkehr-Chartmustern (Double Top/Bottom, H&S), Reversal Price Action (Evening Star) und regulären Divergenzen an diesen Levels.</li>
+                </ul>
+                <h4>6.3. Vergleich und Kontrast: Retracement vs. Extension/Expansion</h4>
+                 <ul class="list-disc pl-5 mb-4 rules-list">
+                    <li><strong>Zweck:</strong> Retracement für Pullback-Umkehrpunkte, Extension/Expansion für Trendend-Ziele.</li>
+                    <li><strong>Anwendung:</strong> Retracement auf eine Bewegung (2 Punkte), Ext./Exp. auf Bewegung + Pullback (3 Punkte).</li>
+                    <li><strong>Kombination:</strong> Retracement eher mit Trendfortsetzungs-Setups, Ext./Exp. mit Trendumkehr-Setups.</li>
+                    <li><strong>Regelwerk:</strong> Objektive Anwendung ist entscheidend, besonders die "Kein-Körperdurchbruch"-Regel.</li>
+                </ul>
+                <h4>6.4. Zusammenfassung zur Rolle von Fibonacci-Levels</h4>
+                <p>Retracement hilft Einstiegspunkte in Pullbacks zu finden, Extension/Expansion Ausstiegs- oder Umkehrpunkte am Bewegungsende. Beides sind wertvolle Werkzeuge bei regelbasierter Anwendung und Konfluenz.</p>
+            </div>
+
+            <div id="allgemeine_regeln" class="tab-content card">
+                <h2>Allgemeine Handelsregeln & Tipps</h2>
+                <p class="mb-6">Erfolgreiches Trading basiert auf einem soliden Fundament aus allgemeinen Regeln und Prinzipien, die über spezifische Setups hinausgehen. Dieser Abschnitt fasst wichtige übergeordnete Konzepte und Tipps zusammen.</p>
+
+                <ul class="list-disc pl-5 mb-4 rules-list">
+                    <li><strong>Objektive, messbare, wiederholbare Regeln:</strong> Essentiell für profitables Trading. "Trading nach Gefühl" ist meist nur mit sehr viel Erfahrung erfolgreich.</li>
+                    <li><strong>Backtesting und Übung:</strong> Intensives Üben (Backtesting, Live-Trading) baut Vertrauen und Erfahrung auf, auch in "unsauberen" Marktphasen.</li>
+                    <li><strong>Konfluenz:</strong> Mehrere bestätigende Signale (Divergenz + Fibonacci + Pattern etc.) erhöhen die Setup-Stärke.</li>
+                    <li><strong>Kerzenschluss als Validierung:</strong> Ein Level (Fibo, S/R) ist oft invalide, wenn eine Kerze mit dem Körper hindurchschneidet. Auf Berührung/Ablehnung achten.</li>
+                    <li><strong>Risk-Reward:</strong> Gutes CRV ist entscheidend; schlechtes CRV macht auch gute Muster untradebar.</li>
+                    <li><strong>Umgang mit Verlusten:</strong> Verluste sind normal. Akzeptanz ist nötig, um profitable Setups nicht zu verpassen. Winrate bezieht sich nicht zwingend auf Erreichen voller Ziele.</li>
+                    <li><strong>Filter zur Vermeidung schlechter Setups:</strong>
+                        <ul class="list-disc pl-5 mt-2">
+                            <li>RSI-Abstand zum 8er SMA (nah dran/Cross ist gut).</li>
+                            <li>Kerzengröße (nicht zu groß).</li>
+                            <li>Abstand zu "Busstopps" (S/R, EMAs, Order Blocks).</li>
+                            <li>Seitwärtsphasen (bestimmte Setups meiden).</li>
+                            <li>Klarheit des Musters (kein "Einreden").</li>
+                        </ul>
+                    </li>
+                    <li><strong>Systematische Werkzeuganwendung:</strong> Fibonacci etc. nicht willkürlich, sondern regelbasiert anwenden.</li>
+                    <li><strong>Targets und Exit-Strategien:</strong> Fibonacci Extension/Expansion für Zielbereiche. Diversifizierte Exits (Teilverkäufe, Stop-Loss auf Break-Even) sichern Gewinne.</li>
+                </ul>
+                <p>Erfolgreiches Trading basiert auf Disziplin, Systematik, klaren Regeln, Filtern, Konfluenz, Übung und Akzeptanz von Verlusten.</p>
+                <h3>Grundlagen für erfolgreiches Trading</h3>
+                 <ul class="list-disc pl-5 mb-4 rules-list">
+                    <li><strong>Objektive Regeln:</strong> Klar definiert und konsequent angewendet.</li>
+                    <li><strong>Backtesting:</strong> Zur Strategievalidierung und Vertrauensbildung.</li>
+                    <li><strong>Emotionale Kontrolle:</strong> Handelsplan und Regeln helfen gegen Gier, Angst, Ungeduld.</li>
+                    <li><strong>Systematisches Vorgehen:</strong> Konsistenz durch regelbasiertes Anwenden von Tools.</li>
+                    <li><strong>Risiko- und Money-Management:</strong> Fundamental, aber hier nicht im Detail behandelt.</li>
+                </ul>
+            </div>
+
+            <div id="faq" class="tab-content card">
+                <h2>Häufig gestellte Fragen (FAQ)</h2>
+                <p class="mb-6">Dieser Abschnitt beantwortet einige häufig gestellte Fragen zu RSI-Divergenzen und der Anwendung von Fibonacci-Levels im Trading, basierend auf den im Tutorial behandelten Konzepten.</p>
+                
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="font-semibold text-sky-700">7.1. Was versteht man unter einer RSI-Divergenz im Trading und warum ist sie wichtig?</h4>
+                        <p>Eine RSI-Divergenz ist eine Diskrepanz zwischen Preisbewegung und RSI-Bewegung (z.B. Preis macht höhere Hochs, RSI tiefere Hochs). Sie ist wichtig, da sie zuverlässigere Signale für Preisbewegungen (Umkehr/Fortsetzung) liefert als das reine Achten auf Überkauft-/Überverkauft-Zonen des RSI, was besonders in Trends oft fehlschlägt. Divergenzen gelten als eine der besten RSI-Anwendungen.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-sky-700">7.2. Welche verschiedenen Arten von RSI-Divergenzen gibt es und was signalisieren sie?</h4>
+                        <p>Es gibt drei Hauptarten:</p>
+                        <ul class="list-disc pl-5 mt-2 rules-list">
+                            <li><strong>Reguläre RSI-Divergenz:</strong> Trendumkehrmuster. Bärisch (Preis HH, RSI LH) für mögliche Abwärtsbewegung; Bullisch (Preis LL, RSI HL) für mögliche Aufwärtsbewegung.</li>
+                            <li><strong>Versteckte RSI-Divergenz:</strong> Trendfortsetzungsmuster. Bullisch (Preis HL, RSI LL) für Fortsetzung Aufwärtstrend; Bärisch (Preis LH, RSI HH) für Fortsetzung Abwärtstrend.</li>
+                            <li><strong>Trendline Break Divergenz:</strong> Fortgeschritten, bei Chartmustern (H&S, Double Top/Bottom). RSI bricht Muster-Neckline vor Preis; ermöglicht früheren Einstieg.</li>
+                        </ul>
+                    </div>
+                     <div>
+                        <h4 class="font-semibold text-sky-700">7.3. Wie identifiziert man reguläre bullische und bärische RSI-Divergenzen?</h4>
+                        <p>Man vergleicht Preis-Hochs/Tiefs mit RSI-Hochs/Tiefs:</p>
+                         <ul class="list-disc pl-5 mt-2 rules-list">
+                            <li><strong>Bärisch Regulär:</strong> Am Aufwärtstrend-Ende. Preis macht höhere Hochs, RSI gleichzeitig tiefere Hochs. Ideal: Erstes RSI-Hoch >70, zweites <70.</li>
+                            <li><strong>Bullisch Regulär:</strong> Am Abwärtstrend-Ende. Preis macht tiefere Tiefs, RSI gleichzeitig höhere Tiefs.</li>
+                        </ul>
+                        <p>Die Divergenz muss klar erkennbar sein.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-sky-700">7.4. Worauf sollte man bei der Identifizierung und beim Trading von regulären Divergenzen achten, um Verluste zu minimieren?</h4>
+                        <p>Wichtig sind objektive Regeln und Filter:</p>
+                        <ul class="list-disc pl-5 mt-2 rules-list">
+                            <li><strong>Größe der Divergenz:</strong> Sehr kleine Divergenzen meiden.</li>
+                            <li><strong>RSI-Levels:</strong> Bei bärischer Div. ideal: erstes RSI-Hoch >70/80, zweites <70.</li>
+                            <li><strong>Kerzenformationen:</strong> Auf Ablehnungskerzen mit Docht achten.</li>
+                            <li><strong>Form der Bewegung (bärisch):</strong> U-Form besser als "Nike-Haken".</li>
+                            <li><strong>Konsolidierung:</strong> Lange Seitwärtsphase zwischen Hochs kann Akkumulation bedeuten.</li>
+                            <li><strong>RSI & 8er SMA:</strong> RSI sollte nahe am/über (bullisch) bzw. nahe am/unter (bärisch) dem 8er SMA sein. Großer Abstand = Skip.</li>
+                            <li><strong>Objektive Regeln & Backtesting:</strong> Essentiell für Vertrauen und Konsistenz.</li>
+                        </ul>
+                    </div>
+                     <div>
+                        <h4 class="font-semibold text-sky-700">7.5. Wie unterscheidet sich die versteckte RSI-Divergenz von der regulären und wie identifiziert man sie?</h4>
+                        <p>Hauptunterschied: Regulär = Trendumkehrsignal, Versteckt = Trendfortsetzungssignal.</p>
+                        <p>Identifikation:</p>
+                         <ul class="list-disc pl-5 mt-2 rules-list">
+                            <li><strong>Bullisch Versteckt:</strong> Im Aufwärtstrend. Preis macht höheres Tief, RSI aber tieferes Tief (Tiefs von Preis und RSI vergleichen).</li>
+                            <li><strong>Bärisch Versteckt:</strong> Im Abwärtstrend. Preis macht tieferes Hoch, RSI aber höheres Hoch (Hochs von Preis und RSI vergleichen).</li>
+                        </ul>
+                        <p>Signalisiert Stärke des ursprünglichen Trends trotz Pullback.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-sky-700">7.6. Welche zusätzlichen Filter und Konfluenzfaktoren werden für das Trading versteckter Divergenzen empfohlen?</h4>
+                        <p>Zur Qualitätsverbesserung von Setups:</p>
+                        <ul class="list-disc pl-5 mt-2 rules-list">
+                            <li><strong>Kerzengröße:</strong> Nicht zu groß (wegen Risk-Reward).</li>
+                            <li><strong>RSI & 8er SMA:</strong> Entscheidender Filter. RSI muss nah am SMA sein oder diesen kreuzen.</li>
+                            <li><strong>Abstand zu wichtigen Zonen:</strong> S/R-Zonen, EMAs (v.a. 21er), Order Blocks meiden. Bullische Kerze nicht direkt unter 21er EMA schließen lassen.</li>
+                            <li><strong>Kerzenmuster:</strong> Bestätigende Muster wie Hammer (bullisch) oder Tweezer Top/Bottom.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-sky-700">7.7. Was ist die Trendline Break Divergenz und wie identifiziert und nutzt man sie?</h4>
+                        <p>Eine fortgeschrittene, weniger bekannte Divergenz bei Chartmustern (H&S, Double Top/Bottom).</p>
+                        <p><strong>Identifizierung & Nutzung:</strong></p>
+                        <ol class="list-decimal pl-5 mt-2 rules-list">
+                            <li>Klares Chartmuster identifizieren.</li>
+                            <li>Neckline im Preis-Chart definieren.</li>
+                            <li>Entsprechenden Punkt/Linie auf dem RSI finden.</li>
+                            <li>Liegt vor, wenn RSI seine Neckline *vor* dem Preis bricht.</li>
+                            <li>Dieser frühe RSI-Bruch kann als Einstiegssignal dienen, oft mit besserem Risk-Reward.</li>
+                        </ol>
+                        <p>Das Chartmuster muss eindeutig sein.</p>
+                    </div>
+                     <div>
+                        <h4 class="font-semibold text-sky-700">7.8. Wie können Fibonacci-Levels in Kombination mit Divergenzen und anderen Setups im Trading eingesetzt werden?</h4>
+                        <p>Fibonacci-Levels (Retracement, Extension/Expansion) dienen als potenzielle S/R-Zonen und können gut mit Divergenzen kombiniert werden:</p>
+                         <ul class="list-disc pl-5 mt-2 rules-list">
+                            <li><strong>Retracement-Levels:</strong> Für Pullback-Zonen. Golden Pocket (0.5-0.618) und 786 sind wichtig. 382 in starken Trends.
+                                <ul class="list-disc pl-5">
+                                    <li><em>Kombination:</em> Versteckte bullische Divergenz an Golden Pocket/786 ist stark.</li>
+                                    <li><em>Regel:</em> Level muss berührt, aber nicht vom Kerzenkörper durchschnitten werden.</li>
+                                </ul>
+                            </li>
+                            <li><strong>Extension/Expansion-Levels:</strong> Primär für Zielbereiche und Trendwenden.
+                                 <ul class="list-disc pl-5">
+                                    <li><em>Kombination:</em> Reguläre bärische Divergenz an wichtigem Extension-Level erhöht Umkehrwahrscheinlichkeit.</li>
+                                    <li><em>Regel:</em> Level muss berührt, aber nicht vom Kerzenkörper durchschnitten werden.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p>Systematisches Einzeichnen und Kombination mit anderen Filtern ist entscheidend.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="glossar" class="tab-content card">
+                <h2>Glossar der Schlüsselbegriffe</h2>
+                <p class="mb-6">Dieses Glossar erläutert die wichtigsten Fachbegriffe, die im Kontext von RSI-Divergenzen, Fibonacci-Analyse und allgemeinem Trading verwendet werden.</p>
+                <dl class="space-y-4">
+                    <div><dt class="glossary-term">Divergenz:</dt><dd class="ml-4">Eine Diskrepanz oder Abweichung zwischen der Preisbewegung eines Vermögenswerts und der Bewegung eines Indikators (hier RSI).</dd></div>
+                    <div><dt class="glossary-term">RSI (Relative Strength Index):</dt><dd class="ml-4">Ein technischer Indikator, der die Geschwindigkeit und die Stärke von Preisänderungen misst. Die Skala reicht typischerweise von 0 bis 100.</dd></div>
+                    <div><dt class="glossary-term">Überkauft (Overbought):</dt><dd class="ml-4">Ein Zustand, bei dem der RSI über einem bestimmten Level (typischerweise 70) liegt, was oft als Signal für eine mögliche Preiskorrektur nach unten interpretiert wird (wird hier relativiert).</dd></div>
+                    <div><dt class="glossary-term">Überverkauft (Oversold):</dt><dd class="ml-4">Ein Zustand, bei dem der RSI unter einem bestimmten Level (typischerweise 30) liegt, was oft als Signal für eine mögliche Preiskorrektur nach oben interpretiert wird (wird hier relativiert).</dd></div>
+                    <div><dt class="glossary-term">Reguläre RSI Divergenz (Regular Divergence):</dt><dd class="ml-4">Ein Divergenzmuster, das auf eine mögliche Trendumkehr hindeutet (Trend Reversal Pattern). Bärisch: Höheres Preis-Hoch, tieferes RSI-Hoch. Bullisch: Tieferes Preis-Tief, höheres RSI-Tief.</dd></div>
+                    <div><dt class="glossary-term">Versteckte RSI Divergenz (Hidden Divergence):</dt><dd class="ml-4">Ein Divergenzmuster, das auf die Fortsetzung eines bestehenden Trends nach einem Pullback hindeutet (Trend Continuation Pattern). Bullisch: Höheres Preis-Tief, tieferes RSI-Tief. Bärisch: Tieferes Preis-Hoch, höheres RSI-Hoch.</dd></div>
+                    <div><dt class="glossary-term">Trendline Break Divergenz:</dt><dd class="ml-4">Eine fortgeschrittene Divergenz, die in Verbindung mit bestimmten Chartmustern auftritt, bei der der RSI die Neckline des Musters bricht, bevor der Preis dies tut.</dd></div>
+                    <div><dt class="glossary-term">Neckline (Nackenlinie):</dt><dd class="ml-4">Eine Trendlinie, die bei Chartmustern wie Head and Shoulders oder Double Tops/Bottoms die Unterstützungs- oder Widerstandslinie verbindet. Ihr Bruch signalisiert oft die Bestätigung des Musters.</dd></div>
+                    <div><dt class="glossary-term">Trend Reversal Pattern:</dt><dd class="ml-4">Ein Chart- oder Indikatormuster, das auf eine mögliche Umkehr des bestehenden Trends hindeutet.</dd></div>
+                    <div><dt class="glossary-term">Trend Continuation Pattern:</dt><dd class="ml-4">Ein Chart- oder Indikatormuster, das auf die Fortsetzung des bestehenden Trends nach einem Rücksetzer hindeutet.</dd></div>
+                    <div><dt class="glossary-term">Pullback:</dt><dd class="ml-4">Ein kurzfristiger Rücksetzer oder eine Korrektur innerhalb eines längerfristigen Trends.</dd></div>
+                    <div><dt class="glossary-term">EMA (Exponential Moving Average):</dt><dd class="ml-4">Ein gleitender Durchschnitt, der den neueren Preisen mehr Gewicht verleiht. Die 21er EMA wird als wichtiger Filter oder potenzielles Ziel genannt.</dd></div>
+                    <div><dt class="glossary-term">SMA (Simple Moving Average):</dt><dd class="ml-4">Ein einfacher gleitender Durchschnitt. Die 8er SMA wird in Verbindung mit dem RSI als wichtiger Filter genannt.</dd></div>
+                    <div><dt class="glossary-term">Risk-Reward:</dt><dd class="ml-4">Das Verhältnis des potenziellen Gewinns zum potenziellen Verlust bei einem Trade. Ein guter Risk-Reward ist entscheidend für die Profitabilität.</dd></div>
+                    <div><dt class="glossary-term">Backtesting:</dt><dd class="ml-4">Das Testen einer Handelsstrategie anhand historischer Preisdaten, um ihre potenzielle Leistung zu bewerten.</dd></div>
+                    <div><dt class="glossary-term">Konfluenz (Confluence):</dt><dd class="ml-4">Das Zusammenkommen mehrerer bestätigender Signale oder Faktoren an einem bestimmten Preislevel oder einer bestimmten Zeit.</dd></div>
+                    <div><dt class="glossary-term">Fibonacci Retracement:</dt><dd class="ml-4">Ein Tool, das basierend auf Fibonacci-Zahlen potenzielle Unterstützungs- und Widerstandsniveaus (Pullback-Ziele) innerhalb eines bestehenden Trends identifiziert. Wichtige Level sind 38.2%, 50%, 61.8% (Golden Pocket), 78.6%.</dd></div>
+                    <div><dt class="glossary-term">Fibonacci Extension/Expansion:</dt><dd class="ml-4">Tools, die basierend auf Fibonacci-Zahlen potenzielle Zielbereiche oder Bereiche, in denen der Trend enden könnte, außerhalb der bisherigen Preisbewegung identifizieren.</dd></div>
+                    <div><dt class="glossary-term">Golden Pocket:</dt><dd class="ml-4">Der Bereich zwischen dem 0.5 und 0.618 Fibonacci Retracement Level, der oft als signifikanter Bereich für Pullback-Enden angesehen wird.</dd></div>
+                    <div><dt class="glossary-term">Price Action:</dt><dd class="ml-4">Das Studieren und Interpretieren der reinen Preisbewegung auf einem Chart, oft in Verbindung mit Kerzenmustern.</dd></div>
+                    <div><dt class="glossary-term">Head and Shoulders / Inverted Head and Shoulders:</dt><dd class="ml-4">Umkehr-Chartmuster, die drei Gipfel/Täler mit einer zentralen Neckline bilden.</dd></div>
+                    <div><dt class="glossary-term">Double Top / Double Bottom:</dt><dd class="ml-4">Umkehr-Chartmuster, die zwei Gipfel/Täler auf ungefähr demselben Preisniveau bilden.</dd></div>
+                    <div><dt class="glossary-term">Side by Side:</dt><dd class="ml-4">Ein Kerzenmuster aus bullischer und bärischer Kerze auf ähnlichem Niveau.</dd></div>
+                    <div><dt class="glossary-term">Tower Top / Tower Bottom:</dt><dd class="ml-4">Price Action Muster; Konsolidierung gefolgt von starker Umkehrkerze.</dd></div>
+                    <div><dt class="glossary-term">Engulfing Kerze:</dt><dd class="ml-4">Kerzenkörper umschließt vorherigen; oft starkes Umkehrsignal.</dd></div>
+                    <div><dt class="glossary-term">Docht (Wick) / Schatten:</dt><dd class="ml-4">Linien über/unter Kerzenkörper, zeigen Hoch/Tief der Periode.</dd></div>
+                    <div><dt class="glossary-term">LSOB (Last Seen Order Block / Last Sign of Bearishness):</dt><dd class="ml-4">Spezifisches Pattern, kontextabhängig.</dd></div>
+                    <div><dt class="glossary-term">Order Block / Breaker Block:</dt><dd class="ml-4">Bereiche potenziell großer institutioneller Orders (Smart Money Concepts).</dd></div>
+                </dl>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function openTab(event, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add("active");
+            event.currentTarget.classList.add("active");
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('.tab-button').click();
+            renderCharts();
+        });
+
+        function renderCharts() {
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 10 } } },
+                scales: {
+                    y: { ticks: { font: { size: 10 } } },
+                    x: { ticks: { font: { size: 10 } } }
+                }
+            };
+
+            const bearishRegCtx = document.getElementById('bearishRegularDivChart').getContext('2d');
+            new Chart(bearishRegCtx, {
+                type: 'line',
+                data: {
+                    labels: ['T1', 'T2', 'T3', 'T4'],
+                    datasets: [{
+                        label: 'Preis', data: [60, 80, 75, 95], borderColor: '#3b82f6', tension: 0.1, pointRadius: 4, pointBackgroundColor: '#3b82f6'
+                    }, {
+                        label: 'RSI', data: [75, 65, 70, 60], borderColor: '#f97316', tension: 0.1, pointRadius: 4, pointBackgroundColor: '#f97316'
+                    }]
+                },
+                options: commonOptions
+            });
+
+            const bullishRegCtx = document.getElementById('bullishRegularDivChart').getContext('2d');
+            new Chart(bullishRegCtx, {
+                type: 'line',
+                data: {
+                    labels: ['T1', 'T2', 'T3', 'T4'],
+                    datasets: [{
+                        label: 'Preis', data: [40, 20, 25, 10], borderColor: '#3b82f6', tension: 0.1, pointRadius: 4, pointBackgroundColor: '#3b82f6'
+                    }, {
+                        label: 'RSI', data: [25, 35, 30, 45], borderColor: '#f97316', tension: 0.1, pointRadius: 4, pointBackgroundColor: '#f97316'
+                    }]
+                },
+                options: commonOptions
+            });
+
+            const bullishHiddenCtx = document.getElementById('bullishHiddenDivChart').getContext('2d');
+            new Chart(bullishHiddenCtx, {
+                type: 'line',
+                data: {
+                    labels: ['T1', 'T2', 'T3', 'T4'],
+                    datasets: [{
+                        label: 'Preis', data: [50, 70, 60, 80], borderColor: '#3b82f6', tension: 0.1, pointRadius: 4, pointBackgroundColor: '#3b82f6'
+                    }, {
+                        label: 'RSI', data: [45, 60, 35, 55], borderColor: '#f97316', tension: 0.1, pointRadius: 4, pointBackgroundColor: '#f97316'
+                    }]
+                },
+                options: commonOptions
+            });
+
+            const bearishHiddenCtx = document.getElementById('bearishHiddenDivChart').getContext('2d');
+            new Chart(bearishHiddenCtx, {
+                type: 'line',
+                data: {
+                    labels: ['T1', 'T2', 'T3', 'T4'],
+                    datasets: [{
+                        label: 'Preis', data: [80, 60, 70, 50], borderColor: '#3b82f6', tension: 0.1, pointRadius: 4, pointBackgroundColor: '#3b82f6'
+                    }, {
+                        label: 'RSI', data: [55, 40, 65, 50], borderColor: '#f97316', tension: 0.1, pointRadius: 4, pointBackgroundColor: '#f97316'
+                    }]
+                },
+                options: commonOptions
+            });
+        }
+    </script>
+</body>
+</html>

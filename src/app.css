@@ -1,23 +1,393 @@
 @import "tailwindcss";
 
+/* =========================================
+   1. GLOBAL VARIABLES & PALETTES
+   ========================================= */
+@layer base {
+    :root {
+        /* --- Base Fonts --- */
+        --font-heading: "Montserrat", sans-serif;
+        --font-body: "Montserrat", sans-serif;
+
+        /* --- Default Theme (Navy) - Dark (Default) --- */
+        --navy-950: #0a0e17;
+        --navy-900: #111625;
+        --navy-800: #1c2333;
+        --cyan-500: #00f2ea;
+        --cyan-400: #33f5ee;
+
+        /* --- Default Theme - Light --- */
+        --slate-50: #f8fafc;
+        --slate-100: #f1f5f9;
+        --slate-200: #e2e8f0;
+        --slate-900: #0f172a;
+        --sky-500: #0ea5e9;
+
+        /* --- Steel Theme - Dark --- */
+        --steel-950: #05081a;
+        --steel-800: #0f173d;
+        --steel-700: #1a2a6c;
+        --blue-600: #334eff;
+
+        /* --- Steel Theme - Light --- */
+        --steel-50: #f0f4f8;
+        --steel-white: #ffffff;
+        --blue-500: #2563eb;
+
+        /* --- Meteorite Theme - Dark --- */
+        --meteor-950: #0c082f;
+        --meteor-800: #161245;
+        --meteor-700: #2b1f99;
+        --purple-500: #7c3aed;
+
+        /* --- Meteorite Theme - Light --- */
+        --meteor-50: #f3f0ff;
+        --meteor-white: #ffffff;
+        --purple-600: #7c3aed;
+    }
+
+    /* =========================================
+     2. SEMANTIC MAPPING (The Magic)
+     ========================================= */
+
+    /* --- THEME: DEFAULT (Navy) --- */
+    .theme-default {
+        /* Mode: Dark (Default) */
+        --bg-body: var(--navy-950);
+        --bg-surface: var(--navy-900);
+        --bg-surface-2: var(--navy-800);
+        --text-main: #ffffff;
+        --text-muted: #94a3b8;
+        --color-accent: var(--cyan-500);
+        --color-border: rgba(255, 255, 255, 0.1);
+    }
+
+    .theme-default[data-mode="light"] {
+        --bg-body: var(--slate-50);
+        --bg-surface: var(--slate-100);
+        --bg-surface-2: var(--slate-200);
+        --text-main: var(--slate-900);
+        --text-muted: #475569;
+        --color-accent: var(--sky-500);
+        --color-border: #cbd5e1;
+    }
+
+    /* --- THEME: STEEL --- */
+    .theme-steel {
+        /* Mode: Dark */
+        --bg-body: var(--steel-950);
+        --bg-surface: var(--steel-800);
+        --bg-surface-2: var(--steel-700);
+        --text-main: #e2e8f0;
+        --text-muted: #93a1a1;
+        --color-accent: var(--blue-600);
+        --color-border: rgba(51, 78, 255, 0.2);
+    }
+
+    .theme-steel[data-mode="light"] {
+        --bg-body: var(--steel-50);
+        --bg-surface: var(--steel-white);
+        --bg-surface-2: #e2e8f0;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --color-accent: var(--blue-500);
+        --color-border: #e2e8f0;
+    }
+
+    /* --- THEME: METEORITE --- */
+    .theme-meteorite {
+        /* Mode: Dark */
+        --bg-body: var(--meteor-950);
+        --bg-surface: var(--meteor-800);
+        --bg-surface-2: var(--meteor-700);
+        --text-main: #ede8fd;
+        --text-muted: #c2befa;
+        --color-accent: var(--blue-600);
+        /* Keep Blue Pro accent from original */
+        --color-border: #2b1f99;
+    }
+
+    .theme-meteorite[data-mode="light"] {
+        --bg-body: var(--meteor-50);
+        --bg-surface: var(--meteor-white);
+        --bg-surface-2: #e9d5ff;
+        --text-main: #2e1065;
+        --text-muted: #5b21b6;
+        --color-accent: var(--purple-600);
+        --color-border: #ddd6fe;
+    }
+
+    /* =========================================
+     2.1 CATEGORY OVERRIDES (The Brand Layer)
+     ========================================= */
+
+    /* FREE Category: Green (#0da49a) */
+    [data-category="free"] {
+        --color-accent: #0da49a;
+        --color-border: rgba(13, 164, 154, 0.3);
+    }
+
+    /* PRO Category: Blue (#334eff) */
+    [data-category="pro"] {
+        --color-accent: #334eff;
+        --color-border: rgba(51, 78, 255, 0.3);
+    }
+
+    /* SPECIAL Category: Red (#ee485f) */
+    [data-category="special"] {
+        --color-accent: #ee485f;
+        --color-border: rgba(238, 72, 95, 0.3);
+    }
+
+    /* GENERIC/BLOG Category: Purple (#4e21e7) - Default fallback but explicit here */
+    [data-category="default"] {
+        /* Uses theme defaults usually, but if we want strictly purple for "Blog": */
+        /* --color-accent: #4e21e7; */
+    }
+}
+
+/* =========================================
+   3. TAILWIND CONFIGURAION
+   ========================================= */
 @theme {
-  --color-brand-navy: #0a0e17;
-  --color-brand-cyan: #00f2ea;
-  --color-brand-dark: #050505;
-  --font-sans: "Montserrat", sans-serif;
+    --color-bg-body: var(--bg-body);
+    --color-bg-surface: var(--bg-surface);
+    --color-bg-surface-2: var(--bg-surface-2);
+
+    --color-text-main: var(--text-main);
+    --color-text-muted: var(--text-muted);
+
+    --color-accent: var(--color-accent);
+    --color-border: var(--color-border);
+
+    /* Legacy mappings for backward compatibility if needed, 
+     but ideally we update components */
+    --color-brand-navy: var(--bg-body);
+    --color-brand-cyan: var(--color-accent);
+
+    --font-sans: "Montserrat", sans-serif;
 }
 
 /* Global Styles */
 body {
-    @apply bg-brand-navy text-white font-sans;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    transition: background-color 0.3s ease, color 0.3s ease;
     overflow-x: hidden;
 }
 
 /* Typography Defaults */
-h1, h2, h3, h4, h5, h6 {
-    @apply font-bold tracking-tight;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 700;
+    letter-spacing: -0.025em;
 }
 
 a {
-    @apply transition-colors duration-200;
+    transition: color 0.2s;
+}
+
+
+/* Von Patrick Zugefügt */
+
+/* =================================================================
+   Meteorite Theme - Vollständige Farbpalette
+   ================================================================= */
+.theme-meteorite {
+    /* --- Core Colors --- */
+    --core-purple: #4e21e7;
+    --core-meteorite: #433f65;
+    --core-green-free: #0da49a;
+    --core-blue-pro: #334eff;
+    --core-red-insights: #ee485f;
+
+    /* --- Highlighting Colors --- */
+    --highlight-purple: #7383f5;
+    --highlight-meteorite: #c2befa;
+    --highlight-green-free: #48b0b2;
+    --highlight-blue-pro-alt: #7fb5a8;
+    --highlight-blue-pro: #80b8f2;
+    --highlight-red-alt: #fa9de7;
+    --highlight-red: #ff60ee;
+
+    /* --- Gradient Colors --- */
+    --gradient-purple-light: #2b1f99;
+    --gradient-purple-dark: #0c082f;
+    --gradient-green-light: #3c8499;
+    --gradient-green-dark: #002039;
+    --gradient-blue-light: #3c6e99;
+    --gradient-blue-dark: #08103f;
+    --gradient-red-light: #6d2954;
+    --gradient-red-dark: #0f0523;
+
+    /* --- Light and Dark Colors --- */
+    --purple-light: #ede8fd;
+    --purple-dark: #0c082f;
+    --green-free-light: #e6f6f5;
+    --green-free-dark: #002039;
+    --blue-pro-light: #eaedff;
+    --blue-pro-dark: #08103f;
+    --red-insights-light: #feecef;
+    --red-insights-dark: #0f0523;
+
+    /* --- Derived Colors --- */
+    --bg-secondary-derived: #1a154a;
+    --bg-tertiary-derived: #2b1f99;
+    --chat-bubble-assistant-bg: #0c082f;
+    --accent-hover-derived: #5c71ff;
+    --default-hover-derived: #5b587d;
+    --danger-hover-derived: #f46d7e;
+    --success-hover-derived: #3db6af;
+    --overlay-derived: rgba(12, 8, 47, 0.8);
+
+    /* --- Semantic Mapping --- */
+    --bg-primary: radial-gradient(farthest-side at top,
+            var(--gradient-purple-light),
+            var(--gradient-purple-dark));
+    --bg-secondary: #08051e;
+    /* Deepest purple for sidebar & inputs */
+    --bg-tertiary: #161245;
+    /* Slightly lighter for card backgrounds */
+    --chat-bubble-bg: var(--chat-bubble-assistant-bg);
+    --chat-messages-bg: var(--gradient-purple-dark);
+    --scrollbar-thumb: var(--bg-tertiary);
+    --scrollbar-track: var(--bg-secondary);
+    --text-primary: var(--purple-light);
+    --text-secondary: var(--highlight-meteorite);
+    --text-tertiary: var(--core-meteorite);
+    --border-color: #2b1f99;
+    /* Sharper borders for better separation */
+    --accent-color: var(--core-blue-pro);
+    --accent-color-hover: var(--accent-hover-derived);
+    --success-color: var(--core-green-free);
+    --danger-color: var(--core-red-insights);
+    --warning-color: var(--highlight-red-alt);
+    --shadow-tooltip: 0 30px 90px -20px rgba(12, 8, 47, 0.5);
+
+    /* --- Button Colors --- */
+    --btn-default-bg: var(--core-meteorite);
+    --btn-default-hover-bg: var(--default-hover-derived);
+    --btn-default-text: var(--purple-light);
+    --btn-danger-bg: var(--core-red-insights);
+    --btn-danger-hover-bg: var(--danger-hover-derived);
+    --btn-danger-text: var(--purple-light);
+    --btn-accent-bg: var(--core-blue-pro);
+    --btn-accent-hover-bg: var(--accent-hover-derived);
+    --btn-accent-text: var(--purple-light);
+    --btn-success-bg: var(--core-green-free);
+    --btn-success-hover-bg: var(--success-hover-derived);
+    --btn-success-text: var(--purple-light);
+
+    /* --- Toggle Colors --- */
+    --toggle-bg-off: var(--core-meteorite);
+    --toggle-bg-on: var(--core-blue-pro);
+    --toggle-circle-bg: var(--purple-light);
+    --toggle-circle-bg-on: var(--purple-light);
+
+    /* --- Overlay --- */
+    --overlay-color: var(--overlay-derived);
+}
+
+
+/* =================================================================
+   Steel Theme - Vollständige Farbpalette
+   ================================================================= */
+.theme-steel {
+    /* --- Core Colors --- */
+    --core-purple: #4e21e7;
+    --core-meteorite: #433f65;
+    --core-green-free: #0da49a;
+    --core-blue-pro: #334eff;
+    --core-red-insights: #ee485f;
+
+    /* --- Highlighting Colors --- */
+    --highlight-purple: #7383f5;
+    --highlight-meteorite: #c2befa;
+    --highlight-green-free: #48b0b2;
+    --highlight-blue-pro-alt: #7fb5a8;
+    --highlight-blue-pro: #80b8f2;
+    --highlight-red-alt: #fa9de7;
+    --highlight-red: #ff60ee;
+
+    /* --- Gradient Colors --- */
+    --gradient-purple-light: #2b1f99;
+    --gradient-purple-dark: #0c082f;
+    --gradient-green-light: #3c8499;
+    --gradient-green-dark: #002039;
+    --gradient-blue-light: #3c6e99;
+    --gradient-blue-dark: #08103f;
+    --gradient-red-light: #6d2954;
+    --gradient-red-dark: #0f0523;
+
+    /* --- Light and Dark Colors --- */
+    --purple-light: #ede8fd;
+    --purple-dark: #0c082f;
+    --green-free-light: #e6f6f5;
+    --green-free-dark: #002039;
+    --blue-pro-light: #eaedff;
+    --blue-pro-dark: #08103f;
+    --red-insights-light: #feecef;
+    --red-insights-dark: #0f0523;
+
+    /* --- Derived Colors --- */
+    --bg-secondary-derived: #1a2a6c;
+    --bg-tertiary-derived: #3c6e99;
+    --chat-bubble-assistant-bg: #08103f;
+    --accent-hover-derived: #5c71ff;
+    --default-hover-derived: #5b587d;
+    --danger-hover-derived: #f46d7e;
+    --success-hover-derived: #3db6af;
+    --overlay-derived: rgba(8, 16, 63, 0.8);
+
+    /* --- Semantic Mapping --- */
+    --bg-primary: radial-gradient(farthest-side at top,
+            var(--gradient-blue-light),
+            var(--gradient-blue-dark));
+    --bg-secondary: #05081a;
+    /* Deepest blue for sidebar & inputs */
+    --bg-tertiary: #0f173d;
+    /* Slightly lighter for card backgrounds */
+    --chat-bubble-bg: var(--chat-bubble-assistant-bg);
+    --chat-messages-bg: var(--gradient-blue-dark);
+    --scrollbar-thumb: var(--bg-tertiary);
+    --scrollbar-track: var(--bg-secondary);
+    --text-primary: var(--blue-pro-light);
+    --text-secondary: var(--highlight-blue-pro);
+    --text-tertiary: var(--core-meteorite);
+    --border-color: #1a2a6c;
+    /* Sharper borders for better separation */
+    --accent-color: var(--core-blue-pro);
+    --accent-color-hover: var(--accent-hover-derived);
+    --success-color: var(--core-green-free);
+    --danger-color: var(--core-red-insights);
+    --warning-color: var(--highlight-red-alt);
+    --shadow-tooltip: 0 30px 90px -20px rgba(8, 16, 63, 0.5);
+
+    /* --- Button Colors --- */
+    --btn-default-bg: var(--core-meteorite);
+    --btn-default-hover-bg: var(--default-hover-derived);
+    --btn-default-text: var(--blue-pro-light);
+    --btn-danger-bg: var(--core-red-insights);
+    --btn-danger-hover-bg: var(--danger-hover-derived);
+    --btn-danger-text: var(--blue-pro-light);
+    --btn-accent-bg: var(--core-blue-pro);
+    --btn-accent-hover-bg: var(--accent-hover-derived);
+    --btn-accent-text: var(--blue-pro-light);
+    --btn-success-bg: var(--core-green-free);
+    --btn-success-hover-bg: var(--success-hover-derived);
+    --btn-success-text: var(--blue-pro-light);
+
+    /* --- Toggle Colors --- */
+    --toggle-bg-off: var(--core-meteorite);
+    --toggle-bg-on: var(--core-blue-pro);
+    --toggle-circle-bg: var(--blue-pro-light);
+    --toggle-circle-bg-on: var(--blue-pro-light);
+
+    /* --- Overlay --- */
+    --overlay-color: var(--overlay-derived);
 }

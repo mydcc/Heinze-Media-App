@@ -1,0 +1,2056 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kerzenmuster</title> 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variablen für einfachere Anpassung */
+        :root {
+            --font-family-sans: 'Inter', sans-serif;
+            --spacing-1: 0.25rem; 
+            --spacing-2: 0.5rem; 
+            --spacing-3: 0.75rem; 
+            --spacing-4: 1rem; 
+            --spacing-6: 1.5rem; 
+            --spacing-8: 2rem; 
+
+            --border-radius-md: 0.375rem; 
+            --border-radius-lg: 0.5rem; 
+            --border-radius-xl: 0.75rem; 
+
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .theme-dark {
+            --color-primary-bg: #111827; 
+            --color-primary-text: #f3f4f6; 
+            --color-container-bg: #1f2937; 
+            --color-section-bg: #374151; 
+            --color-sidebar-bg: #374151; 
+            --color-canvas-bg: #1f2937; 
+            --color-accent-green: #34d399; 
+            --color-accent-green-active: #10B981; 
+            --color-accent-yellow: #FACC15; 
+            --color-text-muted: #9ca3af; 
+            --color-text-subtle: #6b7280; 
+            --color-border-subtle: #4b5563; 
+            --color-button-hover: #4B5563;
+        }
+
+        .theme-light {
+            --color-primary-bg: #f9fafb;
+            --color-primary-text: #111827;
+            --color-container-bg: #ffffff;
+            --color-section-bg: #f3f4f6;
+            --color-sidebar-bg: #f3f4f6;
+            --color-canvas-bg: #ffffff;
+            --color-accent-green: #10B981;
+            --color-accent-green-active: #059669;
+            --color-accent-yellow: #F59E0B;
+            --color-text-muted: #4b5563;
+            --color-text-subtle: #6b7280;
+            --color-border-subtle: #d1d5db;
+            --color-button-hover: #e5e7eb;
+        }
+
+        /* Basis-Stile */
+        body {
+            font-family: var(--font-family-sans);
+            background-color: var(--color-primary-bg);
+            color: var(--color-primary-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-4);
+            margin: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        *, *::before, *::after {
+            box-sizing: inherit;
+        }
+
+        ::selection {
+            background-color: var(--color-accent-green-active);
+            color: white;
+        }
+
+        /* Hauptcontainer der App */
+        .app-container {
+            width: 100%;
+            max-width: 72rem; 
+            background-color: var(--color-container-bg);
+            box-shadow: var(--shadow-2xl);
+            border-radius: var(--border-radius-xl);
+            padding: var(--spacing-6);
+            transition: background-color 0.3s ease;
+            position: relative;
+        }
+        
+        /* Theme Toggle Button */
+        .theme-toggle-button {
+            position: absolute;
+            top: var(--spacing-4);
+            right: var(--spacing-4);
+            background-color: var(--color-section-bg);
+            border: 1px solid var(--color-border-subtle);
+            color: var(--color-text-muted);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .theme-toggle-button:hover {
+             background-color: var(--color-button-hover);
+        }
+        .theme-toggle-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+
+        /* App Header */
+        .app-header {
+            margin-bottom: var(--spacing-6);
+            text-align: center;
+        }
+        .app-title {
+            font-size: 1.875rem; 
+            line-height: 2.25rem;
+            font-weight: 700; 
+            color: var(--color-accent-green);
+        }
+        .app-subtitle {
+            color: var(--color-text-muted);
+            margin-top: var(--spacing-2);
+            font-size: 0.875rem; 
+            line-height: 1.25rem;
+        }
+
+        /* Content Wrapper (Sidebar und Main Content) */
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-6);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 100%;
+            background-color: var(--color-sidebar-bg);
+            padding: var(--spacing-4);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            transition: background-color 0.3s ease;
+        }
+        .sidebar-title {
+            font-size: 1.25rem; 
+            line-height: 1.75rem;
+            font-weight: 600; 
+            margin-bottom: var(--spacing-4);
+            color: var(--color-accent-green); 
+            border-bottom: 1px solid var(--color-border-subtle);
+            padding-bottom: var(--spacing-2);
+        }
+        .pattern-list-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: var(--spacing-2); 
+        }
+        .pattern-list-container > *:not(:last-child) {
+             margin-bottom: var(--spacing-1); 
+        }
+        .pattern-category-header {
+            font-size: 0.9375rem; 
+            line-height: 1.375rem;
+            font-weight: 600; 
+            margin-top: var(--spacing-3);
+            margin-bottom: var(--spacing-1);
+            color: var(--color-accent-green);
+            opacity: 0.9;
+            padding-left: var(--spacing-1);
+            padding-top: var(--spacing-1);
+        }
+        .pattern-category-header.with-favorites-separator {
+            padding-top: var(--spacing-3);
+            border-top: 1px solid var(--color-border-subtle);
+        }
+
+
+        /* Main Content Bereich */
+        .main-content {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-6);
+        }
+
+        /* Chart Anzeige Sektion */
+        .chart-display-section {
+            background-color: var(--color-section-bg);
+            padding: var(--spacing-4);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            height: 20rem; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+        .chart-canvas {
+            border-radius: var(--border-radius-md);
+            background-color: var(--color-canvas-bg);
+            width: 100%; 
+            height: 100%; 
+            transition: background-color 0.3s ease;
+        }
+
+        /* Pattern Info Sektion */
+        .pattern-info-section {
+            background-color: var(--color-section-bg);
+            padding: var(--spacing-4);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            max-height: calc(100vh - 400px); 
+            overflow-y: auto;
+            transition: background-color 0.3s ease;
+        }
+        .pattern-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-3);
+            position: sticky; 
+            top: 0;
+            background-color: var(--color-section-bg); 
+            padding-top: var(--spacing-2);
+            padding-bottom: var(--spacing-2);
+            z-index: 10;
+            transition: background-color 0.3s ease;
+        }
+        .pattern-title {
+            font-size: 1.5rem; 
+            line-height: 2rem;
+            font-weight: 600; 
+            color: var(--color-accent-green);
+        }
+        .info-details > div:not(:last-child) {
+             margin-bottom: var(--spacing-3); 
+        }
+        .info-details-heading {
+            font-size: 1.125rem; 
+            line-height: 1.75rem;
+            font-weight: 500; 
+            color: var(--color-accent-green);
+            opacity: 0.9;
+            margin-bottom: var(--spacing-1); 
+        }
+        .info-details-text {
+            color: var(--color-primary-text); 
+            font-size: 0.875rem; 
+            line-height: 1.625; 
+        }
+        
+        /* Buttons */
+        .pattern-select-button {
+            width: 100%;
+            text-align: left;
+            padding: 0.625rem; 
+            border-radius: var(--border-radius-md);
+            background-color: var(--color-border-subtle); 
+            color: var(--color-text-muted); 
+            font-size: 0.875rem; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .pattern-select-button:hover {
+            background-color: var(--color-button-hover); 
+        }
+        .pattern-select-button.active {
+            background-color: var(--color-accent-green-active);
+            color: white;
+            font-weight: 600; 
+        }
+        .pattern-select-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--color-accent-green); 
+        }
+
+        .favorite-button {
+            padding: var(--spacing-2);
+            border-radius: var(--border-radius-md);
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--color-text-muted);
+        }
+        .favorite-button:hover {
+            background-color: var(--color-button-hover); 
+        }
+         .favorite-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--color-accent-yellow); 
+        }
+
+
+        /* Footer */
+        .app-footer {
+            margin-top: var(--spacing-8);
+            text-align: center;
+            color: var(--color-text-subtle);
+            font-size: 0.75rem; 
+            line-height: 1rem;
+        }
+
+        /* Bestehende Custom Scrollbar Stile */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: var(--color-section-bg); 
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--color-text-subtle); 
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: var(--color-border-subtle); 
+        }
+
+        /* Bestehende Favoriten-Icon Stile */
+        .favorite-star-icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+        .favorite-button-active svg {
+            color: var(--color-accent-yellow);
+        }
+        .favorite-button-inactive svg {
+            color: var(--color-text-muted);
+        }
+        .highlight-overlay { 
+            background-color: rgba(250, 204, 21, 0.3); 
+            border: 1px dashed var(--color-accent-yellow); 
+            position: absolute;
+            pointer-events: none; 
+        }
+
+        /* Responsive Design Anpassungen */
+        @media (min-width: 640px) { 
+            .app-title {
+                font-size: 2.25rem; 
+                line-height: 2.5rem;
+            }
+            .app-subtitle {
+                font-size: 1rem; 
+                line-height: 1.5rem;
+            }
+        }
+
+        @media (min-width: 768px) { 
+            .app-container {
+                padding: var(--spacing-8);
+            }
+            .app-header {
+                margin-bottom: var(--spacing-8);
+            }
+            .content-wrapper {
+                gap: var(--spacing-8);
+            }
+            .chart-display-section {
+                height: 24rem; 
+            }
+        }
+
+        @media (min-width: 1024px) { 
+            .content-wrapper {
+                flex-direction: row;
+            }
+            .sidebar {
+                width: 33.333333%; 
+            }
+            .pattern-list-container {
+                max-height: calc(100vh - 250px);
+            }
+            .main-content {
+                width: 66.666667%; 
+            }
+        }
+
+    </style>
+</head>
+<body class="theme-dark">
+
+    <div class="app-container">
+        <button id="theme-toggle" class="theme-toggle-button" aria-label="Toggle dark/light mode">
+            <!-- Icon will be injected by JS -->
+        </button>
+        <header class="app-header">
+            <h1 class="app-title">Kerzenmuster</h1>
+            <p class="app-subtitle">Lerne und erkenne wichtige Chartmuster.</p>
+        </header>
+
+        <div class="content-wrapper">
+            <aside class="sidebar">
+                <h2 class="sidebar-title">Muster auswählen:</h2>
+                <div id="patternList" class="pattern-list-container custom-scrollbar">
+                    <!-- Pattern buttons and headers will be injected here by JavaScript -->
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <section class="chart-display-section">
+                    <canvas id="candlestickCanvas" class="chart-canvas"></canvas>
+                    <div id="highlightContainer"></div> 
+                </section>
+
+                <section id="patternInfoSection" class="pattern-info-section custom-scrollbar">
+                    <div class="pattern-info-header">
+                        <h2 id="patternName" class="pattern-title">Mustername</h2>
+                        <button id="favoriteToggleButton" class="favorite-button">
+                            <!-- SVG Star will be injected by JS -->
+                        </button>
+                    </div>
+                    <div class="info-details">
+                        <div>
+                            <h3 class="info-details-heading">Beschreibung:</h3>
+                            <p id="patternDescription" class="info-details-text">Beschreibung des Musters...</p>
+                        </div>
+                        <div>
+                            <h3 class="info-details-heading">Interpretation:</h3>
+                            <p id="patternInterpretation" class="info-details-text">Interpretation des Musters...</p>
+                        </div>
+                         <div>
+                            <h3 class="info-details-heading">Typ:</h3>
+                            <p id="patternType" class="info-details-text">Typ...</p>
+                        </div>
+                        <div>
+                            <h3 class="info-details-heading">Kombination mit technischen Indikatoren:</h3>
+                            <p id="patternIndicatorCombination" class="info-details-text">Information folgt...</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+         <footer class="app-footer">
+            <p>Die hier dargestellten Informationen dienen ausschließlich zu Bildungszwecken und stellen keine Anlageberatung dar.</p>
+        </footer>
+    </div>
+
+    <script>
+        const defaultPatternInfoExtension = {
+            indicatorCombination: "Informationen zur Kombination mit Indikatoren folgen.",
+        };
+
+        const INTERNAL_ALL_PATTERNS = [
+            // Unentschlossenheit
+            {
+                id: 'doji',
+                name: 'Doji',
+                description: 'Ein Doji entsteht, wenn Eröffnungs- und Schlusskurs nahezu identisch sind (oder identisch). Der Körper ist eine dünne Linie. Er signalisiert Unentschlossenheit im Markt.',
+                interpretation: 'Abhängig vom Kontext kann ein Doji eine Trendumkehr oder eine Fortsetzung signalisieren. Oft ein Zeichen der Unentschlossenheit vor einer wichtigen Marktbewegung.',
+                type: 'Unentschlossenheit',
+                candles: [{ open: 50, high: 60, low: 40, close: 50.5, trend: 'any' }], 
+                keyFeatures: [ { type: 'body', candleIndex: 0, color: 'rgba(250, 204, 21, 0.4)', borderColor: '#FACC15' } ],
+                indicatorCombination: "Ein Doji an einer wichtigen Unterstützungslinie, zusammen mit einer bullischen Divergenz im RSI, kann ein starkes Umkehrsignal sein. Volumen kann die Aussagekraft bestätigen: hohes Volumen bei einem Doji nach starkem Trend kann Erschöpfung signalisieren."
+            },
+            {
+                id: 'spinning_top',
+                name: 'Spinning Top',
+                description: 'Ein Spinning Top hat einen kleinen Körper, der in der Mitte zwischen langen oberen und unteren Schatten zentriert ist. Die Farbe des Körpers ist nicht sehr wichtig. Es ähnelt einem Doji, aber mit einem erkennbaren (wenn auch kleinen) Körper.',
+                interpretation: 'Signalisiert Unentschlossenheit im Markt. Weder Käufer noch Verkäufer konnten die Oberhand gewinnen. Kann auf eine mögliche Trendänderung oder eine Fortsetzung der Konsolidierung hindeuten, abhängig vom Kontext.',
+                type: 'Unentschlossenheit',
+                candles: [{ open: 50, high: 65, low: 35, close: 52, trend: 'any' }], 
+                keyFeatures: [ { type: 'body', candleIndex: 0, color: 'rgba(250, 204, 21, 0.4)', borderColor: '#FACC15' } ],
+                indicatorCombination: "Spinning Tops in überkauften/überverkauften Zonen (Stochastik, RSI) können auf eine bevorstehende Korrektur oder Umkehr hindeuten. Achten Sie auf das Volumen der Folgekerze zur Bestätigung."
+            },
+            // Bullische Umkehr
+            {
+                id: 'abandoned_baby_bullish',
+                name: 'Abandoned Baby (Bullish)',
+                description: 'Ein sehr seltenes, aber starkes bullisches Umkehrmuster. 1. Eine lange bärische Kerze. 2. Ein Doji, der mit einem Gap nach unten unter dem Tief der ersten Kerze eröffnet und dessen Schatten sich nicht mit dem Schatten der ersten Kerze überschneiden. 3. Eine lange bullische Kerze, die mit einem Gap nach oben über dem Hoch des Dojis eröffnet und deren Schatten sich nicht mit dem Schatten des Dojis überschneiden.',
+                interpretation: 'Die Gaps auf beiden Seiten des Dojis isolieren ihn vollständig und signalisieren eine dramatische Umkehr der Marktstimmung. Die Verkäufer sind erschöpft, und die Käufer übernehmen mit großer Kraft.',
+                type: 'Bullische Umkehr',
+                candles: [{ open: 70, high: 72, low: 50, close: 52, trend: 'downtrend' }, { open: 40, high: 42, low: 38, close: 40.5 }, { open: 55, high: 80, low: 53, close: 78 }],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 1, color: 'rgba(250,204,21,0.4)'}, 
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, gapType: 'shadow_to_shadow', direction: 'down', color: 'rgba(163,230,53,0.3)'}, 
+                    { type: 'gap', candleIndex1: 1, candleIndex2: 2, gapType: 'shadow_to_shadow', direction: 'up', color: 'rgba(163,230,53,0.3)'}
+                ],
+                indicatorCombination: "Aufgrund seiner Seltenheit und Stärke ist die Kombination mit anderen Indikatoren weniger kritisch, aber ein überverkaufter Zustand (RSI, Stochastik) vor dem Muster kann die bullische Implikation verstärken."
+            },
+            {
+                id: 'belt_hold_bullish',
+                name: 'Belt Hold (Bullish)',
+                description: 'Eine einzelne bullische Kerze, die nach einem Abwärtstrend auftritt. Sie eröffnet an ihrem Tief (oder sehr nahe daran) und hat einen langen bullischen Körper mit wenig oder keinem unteren Schatten. Ein kleiner oberer Schatten kann vorhanden sein.',
+                interpretation: 'Signalisiert eine plötzliche Übernahme der Kontrolle durch die Käufer. Die Stärke des Musters hängt von der Länge des Körpers ab. Stärker, wenn es nach einer längeren Abwärtsbewegung auftritt.',
+                type: 'Bullische Umkehr',
+                candles: [{ open: 30, high: 55, low: 30, close: 53, trend: 'downtrend' }],
+                keyFeatures: [{ type: 'body', candleIndex: 0 }],
+                indicatorCombination: "Ein hohes Volumen bei der Belt Hold Kerze verstärkt das Signal. Kann an wichtigen Unterstützungsniveaus oder in Verbindung mit einer bullischen Divergenz eines Momentum-Oszillators auftreten."
+            },
+            {
+                id: 'breakaway_bullish',
+                name: 'Breakaway (Bullish)',
+                description: 'Ein bullisches Umkehrmuster aus fünf Kerzen, das nach einem Abwärtstrend auftritt. 1. Eine lange bärische Kerze. 2. Eine bärische Kerze, die mit einem Gap nach unten eröffnet. 3. Eine oder zwei weitere (meist bärische) Kerzen, die den Abwärtstrend fortsetzen. 4. Eine lange bullische Kerze, die das Gap zwischen der ersten und zweiten Kerze schließt oder in den Körper der ersten Kerze hineinreicht.',
+                interpretation: 'Der anfängliche Gap und die Fortsetzung des Abwärtstrends scheinen bärisch, aber die letzte starke bullische Kerze signalisiert eine plötzliche und kräftige Umkehr der Käufer, die die vorherige bärische Dynamik negiert.',
+                type: 'Bullische Umkehr',
+                candles: [{ open: 80, high: 82, low: 60, close: 62, trend: 'downtrend' }, { open: 55, high: 57, low: 45, close: 48 }, { open: 47, high: 49, low: 40, close: 42 }, { open: 41, high: 43, low: 35, close: 38 }, { open: 37, high: 70, low: 36, close: 68 }],
+                keyFeatures: [
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, gapType: 'body_to_body', direction: 'down', color: 'rgba(250,204,21,0.3)' },
+                    { type: 'body', candleIndex: 4, color: 'rgba(34,197,94,0.4)' } 
+                ],
+                indicatorCombination: "Ein Anstieg des Volumens bei der fünften (Ausbruchs-)Kerze ist ein starkes Bestätigungszeichen. Kann auch durch das Durchbrechen einer kurzfristigen Abwärtstrendlinie unterstützt werden."
+            },
+            {
+                id: 'bullish_engulfing',
+                name: 'Bullish Engulfing',
+                description: 'Ein bullisches Engulfing-Muster tritt nach einem Abwärtstrend auf. Es besteht aus zwei Kerzen: Die erste ist eine bärische Kerze, gefolgt von einer größeren bullischen Kerze, deren Körper den Körper der vorherigen Kerze vollständig umschließt.',
+                interpretation: 'Signalisiert, dass die Käufer die Kontrolle von den Verkäufern übernommen haben und eine starke bullische Umkehr wahrscheinlich ist.',
+                type: 'Bullische Umkehr',
+                candles: [
+                    { open: 50, high: 52, low: 45, close: 46, trend: 'downtrend' }, 
+                    { open: 44, high: 60, low: 43, close: 58 }
+                ],
+                keyFeatures: [ 
+                    { type: 'body', candleIndex: 0, color: 'rgba(239, 68, 68, 0.3)', borderColor: '#EF4444' }, 
+                    { type: 'body', candleIndex: 1, color: 'rgba(34, 197, 94, 0.3)', borderColor: '#22C55E' }, 
+                    { type: 'engulf', candleIndex1: 0, candleIndex2: 1, color: 'rgba(250, 204, 21, 0.4)', borderColor: '#FACC15' }
+                ],
+                 indicatorCombination: "Ein Bullish Engulfing ist stärker, wenn es bei hohem Volumen auftritt. Zusätzliche Bestätigung durch einen überverkauften RSI (<30) oder eine bullische Divergenz kann die Zuverlässigkeit erhöhen."
+            },
+            {
+                id: 'bullish_harami',
+                name: 'Bullish Harami',
+                description: 'Ein Bullish Harami tritt nach einem Abwärtstrend auf. Es besteht aus einer langen bärischen Kerze, gefolgt von einer kleinen bullischen Kerze, deren Körper vollständig innerhalb des Körpers der vorherigen Kerze liegt.',
+                interpretation: 'Signalisiert eine mögliche Abschwächung des Abwärtstrends und eine bevorstehende bullische Umkehr. Die Bestätigung durch die nächste Kerze ist wichtig.',
+                type: 'Bullische Umkehr',
+                candles: [
+                    { open: 60, high: 62, low: 40, close: 42, trend: 'downtrend' }, 
+                    { open: 45, high: 50, low: 43, close: 48 }
+                ],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0 }, 
+                    { type: 'body_inside_body', candleIndex1: 0, candleIndex2: 1, color: 'rgba(250,204,21,0.4)'}
+                ],
+                indicatorCombination: "Ein Bullish Harami in einer überverkauften Zone (RSI, Stochastik) oder an einer wichtigen Unterstützungslinie gewinnt an Bedeutung. Achten Sie auf das Volumen der Bestätigungskerze."
+            },
+            {
+                id: 'bullish_harami_cross',
+                name: 'Bullish Harami Cross',
+                description: 'Ähnlich dem Bullish Harami, aber die zweite Kerze ist ein Doji. Tritt nach einem Abwärtstrend auf. Eine lange bärische Kerze, gefolgt von einem Doji, der vollständig innerhalb des Körpers der vorherigen Kerze liegt.',
+                interpretation: 'Ein stärkeres Signal für eine bullische Umkehr als ein normales Bullish Harami, da der Doji größere Unentschlossenheit der Verkäufer anzeigt.',
+                type: 'Bullische Umkehr',
+                candles: [
+                    { open: 60, high: 62, low: 40, close: 42, trend: 'downtrend' }, 
+                    { open: 48, high: 52, low: 46, close: 48.5 }
+                ],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0 }, 
+                    { type: 'body_inside_body', candleIndex1: 0, candleIndex2: 1, color: 'rgba(250,204,21,0.4)'} 
+                ],
+                indicatorCombination: "Ähnlich wie beim Bullish Harami, aber die Doji-Komponente macht das Signal oft stärker, besonders wenn es von Volumen bei der Bestätigungskerze begleitet wird."
+            },
+            {
+                id: 'bullish_kicker',
+                name: 'Bullish Kicker',
+                description: 'Ein extrem starkes bullisches Umkehrmuster. 1. Eine bärische Kerze (oft lang). 2. Eine bullische Kerze, die mit einem Gap nach oben über dem Hoch der vorherigen Kerze eröffnet und stark bullisch schließt. Es gibt keine Überlappung der Handelsspannen.',
+                interpretation: 'Signalisiert eine plötzliche und dramatische Verschiebung der Marktstimmung von bärisch zu bullisch. Oft ausgelöst durch unerwartete Nachrichten. Eines der stärksten Umkehrsignale.',
+                type: 'Bullische Umkehr',
+                candles: [
+                    { open: 60, high: 62, low: 45, close: 48, trend: 'downtrend' }, 
+                    { open: 65, high: 85, low: 64, close: 82 }
+                ],
+                keyFeatures: [
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, gapType: 'shadow_to_shadow', direction: 'up', color: 'rgba(163,230,53,0.3)'}
+                ],
+                indicatorCombination: "Ein sehr hohes Volumen bei der zweiten (Kicker-)Kerze bestätigt die Stärke des Signals. Aufgrund der plötzlichen Natur ist die Kombination mit vorherigen Indikatorsignalen weniger typisch, aber nachfolgende Indikatoren sollten die neue Richtung bestätigen."
+            },
+            {
+                id: 'concealing_baby_swallow',
+                name: 'Concealing Baby Swallow',
+                description: 'Ein sehr seltenes und komplexes bullisches Umkehrmuster aus vier Kerzen, das nach einem starken Abwärtstrend auftritt. 1. Eine lange bärische Marubozu. 2. Eine weitere bärische Marubozu, die innerhalb des Körpers der ersten eröffnet (Gap Down). 3. Eine bärische Kerze, die innerhalb des Körpers der zweiten eröffnet, aber höher schließt und einen oberen Schatten hat, der in den Körper der zweiten Kerze hineinragt. 4. Eine lange bärische Kerze, die die gesamte vorherige Kerze (die dritte) vollständig umschließt (Gap Up und schließt tiefer).',
+                interpretation: 'Trotz der überwiegend bärischen Kerzen signalisiert dieses Muster eine extreme Erschöpfung der Verkäufer. Die Unfähigkeit, neue Tiefs zu erreichen, und die komplexen Interaktionen deuten auf eine bevorstehende scharfe Umkehr hin. Aufgrund seiner Seltenheit und Komplexität ist Vorsicht geboten.',
+                type: 'Bullische Umkehr',
+                candles: [
+                    { open: 80, high: 80, low: 50, close: 50, trend: 'downtrend' }, 
+                    { open: 48, high: 48, low: 30, close: 30 }, 
+                    { open: 35, high: 45, low: 32, close: 40 }, 
+                    { open: 48, high: 49, low: 20, close: 22 }  
+                ],
+                indicatorCombination: "Aufgrund der Seltenheit sind spezifische Indikatorkombinationen weniger dokumentiert. Eine Bestätigung durch Volumen und nachfolgende bullische Kursbewegung ist entscheidend."
+            },
+            {
+                id: 'dragonfly_doji',
+                name: 'Dragonfly Doji',
+                description: 'Ein Dragonfly Doji entsteht, wenn Eröffnungs-, Hoch- und Schlusskurs nahezu identisch sind und ein langer unterer Schatten vorhanden ist. Es gibt keinen oder nur einen sehr kleinen oberen Schatten. Er erscheint typischerweise nach einem Abwärtstrend.',
+                interpretation: 'Signalisiert eine mögliche bullische Umkehr. Verkäufer drückten den Preis nach unten, aber Käufer übernahmen die Kontrolle und brachten den Preis zum Hoch des Tages zurück. Stärker, wenn er in einer Unterstützungszone auftritt.',
+                type: 'Bullische Umkehr',
+                candles: [{ open: 50, high: 50.5, low: 30, close: 50.2, trend: 'downtrend' }],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0 },
+                    { type: 'shadow', candleIndex: 0, shadowType: 'lower', color: 'rgba(250,204,21,0.4)' }
+                ],
+                indicatorCombination: "Hohes Volumen beim Dragonfly Doji kann die Ablehnung tieferer Preise bestätigen. Ein Auftreten in einer überverkauften Zone (RSI) oder an einer Fibonacci-Unterstützung erhöht die Signifikanz."
+            },
+            {
+                id: 'hammer',
+                name: 'Hammer',
+                description: 'Ein Hammer ist ein bullisches Umkehrmuster, das nach einem Abwärtstrend auftritt. Er hat einen kleinen Körper am oberen Ende der Handelsspanne und einen langen unteren Schatten (mindestens doppelt so lang wie der Körper). Wenig bis kein oberer Schatten.',
+                interpretation: 'Signalisiert, dass Verkäufer den Preis nach unten gedrückt haben, aber Käufer stark genug waren, um den Preis bis nahe dem Eröffnungskurs zurückzubringen. Mögliche bullische Umkehr.',
+                type: 'Bullische Umkehr',
+                candles: [{ open: 38, high: 42, low: 20, close: 40, trend: 'downtrend' }],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0, color: 'rgba(250, 204, 21, 0.4)', borderColor: '#FACC15' },
+                    { type: 'shadow', candleIndex: 0, shadowType: 'lower', color: 'rgba(250, 204, 21, 0.4)', borderColor: '#FACC15' }
+                ],
+                indicatorCombination: "Ein Hammer an einer wichtigen Unterstützungslinie oder einem gleitenden Durchschnitt ist ein stärkeres Signal. Ein Anstieg des Volumens bei der Hammer-Kerze oder der Bestätigungskerze unterstützt die Umkehr."
+            },
+            {
+                id: 'homing_pigeon',
+                name: 'Homing Pigeon',
+                description: 'Ein bullisches Umkehrmuster aus zwei Kerzen, das nach einem Abwärtstrend auftritt. 1. Eine lange bärische Kerze. 2. Eine kleinere bärische Kerze, deren Körper vollständig innerhalb des Körpers der ersten Kerze liegt. Ähnelt einem bärischen Harami, aber beide Kerzen sind bärisch.',
+                interpretation: 'Obwohl beide Kerzen bärisch sind, deutet die Tatsache, dass die zweite Kerze nicht tiefer schließt und innerhalb der ersten bleibt, auf eine nachlassende Verkaufsdynamik und eine mögliche Bodenbildung hin. Eine bullische Bestätigung ist wichtig.',
+                type: 'Bullische Umkehr',
+                candles: [{ open: 60, high: 62, low: 40, close: 42, trend: 'downtrend' }, { open: 50, high: 52, low: 44, close: 46 }],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0 }, 
+                    { type: 'body_inside_body', candleIndex1: 0, candleIndex2: 1, color: 'rgba(250,204,21,0.4)'}
+                ],
+                indicatorCombination: "Eine bullische Divergenz bei einem Oszillator (z.B. RSI, MACD) kann das Signal des Homing Pigeon verstärken. Achten Sie auf eine Bestätigungskerze mit höherem Volumen."
+            },
+            {
+                id: 'inverted_hammer',
+                name: 'Inverted Hammer',
+                description: 'Der Inverted Hammer ist ein bullisches Umkehrmuster, das nach einem Abwärtstrend auftritt. Er hat einen kleinen Körper am unteren Ende der Handelsspanne und einen langen oberen Schatten. Wenig bis kein unterer Schatten.',
+                interpretation: 'Signalisiert, dass Käufer versucht haben, den Preis nach oben zu treiben, aber auf Widerstand stießen. Wenn die nächste Kerze höher schließt, kann dies eine bullische Umkehr bestätigen.',
+                type: 'Bullische Umkehr',
+                candles: [{ open: 40, high: 60, low: 38, close: 42, trend: 'downtrend' }],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0 },
+                    { type: 'shadow', candleIndex: 0, shadowType: 'upper', color: 'rgba(250,204,21,0.4)' }
+                ],
+                indicatorCombination: "Ein Inverted Hammer ist aussagekräftiger, wenn er nach einem deutlichen Abwärtstrend und an einer Unterstützungslinie auftritt. Eine Bestätigung durch eine bullische Folgekerze mit Volumen ist wichtig."
+            },
+            {
+                id: 'ladder_bottom',
+                name: 'Ladder Bottom',
+                description: 'Ein bullisches Umkehrmuster aus fünf Kerzen, das nach einem Abwärtstrend auftritt. 1-3. Drei lange bärische Kerzen mit sukzessive tieferen Tiefs. 4. Eine bärische Kerze mit einem kleinen Körper und einem langen oberen Schatten. 5. Eine große bullische Kerze, die über dem Körper der vierten Kerze eröffnet und deutlich höher schließt.',
+                interpretation: 'Die ersten drei Kerzen zeigen einen starken Abwärtstrend. Die vierte Kerze signalisiert eine erste Schwäche der Bären. Die fünfte bullische Kerze bestätigt die Umkehr mit starkem Kaufinteresse.',
+                type: 'Bullische Umkehr',
+                candles: [{ open: 80, high: 81, low: 65, close: 68, trend: 'downtrend' }, { open: 67, high: 68, low: 55, close: 58 }, { open: 57, high: 58, low: 45, close: 48 }, { open: 47, high: 55, low: 44, close: 46 }, { open: 50, high: 75, low: 49, close: 72 }],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 3, color: 'rgba(250,204,21,0.3)' }, 
+                    { type: 'body', candleIndex: 4, color: 'rgba(34,197,94,0.4)' } 
+                ],
+                indicatorCombination: "Ein Anstieg des Volumens bei der fünften (Ausbruchs-)Kerze ist ein starkes Bestätigungszeichen. Kann auch durch das Durchbrechen einer kurzfristigen Abwärtstrendlinie unterstützt werden."
+            },
+            {
+                id: 'matching_low',
+                name: 'Matching Low',
+                description: 'Ein bullisches Umkehrmuster, das nach einem Abwärtstrend auftritt. 1. Eine lange bärische Kerze. 2. Eine weitere bärische Kerze, die unterhalb der ersten eröffnet, aber auf dem gleichen Niveau wie die erste Kerze schließt (identische Schlusskurse). Beide Kerzen haben oft wenig bis keine unteren Schatten.',
+                interpretation: 'Die Unfähigkeit der Verkäufer, den Preis am zweiten Tag unter den Schlusskurs des ersten Tages zu drücken, deutet auf eine nachlassende Verkaufsdynamik und eine mögliche Unterstützung hin. Eine bullische Bestätigung ist ratsam.',
+                type: 'Bullische Umkehr',
+                candles: [{ open: 60, high: 62, low: 40, close: 40, trend: 'downtrend' }, { open: 45, high: 47, low: 38, close: 40 }],
+                keyFeatures: [
+                    { type: 'line', yValue1Property: 'close', candleIndex1: 0, yValue2Property: 'close', candleIndex2: 1, color: '#FACC15', lineWidth: 2, dashed: true }
+                ],
+                indicatorCombination: "Das Auftreten an einer bekannten Unterstützungslinie oder in einer überverkauften Zone (RSI) kann die Bedeutung des Matching Low erhöhen. Eine Bestätigungskerze mit Volumen ist wichtig."
+            },
+            {
+                id: 'morning_doji_star',
+                name: 'Morning Doji Star',
+                description: 'Eine spezifischere Version des Morning Star. 1. Eine lange bärische Kerze. 2. Ein Doji, der mit einem Gap nach unten unter dem Körper der ersten Kerze eröffnet. 3. Eine lange bullische Kerze, die deutlich in den Körper der ersten Kerze hineinreicht oder darüber schließt.',
+                interpretation: 'Der Doji nach einem Gap Down signalisiert starke Unentschlossenheit und eine mögliche Erschöpfung der Verkäufer. Die folgende starke bullische Kerze bestätigt die Umkehr. Gilt als stärkeres Signal als ein regulärer Morning Star.',
+                type: 'Bullische Umkehr',
+                candles: [ { open: 70, high: 72, low: 50, close: 52, trend: 'downtrend' }, { open: 42, high: 45, low: 39, close: 42.5 }, { open: 55, high: 80, low: 53, close: 78 } ],
+                 keyFeatures: [
+                    { type: 'body', candleIndex: 1, color: 'rgba(250,204,21,0.4)'}, 
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, gapType: 'body_to_body', direction: 'down', color: 'rgba(163,230,53,0.3)'}, 
+                    { type: 'gap', candleIndex1: 1, candleIndex2: 2, gapType: 'body_to_body', direction: 'up', color: 'rgba(163,230,53,0.3)'}
+                ],
+                indicatorCombination: "Das Volumen sollte beim Doji gering sein. Ein signifikanter Anstieg des Volumens bei der dritten (bullischen) Kerze ist ein starkes Bestätigungsmerkmal. Eine überverkaufte Bedingung (RSI) vor dem Muster erhöht die Aussagekraft."
+            },
+            {
+                id: 'morning_star',
+                name: 'Morning Star (Morgenstern)',
+                description: 'Der Morgenstern ist ein bullisches Umkehrmuster aus drei Kerzen, das nach einem Abwärtstrend auftritt. 1. Lange bärische Kerze. 2. Kleine Kerze (Doji, Spinning Top, oder kleiner Körper), die idealerweise unterhalb der ersten Kerze eröffnet (Gap Down). 3. Lange bullische Kerze, die deutlich in den Körper der ersten Kerze hineinreicht oder darüber schließt.',
+                interpretation: 'Signalisiert eine nachlassende Verkaufsdynamik (Kerze 1), Unentschlossenheit (Kerze 2) und dann eine starke Übernahme durch Käufer (Kerze 3), was eine bullische Umkehr anzeigt.',
+                type: 'Bullische Umkehr',
+                candles: [
+                    { open: 70, high: 72, low: 50, close: 52, trend: 'downtrend' }, 
+                    { open: 45, high: 48, low: 42, close: 46 },                 
+                    { open: 55, high: 80, low: 53, close: 78 }                  
+                ],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 1, color: 'rgba(250,204,21,0.4)', borderColor: '#FACC15' }, 
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, gapType: 'body_to_body', direction: 'down', color: 'rgba(163,230,53,0.3)'}, 
+                    { type: 'gap', candleIndex1: 1, candleIndex2: 2, gapType: 'body_to_body', direction: 'up', color: 'rgba(163,230,53,0.3)'}  
+                ],
+                indicatorCombination: "Das Volumen bei der zweiten ('Stern'-)Kerze ist oft gering. Ein Anstieg des Volumens bei der dritten (bullischen) Kerze ist ein positives Zeichen und erhöht die Zuverlässigkeit. Kann durch überverkaufte Oszillatoren (RSI, Stochastik) bestätigt werden."
+            },
+            {
+                id: 'piercing_line',
+                name: 'Piercing Line',
+                description: 'Ein Piercing Line ist ein bullisches Umkehrmuster aus zwei Kerzen, das nach einem Abwärtstrend auftritt. Die erste Kerze ist lang und bärisch. Die zweite Kerze eröffnet unter dem Tief der ersten Kerze (Gap Down), schließt aber oberhalb der Mitte des Körpers der ersten Kerze.',
+                interpretation: 'Signalisiert, dass die Käufer nach einem anfänglichen bärischen Momentum stark zurückkommen und den Preis nach oben drücken. Eine bullische Umkehr ist wahrscheinlich.',
+                type: 'Bullische Umkehr',
+                candles: [
+                    { open: 60, high: 62, low: 40, close: 42, trend: 'downtrend' }, 
+                    { open: 38, high: 55, low: 37, close: 53 }
+                ],
+                keyFeatures: [
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, gapType: 'low_to_open', direction: 'down', color: 'rgba(250,204,21,0.3)' },
+                    { type: 'penetration', candleIndex1: 0, candleIndex2: 1, color: 'rgba(34,197,94,0.3)' } 
+                ],
+                indicatorCombination: "Ein Anstieg des Volumens bei der zweiten (bullischen) Kerze verstärkt das Signal. Das Muster ist stärker, wenn es an einer Unterstützungslinie oder in einer überverkauften Zone (RSI) auftritt."
+            },
+            {
+                id: 'stick_sandwich',
+                name: 'Stick Sandwich',
+                description: 'Ein seltenes bullisches Umkehrmuster. 1. Eine lange bärische Kerze. 2. Eine bullische Kerze, die über dem Schlusskurs der ersten Kerze eröffnet und schließt. 3. Eine bärische Kerze, deren Schlusskurs auf dem gleichen Niveau wie der Schlusskurs der ersten bärischen Kerze liegt. Die Tiefs der beiden bärischen Kerzen bilden eine Unterstützung.',
+                interpretation: 'Die mittlere bullische Kerze zeigt Kaufinteresse. Die dritte Kerze testet die Unterstützung, die durch die erste Kerze gebildet wurde. Wenn diese Unterstützung hält, kann eine bullische Umkehr folgen.',
+                type: 'Bullische Umkehr',
+                candles: [
+                    { open: 60, high: 62, low: 40, close: 42, trend: 'downtrend' }, 
+                    { open: 45, high: 58, low: 44, close: 55 }, 
+                    { open: 53, high: 55, low: 41, close: 42.5 }
+                ],
+                keyFeatures: [
+                    { type: 'line', yValue1Property: 'close', candleIndex1: 0, yValue2Property: 'close', candleIndex2: 2, color: '#FACC15', lineWidth: 2, dashed: true }
+                ],
+                indicatorCombination: "Das Auftreten an einer wichtigen Unterstützungslinie oder einem gleitenden Durchschnitt erhöht die Signifikanz. Volumenbestätigung bei der mittleren bullischen Kerze oder der nachfolgenden Bestätigungskerze ist positiv."
+            },
+            {
+                id: 'three_inside_up',
+                name: 'Three Inside Up',
+                description: 'Ein bullisches Umkehrmuster aus drei Kerzen, das nach einem Abwärtstrend auftritt. 1. Eine lange bärische Kerze. 2. Eine kleine bullische Kerze (Harami), deren Körper vollständig innerhalb des Körpers der ersten Kerze liegt. 3. Eine bullische Kerze, die über dem Schlusskurs der zweiten Kerze und idealerweise über dem Hoch der zweiten Kerze schließt.',
+                interpretation: 'Bestätigt das Bullish Harami Muster und signalisiert eine stärkere Wahrscheinlichkeit einer bullischen Umkehr. Die dritte Kerze zeigt, dass die Käufer die Kontrolle übernommen haben.',
+                type: 'Bullische Umkehr',
+                candles: [
+                    { open: 70, high: 72, low: 50, close: 52, trend: 'downtrend' },
+                    { open: 55, high: 60, low: 53, close: 58 }, 
+                    { open: 59, high: 75, low: 58, close: 73 }
+                ],
+                keyFeatures: [
+                    { type: 'body_inside_body', candleIndex1: 0, candleIndex2: 1, color: 'rgba(250,204,21,0.3)'},
+                    { type: 'body', candleIndex: 2, color: 'rgba(34,197,94,0.4)' }
+                ],
+                indicatorCombination: "Ein Anstieg des Volumens bei der dritten Kerze verstärkt das Signal. Das Muster ist zuverlässiger, wenn es in einer überverkauften Zone (RSI) oder an einer Unterstützung auftritt."
+            },
+            {
+                id: 'three_outside_up',
+                name: 'Three Outside Up',
+                description: 'Ein bullisches Umkehrmuster aus drei Kerzen. 1. Eine bärische Kerze. 2. Eine bullische Kerze, die die erste Kerze vollständig umschließt (Bullish Engulfing). 3. Eine weitere bullische Kerze, die über dem Schlusskurs der zweiten Kerze schließt.',
+                interpretation: 'Ein starkes bullisches Umkehrsignal, das das Bullish Engulfing bestätigt und auf eine Fortsetzung der Aufwärtsbewegung hindeutet.',
+                type: 'Bullische Umkehr',
+                candles: [
+                    { open: 60, high: 62, low: 50, close: 52, trend: 'downtrend' },
+                    { open: 50, high: 68, low: 48, close: 65 },
+                    { open: 66, high: 75, low: 64, close: 72 }
+                ],
+                keyFeatures: [
+                    { type: 'engulf', candleIndex1: 0, candleIndex2: 1, color: 'rgba(250,204,21,0.3)'},
+                    { type: 'body', candleIndex: 2, color: 'rgba(34,197,94,0.4)' }
+                ],
+                indicatorCombination: "Steigendes Volumen bei der zweiten und dritten Kerze erhöht die Zuverlässigkeit. Das Auftreten nach einer überkauften Phase (RSI) oder an einer Unterstützungslinie verstärkt das Signal."
+            },
+            {
+                id: 'three_white_soldiers',
+                name: 'Three White Soldiers',
+                description: 'Drei weiße Soldaten sind ein bullisches Umkehrmuster, das nach einem Abwärtstrend auftritt. Es besteht aus drei aufeinanderfolgenden langen bullischen Kerzen. Jede Kerze eröffnet innerhalb des Körpers der vorherigen Kerze und schließt höher als die vorherige Kerze, idealerweise nahe ihrem Hoch.',
+                interpretation: 'Signalisiert eine starke und stetige Umkehr der Kaufkraft und den Beginn eines neuen Aufwärtstrends.',
+                type: 'Bullische Umkehr',
+                candles: [
+                    { open: 30, high: 45, low: 28, close: 43, trend: 'downtrend' },
+                    { open: 42, high: 58, low: 40, close: 55 },
+                    { open: 54, high: 70, low: 52, close: 68 }
+                ],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0, color: 'rgba(34,197,94,0.3)' },
+                    { type: 'body', candleIndex: 1, color: 'rgba(34,197,94,0.3)' },
+                    { type: 'body', candleIndex: 2, color: 'rgba(34,197,94,0.3)' }
+                ],
+                indicatorCombination: "Idealerweise sollte das Volumen bei jeder der drei 'Soldaten'-Kerzen zunehmen oder zumindest stabil hoch bleiben. Das Muster ist stärker, wenn es nach einer deutlichen Abwärtsbewegung oder einer Konsolidierungsphase auftritt und nicht in einer bereits stark überkauften Zone."
+            },
+            {
+                id: 'tower_bottom',
+                name: 'Tower Bottom',
+                description: 'Ein bullisches Umkehrmuster, das nach einem Abwärtstrend auftritt. Es beginnt mit einer oder mehreren langen bärischen Kerzen, gefolgt von einer Phase der Konsolidierung mit kleinen Körpern (Handel in einer engen Spanne). Das Muster wird durch eine oder mehrere lange bullische Kerzen vervollständigt, die nach oben ausbrechen.',
+                interpretation: 'Die langen bärischen Kerzen zeigen Verkaufsdruck. Die Konsolidierungsphase deutet auf Unentschlossenheit und eine mögliche Bodenbildung hin. Die abschließenden bullischen Kerzen signalisieren eine Übernahme durch die Käufer und eine wahrscheinliche Trendumkehr.',
+                type: 'Bullische Umkehr',
+                candles: [ { open: 70, high: 72, low: 55, close: 58, trend: 'downtrend' }, { open: 57, high: 59, low: 48, close: 50 }, { open: 50, high: 53, low: 47, close: 49 }, { open: 49, high: 52, low: 46, close: 48 }, { open: 48, high: 51, low: 47, close: 50 }, { open: 52, high: 65, low: 50, close: 63 }, { open: 64, high: 78, low: 62, close: 75 } ],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0, color: 'rgba(239,68,68,0.3)'}, 
+                    { type: 'body', candleIndex: 6, color: 'rgba(34,197,94,0.3)'}  
+                ],
+                indicatorCombination: "Das Volumen ist während der Konsolidierungsphase oft gering. Ein deutlicher Anstieg des Volumens bei den ausbrechenden bullischen Kerzen ist ein starkes Bestätigungsmerkmal. Eine bullische Divergenz im RSI während der Konsolidierung kann das Signal verstärken."
+            },
+            {
+                id: 'tri_star_bullish',
+                name: 'Tri-Star (Bullish)',
+                description: 'Ein seltenes Umkehrmuster, das aus drei Dojis besteht. Nach einem Abwärtstrend bildet sich der mittlere Doji mit einem Gap tiefer als die beiden äußeren Dojis. Alle drei Dojis haben kleine Handelsspannen.',
+                interpretation: 'Die drei Dojis signalisieren extreme Unentschlossenheit. Das Gap des mittleren Dojis nach unten, gefolgt von einer Unfähigkeit, weiter zu fallen, deutet auf eine Erschöpfung der Verkäufer und eine mögliche starke bullische Umkehr hin.',
+                type: 'Bullische Umkehr',
+                candles: [ { open: 55, high: 58, low: 52, close: 55.5, trend: 'downtrend' }, { open: 48, high: 51, low: 45, close: 48.5 }, { open: 54, high: 57, low: 51, close: 54.5 } ],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0, color: 'rgba(250,204,21,0.3)'},
+                    { type: 'body', candleIndex: 1, color: 'rgba(250,204,21,0.4)'}, 
+                    { type: 'body', candleIndex: 2, color: 'rgba(250,204,21,0.3)'},
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, gapType: 'body_to_body', direction: 'down', color: 'rgba(163,230,53,0.2)'},
+                    { type: 'gap', candleIndex1: 1, candleIndex2: 2, gapType: 'body_to_body', direction: 'up', color: 'rgba(163,230,53,0.2)'}
+                ],
+                indicatorCombination: "Das Volumen ist bei allen drei Dojis typischerweise gering. Ein Anstieg bei einer bullischen Bestätigungskerze ist entscheidend. Ein überverkaufter Zustand vor dem Muster erhöht die Wahrscheinlichkeit einer Umkehr."
+            },
+            {
+                id: 'tweezer_bottoms',
+                name: 'Tweezer Bottoms',
+                description: 'Tweezer Bottoms sind ein bullisches Umkehrmuster, das typischerweise am Ende eines Abwärtstrends auftritt. Es besteht aus zwei oder mehr Kerzen mit nahezu identischen Tiefstkursen. Die erste Kerze ist oft bärisch, die zweite bullisch, aber die Formen können variieren.',
+                interpretation: 'Die identischen Tiefs deuten auf eine starke Unterstützungszone hin. Verkäufer konnten den Preis nicht weiter nach unten drücken, was auf eine mögliche bullische Umkehr hindeutet.',
+                type: 'Bullische Umkehr',
+                candles: [
+                    { open: 50, high: 52, low: 30, close: 35, trend: 'downtrend' }, 
+                    { open: 33, high: 48, low: 30.5, close: 45 }
+                ],
+                 keyFeatures: [
+                    { type: 'low_point', candleIndex: 0, color: 'rgba(250, 204, 21, 0.6)', radius: 5 },
+                    { type: 'low_point', candleIndex: 1, color: 'rgba(250, 204, 21, 0.6)', radius: 5 },
+                    { type: 'line', yValue1Property: 'low', candleIndex1: 0, yValue2Property: 'low', candleIndex2: 1, color: '#FACC15', lineWidth: 2, dashed: true }
+                ],
+                indicatorCombination: "Ein Tweezer Bottom an einer wichtigen Unterstützungslinie oder einem Fibonacci-Retracement-Level ist signifikanter. Eine bullische Divergenz im RSI oder MACD kann das Umkehrsignal verstärken."
+            },
+            {
+                id: 'unique_three_river_bottom',
+                name: 'Unique Three River Bottom',
+                description: 'Ein seltenes bullisches Umkehrmuster aus drei Kerzen. 1. Eine lange bärische Kerze. 2. Eine bärische Kerze mit einem tieferen Tief als die erste Kerze (eine Art Hammer-Form, aber bärisch). 3. Eine kleine bullische Kerze, die unter dem Schlusskurs der zweiten Kerze eröffnet und über deren Tief schließt, aber unter deren Hoch.',
+                interpretation: 'Trotz der bärischen Natur der ersten beiden Kerzen deutet die Unfähigkeit der Verkäufer, den Preis unter das Tief der zweiten Kerze zu drücken, und das Erscheinen der kleinen bullischen Kerze auf eine mögliche Erschöpfung der Verkäufer und eine bevorstehende Umkehr hin.',
+                type: 'Bullische Umkehr',
+                candles: [
+                    { open: 70, high: 72, low: 50, close: 52, trend: 'downtrend' },
+                    { open: 55, high: 57, low: 45, close: 48 }, 
+                    { open: 46, high: 50, low: 44, close: 49 }  
+                ],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 1, color: 'rgba(239,68,68,0.3)'}, 
+                    { type: 'body', candleIndex: 2, color: 'rgba(34,197,94,0.3)'}  
+                ],
+                indicatorCombination: "Aufgrund der Seltenheit ist eine Bestätigung durch erhöhtes Volumen bei der dritten Kerze oder einer nachfolgenden bullischen Kerze besonders wichtig. Überverkaufte Oszillatoren können das Signal unterstützen."
+            },
+            // Bullische Fortsetzung
+            {
+                id: 'mat_hold',
+                name: 'Mat Hold',
+                description: 'Ein bullisches Fortsetzungsmuster, ähnlich den Rising Three Methods, aber oft als stärker angesehen. 1. Eine lange bullische Kerze. 2. Es folgt eine kleine Konsolidierungsphase aus drei kleinen Kerzen (meist bärisch), die mit einem Gap nach oben von der ersten Kerze beginnen und oberhalb deren Tiefs bleiben. 3. Eine weitere lange bullische Kerze, die mit einem Gap nach oben eröffnet und neue Hochs erreicht.',
+                interpretation: 'Die Konsolidierung oberhalb der ersten bullischen Kerze und das anschließende Gap Up mit einer weiteren starken bullischen Kerze bestätigen die Fortsetzung des Aufwärtstrends mit großer Kraft.',
+                type: 'Bullische Fortsetzung',
+                candles: [ { open: 30, high: 60, low: 28, close: 58, trend: 'uptrend' }, { open: 62, high: 65, low: 59, close: 60 }, { open: 60, high: 63, low: 57, close: 58 }, { open: 58, high: 61, low: 56, close: 59 }, { open: 68, high: 90, low: 67, close: 88 } ],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0, color: 'rgba(34,197,94,0.3)' },
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, direction: 'up', color: 'rgba(163,230,53,0.2)' },
+                    { type: 'gap', candleIndex1: 3, candleIndex2: 4, direction: 'up', color: 'rgba(163,230,53,0.2)' },
+                    { type: 'body', candleIndex: 4, color: 'rgba(34,197,94,0.4)' }
+                ],
+                indicatorCombination: "Das Volumen sollte bei der ersten und fünften (starken bullischen) Kerze hoch sein. Während der Konsolidierungsphase (Kerzen 2-4) ist geringeres Volumen typisch. Das Halten über einem wichtigen gleitenden Durchschnitt unterstützt die Fortsetzung."
+            },
+            {
+                id: 'rising_three_methods',
+                name: 'Rising Three Methods',
+                description: 'Ein bullisches Fortsetzungsmuster. Es beginnt mit einer langen bullischen Kerze, gefolgt von drei (oder mehr) kleinen bärischen Kerzen, die innerhalb der Spanne der ersten Kerze bleiben. Das Muster endet mit einer weiteren langen bullischen Kerze, die über dem Schlusskurs der ersten langen bullischen Kerze schließt.',
+                interpretation: 'Zeigt eine Pause oder Konsolidierung innerhalb eines Aufwärtstrends an, bevor der Trend fortgesetzt wird. Die kleinen bärischen Kerzen stellen eine vorübergehende Gewinnmitnahme dar, aber die Bullen gewinnen wieder die Kontrolle.',
+                type: 'Bullische Fortsetzung',
+                candles: [
+                    { open: 30, high: 60, low: 28, close: 58, trend: 'uptrend' },
+                    { open: 55, high: 57, low: 50, close: 52 },
+                    { open: 50, high: 53, low: 47, close: 48 },
+                    { open: 47, high: 49, low: 44, close: 46 },
+                    { open: 45, high: 75, low: 43, close: 70 }
+                ],
+                keyFeatures: [
+                    { type: 'body_range', candleIndex: 0, color: 'rgba(250,204,21,0.2)'}, 
+                    { type: 'body', candleIndex: 4, color: 'rgba(34,197,94,0.4)'} 
+                ],
+                indicatorCombination: "Das Volumen sollte bei der ersten und letzten (langen bullischen) Kerze relativ hoch sein. Während der Konsolidierungsphase (kleine bärische Kerzen) ist ein geringeres Volumen typisch und bestätigt die Pause. Ein MACD, der bullisch bleibt oder ein bullisches Crossover während der Konsolidierung zeigt, kann das Signal verstärken."
+            },
+            {
+                id: 'separating_lines_bullish',
+                name: 'Separating Lines (Bullish)',
+                description: 'Ein bullisches Fortsetzungsmuster. 1. In einem Aufwärtstrend erscheint eine lange bärische Kerze. 2. Am nächsten Tag eröffnet der Markt mit einem Gap nach oben auf dem gleichen Eröffnungskurs wie die vorherige bärische Kerze und schließt als lange bullische Kerze.',
+                interpretation: 'Die bärische Kerze scheint eine Umkehr anzudeuten, aber das Gap Up zum vorherigen Eröffnungskurs und die starke bullische Bewegung am zweiten Tag negieren die bärische Implikation und signalisieren eine Fortsetzung des Aufwärtstrends.',
+                type: 'Bullische Fortsetzung',
+                candles: [{ open: 60, high: 62, low: 40, close: 42, trend: 'uptrend' }, { open: 60, high: 80, low: 58, close: 78 }],
+                keyFeatures: [
+                    { type: 'line', yValue1Property: 'open', candleIndex1: 0, yValue2Property: 'open', candleIndex2: 1, color: '#FACC15', lineWidth: 2, dashed: true } 
+                ],
+                indicatorCombination: "Ein Anstieg des Volumens bei der zweiten (bullischen) Kerze kann die Stärke der Trendfortsetzung unterstreichen. Das Muster ist stärker, wenn es oberhalb eines wichtigen gleitenden Durchschnitts auftritt."
+            },
+            {
+                id: 'side_by_side_white_lines_bullish',
+                name: 'Side-by-Side White Lines (Bullish)',
+                description: 'Ein bullisches Fortsetzungsmuster. 1. In einem Aufwärtstrend bildet sich eine bullische Kerze. 2. Am nächsten Tag eröffnet eine weitere bullische Kerze mit einem Gap nach oben und schließt auf etwa dem gleichen Niveau wie die erste bullische Kerze. Beide Kerzen haben ähnliche Größen und Eröffnungskurse (nach dem Gap).',
+                interpretation: 'Das Gap nach oben und die Unfähigkeit der Bären, den Preis nach unten zu drücken, bestätigen die Stärke des Aufwärtstrends. Es wird eine Fortsetzung der bullischen Bewegung erwartet.',
+                type: 'Bullische Fortsetzung',
+                candles: [ { open: 30, high: 50, low: 28, close: 48, trend: 'uptrend' }, { open: 55, high: 65, low: 53, close: 63 }, { open: 56, high: 66, low: 54, close: 64 } ],
+                keyFeatures: [
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, direction: 'up', color: 'rgba(163,230,53,0.3)'},
+                    { type: 'body', candleIndex: 1, color: 'rgba(34,197,94,0.3)'},
+                    { type: 'body', candleIndex: 2, color: 'rgba(34,197,94,0.3)'}
+                ],
+                indicatorCombination: "Das Volumen sollte bei den Gaps und den bullischen Kerzen zumindest stabil bleiben oder ansteigen, um die Stärke zu bestätigen. Ein MACD, der im bullischen Bereich bleibt, unterstützt das Signal."
+            },
+            {
+                id: 'upside_gap_three_methods',
+                name: 'Upside Gap Three Methods',
+                description: 'Ein bullisches Fortsetzungsmuster. 1. Eine lange bullische Kerze. 2. Eine weitere lange bullische Kerze, die mit einem Gap nach oben eröffnet. 3. Eine kleine bärische Kerze, die das Gap zwischen den ersten beiden Kerzen füllt, aber nicht unter den Schlusskurs der ersten Kerze fällt.',
+                interpretation: 'Das anfängliche Gap zeigt starke bullische Dynamik. Die bärische Kerze stellt eine Gewinnmitnahme oder einen Test des Gaps dar. Solange das Gap nicht vollständig geschlossen wird und der Preis über dem Schlusskurs der ersten Kerze bleibt, wird eine Fortsetzung des Aufwärtstrends erwartet.',
+                type: 'Bullische Fortsetzung',
+                candles: [ { open: 30, high: 50, low: 28, close: 48, trend: 'uptrend' }, { open: 55, high: 75, low: 53, close: 73 }, { open: 70, high: 72, low: 50, close: 52 } ],
+                keyFeatures: [
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, direction: 'up', color: 'rgba(163,230,53,0.3)'},
+                    { type: 'body', candleIndex: 2, color: 'rgba(250,204,21,0.3)'} 
+                ],
+                indicatorCombination: "Das Volumen sollte bei den ersten beiden bullischen Kerzen (insbesondere bei der Gap-Kerze) hoch sein. Bei der dritten (korrigierenden bärischen) Kerze ist geringeres Volumen wünschenswert. Ein erneuter Anstieg bei der Fortsetzung des Trends ist positiv."
+            },
+            {
+                id: 'upside_tasuki_gap',
+                name: 'Upside Tasuki Gap',
+                description: 'Ein bullisches Fortsetzungsmuster. 1. Eine lange bullische Kerze. 2. Eine weitere bullische Kerze, die mit einem Gap nach oben eröffnet. 3. Eine bärische Kerze, die in das Gap hinein eröffnet und schließt, aber das Gap nicht vollständig schließt.',
+                interpretation: 'Das Gap stellt eine starke bullische Dynamik dar. Die dritte Kerze ist ein Versuch der Bären, das Gap zu schließen, scheitert aber. Dies bestätigt die bullische Stärke und deutet auf eine Fortsetzung des Aufwärtstrends hin.',
+                type: 'Bullische Fortsetzung',
+                candles: [
+                    { open: 30, high: 50, low: 28, close: 48, trend: 'uptrend' }, 
+                    { open: 55, high: 65, low: 53, close: 63 }, 
+                    { open: 60, high: 61, low: 52, close: 54 }
+                ],
+                keyFeatures: [
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, direction: 'up', color: 'rgba(163,230,53,0.3)'},
+                    { type: 'body', candleIndex: 2, color: 'rgba(250,204,21,0.3)'} 
+                ],
+                indicatorCombination: "Das Volumen sollte bei der zweiten Kerze (Gap Up) ansteigen. Bei der dritten (bärischen) Kerze ist geringeres Volumen typisch. Ein erneuter Volumenanstieg bei der Fortsetzung des Trends ist positiv."
+            },
+            // Bullische Stärke/Fortsetzung
+            {
+                id: 'bullish_marubozu',
+                name: 'Bullish Marubozu',
+                description: 'Eine bullische Marubozu ist eine lange grüne (oder weiße) Kerze ohne obere oder untere Schatten. Der Eröffnungskurs ist gleich dem Tiefstkurs und der Schlusskurs ist gleich dem Höchstkurs.',
+                interpretation: 'Zeigt extreme bullische Stärke. Die Käufer kontrollierten den Preis von der Eröffnung bis zum Schluss. Kann den Beginn eines bullischen Trends oder die Fortsetzung eines Aufwärtstrends signalisieren.',
+                type: 'Bullische Stärke/Fortsetzung',
+                candles: [{ open: 40, high: 70, low: 40, close: 70, trend: 'any' }],
+                keyFeatures: [{ type: 'body', candleIndex: 0 }],
+                indicatorCombination: "Ein hohes Volumen bei einer Bullish Marubozu bestätigt die Stärke und Überzeugung der Käufer und erhöht die Zuverlässigkeit des Signals erheblich."
+            },
+            // Bärische Umkehr
+            {
+                id: 'abandoned_baby_bearish',
+                name: 'Abandoned Baby (Bearish)',
+                description: 'Ein sehr seltenes, aber starkes bärisches Umkehrmuster. 1. Eine lange bullische Kerze. 2. Ein Doji, der mit einem Gap nach oben über dem Hoch der ersten Kerze eröffnet und dessen Schatten sich nicht mit dem Schatten der ersten Kerze überschneiden. 3. Eine lange bärische Kerze, die mit einem Gap nach unten unter dem Tief des Dojis eröffnet und deren Schatten sich nicht mit dem Schatten des Dojis überschneiden.',
+                interpretation: 'Die Gaps auf beiden Seiten des Dojis isolieren ihn vollständig und signalisieren eine dramatische Umkehr der Marktstimmung. Die Käufer sind erschöpft, und die Verkäufer übernehmen mit großer Kraft.',
+                type: 'Bärische Umkehr',
+                candles: [{ open: 30, high: 52, low: 28, close: 50, trend: 'uptrend' }, { open: 60, high: 62, low: 58, close: 60.5 }, { open: 45, high: 47, low: 20, close: 22 }],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 1, color: 'rgba(250,204,21,0.4)'}, 
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, gapType: 'shadow_to_shadow', direction: 'up', color: 'rgba(239,68,68,0.3)'}, 
+                    { type: 'gap', candleIndex1: 1, candleIndex2: 2, gapType: 'shadow_to_shadow', direction: 'down', color: 'rgba(239,68,68,0.3)'}
+                ],
+                indicatorCombination: "Ein überkaufter Zustand (RSI, Stochastik) vor dem Muster kann die bärische Implikation verstärken. Das Volumen sollte beim Doji gering sein und bei der dritten, stark bärischen Kerze deutlich ansteigen."
+            },
+            {
+                id: 'advance_block',
+                name: 'Advance Block',
+                description: 'Ein bärisches Umkehrmuster aus drei bullischen Kerzen, das nach einem Aufwärtstrend auftritt. Jede Kerze eröffnet innerhalb des Körpers der vorherigen und schließt höher, aber die Körper werden sukzessive kleiner und die oberen Schatten länger. Ähnelt den Three White Soldiers, aber mit Anzeichen von Schwäche.',
+                interpretation: 'Obwohl der Preis steigt, deuten die kleiner werdenden Körper und längeren oberen Schatten auf nachlassende Kaufkraft und zunehmenden Verkaufsdruck hin. Eine bärische Umkehr wird wahrscheinlicher.',
+                type: 'Bärische Umkehr',
+                candles: [{ open: 30, high: 50, low: 28, close: 48, trend: 'uptrend' }, { open: 47, high: 60, low: 46, close: 57 }, { open: 56, high: 65, low: 55, close: 61 }],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0, color: 'rgba(34,197,94,0.2)'},
+                    { type: 'body', candleIndex: 1, color: 'rgba(34,197,94,0.3)'},
+                    { type: 'body', candleIndex: 2, color: 'rgba(34,197,94,0.4)'} 
+                ],
+                indicatorCombination: "Ein abnehmendes Volumen über die drei Kerzen hinweg kann die nachlassende Kaufkraft unterstreichen. Eine bärische Divergenz bei Oszillatoren (RSI, MACD) würde das Umkehrsignal verstärken."
+            },
+            {
+                id: 'belt_hold_bearish',
+                name: 'Belt Hold (Bearish)',
+                description: 'Eine einzelne bärische Kerze, die nach einem Aufwärtstrend auftritt. Sie eröffnet an ihrem Hoch (oder sehr nahe daran) und hat einen langen bärischen Körper mit wenig oder keinem oberen Schatten. Ein kleiner unterer Schatten kann vorhanden sein.',
+                interpretation: 'Signalisiert eine plötzliche Übernahme der Kontrolle durch die Verkäufer. Die Stärke des Musters hängt von der Länge des Körpers ab. Stärker, wenn es nach einer längeren Aufwärtsbewegung auftritt.',
+                type: 'Bärische Umkehr',
+                candles: [{ open: 70, high: 70, low: 45, close: 47, trend: 'uptrend' }],
+                keyFeatures: [{ type: 'body', candleIndex: 0 }],
+                indicatorCombination: "Ein hohes Volumen bei der Belt Hold Kerze verstärkt das Signal. Kann an wichtigen Widerstandsniveaus oder in Verbindung mit einer bärischen Divergenz eines Momentum-Oszillators auftreten."
+            },
+             {
+                id: 'breakaway_bearish',
+                name: 'Breakaway (Bearish)',
+                description: 'Ein bärisches Umkehrmuster aus fünf Kerzen, das nach einem Aufwärtstrend auftritt. 1. Eine lange bullische Kerze. 2. Eine bullische Kerze, die mit einem Gap nach oben eröffnet. 3. Eine oder zwei weitere (meist bullische) Kerzen, die den Aufwärtstrend fortsetzen. 4. Eine lange bärische Kerze, die das Gap zwischen der ersten und zweiten Kerze schließt oder in den Körper der ersten Kerze hineinreicht.',
+                interpretation: 'Der anfängliche Gap und die Fortsetzung des Abwärtstrends scheinen bullisch, aber die letzte starke bärische Kerze signalisiert eine plötzliche und kräftige Umkehr der Verkäufer, die die vorherige bullische Dynamik negiert.',
+                type: 'Bärische Umkehr',
+                candles: [{ open: 30, high: 52, low: 28, close: 50, trend: 'uptrend' }, { open: 57, high: 67, low: 55, close: 65 }, { open: 66, high: 75, low: 64, close: 72 }, { open: 73, high: 80, low: 71, close: 78 }, { open: 79, high: 81, low: 40, close: 45 }],
+                keyFeatures: [
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, gapType: 'body_to_body', direction: 'up', color: 'rgba(250,204,21,0.3)' },
+                    { type: 'body', candleIndex: 4, color: 'rgba(239,68,68,0.4)' } 
+                ],
+                indicatorCombination: "Ein Anstieg des Volumens bei der fünften (Ausbruchs-)Kerze ist ein starkes Bestätigungszeichen. Kann auch durch das Durchbrechen einer kurzfristigen Aufwärtstrendlinie unterstützt werden."
+            },
+            {
+                id: 'bearish_engulfing',
+                name: 'Bearish Engulfing',
+                description: 'Ein bärisches Engulfing-Muster tritt nach einem Aufwärtstrend auf. Es besteht aus zwei Kerzen: Die erste ist eine bullische Kerze, gefolgt von einer größeren bärischen Kerze, deren Körper den Körper der vorherigen Kerze vollständig umschließt.',
+                interpretation: 'Signalisiert, dass die Verkäufer die Kontrolle von den Käufern übernommen haben und eine starke bärische Umkehr wahrscheinlich ist.',
+                type: 'Bärische Umkehr',
+                candles: [
+                    { open: 50, high: 55, low: 48, close: 54, trend: 'uptrend' }, 
+                    { open: 56, high: 57, low: 40, close: 42 }
+                ],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0, color: 'rgba(34, 197, 94, 0.3)', borderColor: '#22C55E' }, 
+                    { type: 'body', candleIndex: 1, color: 'rgba(239, 68, 68, 0.3)', borderColor: '#EF4444' }, 
+                    { type: 'engulf', candleIndex1: 0, candleIndex2: 1, color: 'rgba(250, 204, 21, 0.4)', borderColor: '#FACC15' }
+                ],
+                indicatorCombination: "Ein Bearish Engulfing ist stärker, wenn es bei hohem Volumen auftritt. Zusätzliche Bestätigung durch einen überkauften RSI (>70) oder eine bärische Divergenz kann die Zuverlässigkeit erhöhen."
+            },
+            {
+                id: 'bearish_harami',
+                name: 'Bearish Harami',
+                description: 'Ein Bearish Harami tritt nach einem Aufwärtstrend auf. Es besteht aus einer langen bullischen Kerze, gefolgt von einer kleinen bärischen Kerze, deren Körper vollständig innerhalb des Körpers der vorherigen Kerze liegt.',
+                interpretation: 'Signalisiert eine mögliche Abschwächung des Aufwärtstrends und eine bevorstehende bärische Umkehr. Die Bestätigung durch die nächste Kerze ist wichtig.',
+                type: 'Bärische Umkehr',
+                candles: [
+                    { open: 40, high: 62, low: 38, close: 60, trend: 'uptrend' }, 
+                    { open: 55, high: 57, low: 50, close: 52 }
+                ],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0 }, 
+                    { type: 'body_inside_body', candleIndex1: 0, candleIndex2: 1, color: 'rgba(250,204,21,0.4)'}
+                ],
+                indicatorCombination: "Ein Bearish Harami in einer überkauften Zone (RSI, Stochastik) oder an einer wichtigen Widerstandslinie gewinnt an Bedeutung. Achten Sie auf das Volumen der Bestätigungskerze."
+            },
+            {
+                id: 'bearish_harami_cross',
+                name: 'Bearish Harami Cross',
+                description: 'Ähnlich dem Bearish Harami, aber die zweite Kerze ist ein Doji. Tritt nach einem Aufwärtstrend auf. Eine lange bullische Kerze, gefolgt von einem Doji, der vollständig innerhalb des Körpers der vorherigen Kerze liegt.',
+                interpretation: 'Ein stärkeres Signal für eine bärische Umkehr als ein normales Bearish Harami, da der Doji größere Unentschlossenheit der Käufer anzeigt.',
+                type: 'Bärische Umkehr',
+                candles: [
+                    { open: 40, high: 62, low: 38, close: 60, trend: 'uptrend' }, 
+                    { open: 55, high: 59, low: 53, close: 55.5 }
+                ],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0 }, 
+                    { type: 'body_inside_body', candleIndex1: 0, candleIndex2: 1, color: 'rgba(250,204,21,0.4)'} 
+                ],
+                indicatorCombination: "Ähnlich wie beim Bearish Harami, aber die Doji-Komponente macht das Signal oft stärker, besonders wenn es von Volumen bei der Bestätigungskerze begleitet wird."
+            },
+            {
+                id: 'bearish_kicker',
+                name: 'Bearish Kicker',
+                description: 'Ein extrem starkes bärisches Umkehrmuster. 1. Eine bullische Kerze (oft lang). 2. Eine bärische Kerze, die mit einem Gap nach unten unter dem Tief der vorherigen Kerze eröffnet und stark bärisch schließt. Es gibt keine Überlappung der Handelsspannen.',
+                interpretation: 'Signalisiert eine plötzliche und dramatische Verschiebung der Marktstimmung von bullisch zu bärisch. Oft ausgelöst durch unerwartete Nachrichten. Eines der stärksten Umkehrsignale.',
+                type: 'Bärische Umkehr',
+                candles: [
+                    { open: 40, high: 62, low: 38, close: 60, trend: 'uptrend' }, 
+                    { open: 35, high: 36, low: 18, close: 20 }
+                ],
+                keyFeatures: [
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, gapType: 'shadow_to_shadow', direction: 'down', color: 'rgba(239,68,68,0.3)'}
+                ],
+                indicatorCombination: "Ein sehr hohes Volumen bei der zweiten (Kicker-)Kerze bestätigt die Stärke des Signals. Aufgrund der plötzlichen Natur ist die Kombination mit vorherigen Indikatorsignalen weniger typisch, aber nachfolgende Indikatoren sollten die neue Richtung bestätigen."
+            },
+            {
+                id: 'dark_cloud_cover',
+                name: 'Dark Cloud Cover',
+                description: 'Ein Dark Cloud Cover ist ein bärisches Umkehrmuster aus zwei Kerzen, das nach einem Aufwärtstrend auftritt. Die erste Kerze ist lang und bullisch. Die zweite Kerze eröffnet über dem Hoch der ersten Kerze (Gap Up), schließt aber unterhalb der Mitte des Körpers der ersten Kerze.',
+                interpretation: 'Signalisiert, dass die Verkäufer nach einem anfänglichen bullischen Momentum stark zurückkommen und den Preis nach unten drücken. Eine bärische Umkehr ist wahrscheinlich.',
+                type: 'Bärische Umkehr',
+                candles: [
+                    { open: 40, high: 62, low: 38, close: 60, trend: 'uptrend' }, 
+                    { open: 64, high: 65, low: 45, close: 47 }
+                ],
+                keyFeatures: [
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, gapType: 'high_to_open', direction: 'up', color: 'rgba(250,204,21,0.3)' },
+                    { type: 'penetration', candleIndex1: 0, candleIndex2: 1, color: 'rgba(239,68,68,0.3)' } 
+                ],
+                indicatorCombination: "Ein Anstieg des Volumens bei der zweiten (bärischen) Kerze verstärkt das Signal. Das Muster ist stärker, wenn es an einer Widerstandslinie oder in einer überkauften Zone (RSI) auftritt."
+            },
+            {
+                id: 'deliberation_stalled',
+                name: 'Deliberation / Stalled Pattern',
+                description: 'Ein bärisches Umkehrmuster, das nach einem Aufwärtstrend auftritt. Es besteht aus drei bullischen Kerzen. Die ersten beiden sind lange bullische Kerzen. Die dritte bullische Kerze ist klein und eröffnet mit einem Gap nach oben oder nahe dem Hoch der zweiten Kerze, zeigt aber Unfähigkeit, weiter zu steigen.',
+                interpretation: 'Ähnlich dem Advance Block. Die nachlassende Stärke der dritten Kerze trotz des Gaps deutet auf Erschöpfung der Käufer und eine bevorstehende bärische Umkehr hin.',
+                type: 'Bärische Umkehr',
+                candles: [{ open: 30, high: 55, low: 28, close: 53, trend: 'uptrend' }, { open: 54, high: 70, low: 53, close: 68 }, { open: 70, high: 75, low: 69, close: 72 }],
+                 keyFeatures: [
+                    { type: 'body', candleIndex: 0, color: 'rgba(34,197,94,0.2)'},
+                    { type: 'body', candleIndex: 1, color: 'rgba(34,197,94,0.3)'},
+                    { type: 'body', candleIndex: 2, color: 'rgba(34,197,94,0.4)'} 
+                ],
+                indicatorCombination: "Ein abnehmendes Volumen über die drei Kerzen kann die nachlassende Kaufkraft signalisieren. Eine bärische Divergenz bei Oszillatoren (RSI, MACD) würde das Umkehrsignal verstärken."
+            },
+            {
+                id: 'evening_doji_star',
+                name: 'Evening Doji Star',
+                description: 'Eine spezifischere Version des Evening Star. 1. Eine lange bullische Kerze. 2. Ein Doji, der mit einem Gap nach oben über dem Körper der ersten Kerze eröffnet. 3. Eine lange bärische Kerze, die deutlich in den Körper der ersten Kerze hineinreicht oder darunter schließt.',
+                interpretation: 'Der Doji nach einem Gap Up signalisiert starke Unentschlossenheit und eine mögliche Erschöpfung der Käufer. Die folgende starke bärische Kerze bestätigt die Umkehr. Gilt als stärkeres Signal als ein regulärer Evening Star.',
+                type: 'Bärische Umkehr',
+                candles: [ { open: 30, high: 52, low: 28, close: 50, trend: 'uptrend' }, { open: 58, high: 61, low: 55, close: 58.5 }, { open: 45, high: 47, low: 20, close: 22 } ],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 1, color: 'rgba(250,204,21,0.4)'}, 
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, gapType: 'body_to_body', direction: 'up', color: 'rgba(239,68,68,0.3)'}, 
+                    { type: 'gap', candleIndex1: 1, candleIndex2: 2, gapType: 'body_to_body', direction: 'down', color: 'rgba(239,68,68,0.3)'}
+                ],
+                indicatorCombination: "Das Volumen sollte beim Doji gering sein. Ein signifikanter Anstieg des Volumens bei der dritten (bärischen) Kerze ist ein starkes Bestätigungsmerkmal. Eine überkaufte Bedingung (RSI) vor dem Muster erhöht die Aussagekraft."
+            },
+            {
+                id: 'evening_star',
+                name: 'Evening Star (Abendstern)',
+                description: 'Der Abendstern ist ein bärisches Umkehrmuster aus drei Kerzen, das nach einem Aufwärtstrend auftritt. 1. Lange bullische Kerze. 2. Kleine Kerze (Doji, Spinning Top, oder kleiner Körper), die idealerweise oberhalb der ersten Kerze eröffnet (Gap Up). 3. Lange bärische Kerze, die deutlich in den Körper der ersten Kerze hineinreicht oder darunter schließt.',
+                interpretation: 'Signalisiert eine nachlassende Kaufdynamik (Kerze 1), Unentschlossenheit (Kerze 2) und dann eine starke Übernahme durch Verkäufer (Kerze 3), was eine bärische Umkehr anzeigt.',
+                type: 'Bärische Umkehr',
+                candles: [
+                    { open: 50, high: 72, low: 48, close: 70, trend: 'uptrend' }, 
+                    { open: 75, high: 78, low: 72, close: 74 },                 
+                    { open: 65, high: 67, low: 40, close: 42 }                  
+                ],
+                 keyFeatures: [
+                    { type: 'body', candleIndex: 1, color: 'rgba(250,204,21,0.4)'}, 
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, gapType: 'body_to_body', direction: 'up', color: 'rgba(239,68,68,0.3)'}, 
+                    { type: 'gap', candleIndex1: 1, candleIndex2: 2, gapType: 'body_to_body', direction: 'down', color: 'rgba(239,68,68,0.3)'}
+                ],
+                indicatorCombination: "Das Volumen bei der zweiten ('Stern'-)Kerze ist oft gering. Ein Anstieg des Volumens bei der dritten (bärischen) Kerze ist ein positives Zeichen. Kann durch überkaufte Oszillatoren (RSI, Stochastik) bestätigt werden."
+            },
+            {
+                id: 'gravestone_doji',
+                name: 'Gravestone Doji',
+                description: 'Ein Gravestone Doji entsteht, wenn Eröffnungs-, Tief- und Schlusskurs nahezu identisch sind und ein langer oberer Schatten vorhanden ist. Es gibt keinen oder nur einen sehr kleinen unteren Schatten. Er erscheint typischerweise nach einem Aufwärtstrend.',
+                interpretation: 'Signalisiert eine mögliche bärische Umkehr. Käufer drückten den Preis nach oben, aber Verkäufer übernahmen die Kontrolle und brachten den Preis zum Tief des Tages zurück. Stärker, wenn er in einer Widerstandszone auftritt.',
+                type: 'Bärische Umkehr',
+                candles: [{ open: 50, high: 70, low: 49.5, close: 50.2, trend: 'uptrend' }],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0 },
+                    { type: 'shadow', candleIndex: 0, shadowType: 'upper', color: 'rgba(250,204,21,0.4)' }
+                ],
+                indicatorCombination: "Hohes Volumen beim Gravestone Doji kann die Ablehnung höherer Preise bestätigen. Ein Auftreten in einer überkauften Zone (RSI) oder an einer Fibonacci-Widerstandszone erhöht die Signifikanz."
+            },
+            {
+                id: 'hanging_man',
+                name: 'Hanging Man',
+                description: 'Der Hanging Man ist ein bärisches Umkehrmuster, das nach einem Aufwärtstrend auftritt. Er hat die gleiche Form wie ein Hammer (kleiner Körper oben, langer unterer Schatten), erscheint aber nach einem Aufwärtstrend.',
+                interpretation: 'Obwohl er bullisch aussieht, deutet sein Auftreten nach einem Aufwärtstrend auf nachlassende Kaufkraft und eine mögliche bärische Umkehr hin, besonders wenn die nächste Kerze tiefer schließt.',
+                type: 'Bärische Umkehr',
+                candles: [{ open: 78, high: 82, low: 60, close: 80, trend: 'uptrend' }],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0, color: 'rgba(250,204,21,0.4)' },
+                    { type: 'shadow', candleIndex: 0, shadowType: 'lower', color: 'rgba(250,204,21,0.4)' }
+                ],
+                indicatorCombination: "Ein Hanging Man an einem wichtigen Widerstandsniveau oder einem gleitenden Durchschnitt ist ein stärkeres Signal. Ein Anstieg des Volumens bei der Bestätigungskerze unterstützt die Umkehr."
+            },
+            {
+                id: 'shooting_star',
+                name: 'Shooting Star (Sternschnuppe)',
+                description: 'Eine Sternschnuppe ist ein bärisches Umkehrmuster, das nach einem Aufwärtstrend auftritt. Sie hat einen kleinen Körper am unteren Ende der Handelsspanne und einen langen oberen Schatten (mindestens doppelt so lang wie der Körper). Wenig bis kein unterer Schatten.',
+                interpretation: 'Signalisiert, dass Käufer den Preis nach oben getrieben haben, aber Verkäufer stark genug waren, um den Preis bis nahe dem Eröffnungskurs zurückzubringen. Mögliche bärische Umkehr.',
+                type: 'Bärische Umkehr',
+                candles: [{ open: 72, high: 90, low: 68, close: 70, trend: 'uptrend' }],
+                 keyFeatures: [
+                    { type: 'body', candleIndex: 0, color: 'rgba(250,204,21,0.4)' },
+                    { type: 'shadow', candleIndex: 0, shadowType: 'upper', color: 'rgba(250,204,21,0.4)' }
+                ],
+                indicatorCombination: "Ein Shooting Star an einem Widerstandsniveau oder in einer überkauften Zone (RSI) ist signifikanter. Ein Anstieg des Volumens bei der Shooting Star Kerze oder der bärischen Bestätigungskerze erhöht die Zuverlässigkeit."
+            },
+            {
+                id: 'three_black_crows',
+                name: 'Three Black Crows',
+                description: 'Drei schwarze Krähen sind ein bärisches Umkehrmuster, das nach einem Aufwärtstrend auftritt. Es besteht aus drei aufeinanderfolgenden langen bärischen Kerzen. Jede Kerze eröffnet innerhalb des Körpers der vorherigen Kerze und schließt tiefer als die vorherige Kerze, idealerweise nahe ihrem Tief.',
+                interpretation: 'Signalisiert eine starke und stetige Umkehr der Verkaufskraft und den Beginn eines neuen Abwärtstrends.',
+                type: 'Bärische Umkehr',
+                candles: [
+                    { open: 70, high: 72, low: 55, close: 57, trend: 'uptrend' },
+                    { open: 58, high: 60, low: 42, close: 45 },
+                    { open: 46, high: 48, low: 30, close: 32 }
+                ],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0, color: 'rgba(239,68,68,0.3)' },
+                    { type: 'body', candleIndex: 1, color: 'rgba(239,68,68,0.3)' },
+                    { type: 'body', candleIndex: 2, color: 'rgba(239,68,68,0.3)' }
+                ],
+                indicatorCombination: "Idealerweise sollte das Volumen bei jeder der drei 'Krähen'-Kerzen zunehmen oder zumindest stabil hoch bleiben. Das Muster ist stärker, wenn es nach einer deutlichen Aufwärtsbewegung oder einer Konsolidierungsphase am Hoch auftritt und nicht in einer bereits stark überkauften Zone."
+            },
+            {
+                id: 'three_inside_down',
+                name: 'Three Inside Down',
+                description: 'Ein bärisches Umkehrmuster aus drei Kerzen, das nach einem Aufwärtstrend auftritt. 1. Eine lange bullische Kerze. 2. Eine kleine bärische Kerze (Harami), deren Körper vollständig innerhalb des Körpers der ersten Kerze liegt. 3. Eine bärische Kerze, die unter dem Schlusskurs der zweiten Kerze und idealerweise unter dem Tief der zweiten Kerze schließt.',
+                interpretation: 'Bestätigt das Bearish Harami Muster und signalisiert eine stärkere Wahrscheinlichkeit einer bärischen Umkehr. Die dritte Kerze zeigt, dass die Verkäufer die Kontrolle übernommen haben.',
+                type: 'Bärische Umkehr',
+                candles: [
+                    { open: 50, high: 72, low: 48, close: 70, trend: 'uptrend' },
+                    { open: 65, high: 67, low: 60, close: 62 }, 
+                    { open: 61, high: 62, low: 45, close: 47 }
+                ],
+                keyFeatures: [
+                    { type: 'body_inside_body', candleIndex1: 0, candleIndex2: 1, color: 'rgba(250,204,21,0.3)'},
+                    { type: 'body', candleIndex: 2, color: 'rgba(239,68,68,0.4)' }
+                ],
+                indicatorCombination: "Ein Anstieg des Volumens bei der dritten Kerze verstärkt das Signal. Das Muster ist zuverlässiger, wenn es in einer überkauften Zone (RSI) oder an einem Widerstand auftritt."
+            },
+            {
+                id: 'three_outside_down',
+                name: 'Three Outside Down',
+                description: 'Ein bärisches Umkehrmuster aus drei Kerzen. 1. Eine bullische Kerze. 2. Eine bärische Kerze, die die erste Kerze vollständig umschließt (Bearish Engulfing). 3. Eine weitere bärische Kerze, die unter dem Schlusskurs der zweiten Kerze schließt.',
+                interpretation: 'Ein starkes bärisches Umkehrsignal, das das Bearish Engulfing bestätigt und auf eine Fortsetzung der Abwärtsbewegung hindeutet.',
+                type: 'Bärische Umkehr',
+                candles: [
+                    { open: 40, high: 52, low: 38, close: 50, trend: 'uptrend' },
+                    { open: 52, high: 54, low: 35, close: 38 },
+                    { open: 37, high: 39, low: 28, close: 30 }
+                ],
+                keyFeatures: [
+                    { type: 'engulf', candleIndex1: 0, candleIndex2: 1, color: 'rgba(250,204,21,0.3)'},
+                    { type: 'body', candleIndex: 2, color: 'rgba(239,68,68,0.4)' }
+                ],
+                indicatorCombination: "Steigendes Volumen bei der zweiten und dritten Kerze erhöht die Zuverlässigkeit. Das Auftreten nach einer überkauften Phase (RSI) oder an einer Widerstandslinie verstärkt das Signal."
+            },
+            {
+                id: 'tower_top',
+                name: 'Tower Top',
+                description: 'Ein bärisches Umkehrmuster, das nach einem Aufwärtstrend auftritt. Es beginnt mit einer oder mehreren langen bullischen Kerzen, gefolgt von einer Phase der Konsolidierung mit kleinen Körpern (Handel in einer engen Spanne). Das Muster wird durch eine oder mehrere lange bärische Kerzen vervollständigt, die nach unten ausbrechen.',
+                interpretation: 'Die langen bullischen Kerzen zeigen Kaufdruck. Die Konsolidierungsphase deutet auf Unentschlossenheit und eine mögliche Top-Bildung hin. Die abschließenden bärischen Kerzen signalisieren eine Übernahme durch die Verkäufer und eine wahrscheinliche Trendumkehr.',
+                type: 'Bärische Umkehr',
+                candles: [ { open: 30, high: 45, low: 28, close: 42, trend: 'uptrend' }, { open: 43, high: 55, low: 41, close: 52 }, { open: 52, high: 55, low: 49, close: 53 }, { open: 53, high: 56, low: 50, close: 51 }, { open: 51, high: 54, low: 48, close: 50 }, { open: 48, high: 50, low: 35, close: 38 }, { open: 37, high: 39, low: 25, close: 28 } ],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0, color: 'rgba(34,197,94,0.3)'}, 
+                    { type: 'body', candleIndex: 6, color: 'rgba(239,68,68,0.3)'}  
+                ],
+                indicatorCombination: "Das Volumen ist während der Konsolidierungsphase oft gering. Ein deutlicher Anstieg des Volumens bei den ausbrechenden bärischen Kerzen ist ein starkes Bestätigungsmerkmal. Eine bärische Divergenz im RSI während der Konsolidierung kann das Signal verstärken."
+            },
+            {
+                id: 'tri_star_bearish',
+                name: 'Tri-Star (Bearish)',
+                description: 'Ein seltenes Umkehrmuster, das aus drei Dojis besteht. Nach einem Aufwärtstrend bildet sich der mittlere Doji mit einem Gap höher als die beiden äußeren Dojis. Alle drei Dojis haben kleine Handelsspannen.',
+                interpretation: 'Die drei Dojis signalisieren extreme Unentschlossenheit. Das Gap des mittleren Dojis nach oben, gefolgt von einer Unfähigkeit, weiter zu steigen, deutet auf eine Erschöpfung der Käufer und eine mögliche starke bärische Umkehr hin.',
+                type: 'Bärische Umkehr',
+                candles: [ { open: 45, high: 48, low: 42, close: 45.5, trend: 'uptrend' }, { open: 52, high: 55, low: 49, close: 52.5 }, { open: 46, high: 49, low: 43, close: 46.5 } ],
+                keyFeatures: [
+                    { type: 'body', candleIndex: 0, color: 'rgba(250,204,21,0.3)'},
+                    { type: 'body', candleIndex: 1, color: 'rgba(250,204,21,0.4)'}, 
+                    { type: 'body', candleIndex: 2, color: 'rgba(250,204,21,0.3)'},
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, gapType: 'body_to_body', direction: 'up', color: 'rgba(239,68,68,0.2)'},
+                    { type: 'gap', candleIndex1: 1, candleIndex2: 2, gapType: 'body_to_body', direction: 'down', color: 'rgba(239,68,68,0.2)'}
+                ],
+                indicatorCombination: "Das Volumen ist bei allen drei Dojis typischerweise gering. Ein Anstieg bei einer bärischen Bestätigungskerze ist entscheidend. Ein überkaufter Zustand vor dem Muster erhöht die Wahrscheinlichkeit einer Umkehr."
+            },
+            {
+                id: 'tweezer_tops',
+                name: 'Tweezer Tops',
+                description: 'Tweezer Tops sind ein bärisches Umkehrmuster, das typischerweise am Ende eines Aufwärtstrends auftritt. Es besteht aus zwei oder mehr Kerzen mit nahezu identischen Höchstkursen. Die erste Kerze ist oft bullisch, die zweite bärisch, aber die Formen können variieren.',
+                interpretation: 'Die identischen Hochs deuten auf eine starke Widerstandszone hin. Käufer konnten den Preis nicht weiter nach oben drücken, was auf eine mögliche bärische Umkehr hindeutet.',
+                type: 'Bärische Umkehr',
+                candles: [
+                    { open: 50, high: 70, low: 48, close: 65, trend: 'uptrend' }, 
+                    { open: 67, high: 70.5, low: 52, close: 55 }
+                ],
+                keyFeatures: [
+                    { type: 'high_point', candleIndex: 0, color: 'rgba(250, 204, 21, 0.6)', radius: 5 },
+                    { type: 'high_point', candleIndex: 1, color: 'rgba(250, 204, 21, 0.6)', radius: 5 },
+                    { type: 'line', yValue1Property: 'high', candleIndex1: 0, yValue2Property: 'high', candleIndex2: 1, color: '#FACC15', lineWidth: 2, dashed: true }
+                ],
+                indicatorCombination: "Ein Tweezer Top an einer wichtigen Widerstandslinie oder einem Fibonacci-Retracement-Level ist signifikanter. Eine bärische Divergenz im RSI oder MACD kann das Umkehrsignal verstärken."
+            },
+            // Bärische Fortsetzung
+            {
+                id: 'downside_gap_three_methods',
+                name: 'Downside Gap Three Methods',
+                description: 'Ein bärisches Fortsetzungsmuster. 1. Eine lange bärische Kerze. 2. Eine weitere lange bärische Kerze, die mit einem Gap nach unten eröffnet. 3. Eine kleine bullische Kerze, die das Gap zwischen den ersten beiden Kerzen füllt, aber nicht über den Schlusskurs der ersten Kerze steigt.',
+                interpretation: 'Das anfängliche Gap zeigt starke bärische Dynamik. Die bullische Kerze stellt eine Gewinnmitnahme oder einen Test des Gaps dar. Solange das Gap nicht vollständig geschlossen wird und der Preis unter dem Schlusskurs der ersten Kerze bleibt, wird eine Fortsetzung des Abwärtstrends erwartet.',
+                type: 'Bärische Fortsetzung',
+                candles: [ { open: 70, high: 72, low: 50, close: 52, trend: 'downtrend' }, { open: 45, high: 47, low: 25, close: 27 }, { open: 30, high: 50, low: 28, close: 48 } ],
+                keyFeatures: [
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, direction: 'down', color: 'rgba(239,68,68,0.3)'},
+                    { type: 'body', candleIndex: 2, color: 'rgba(250,204,21,0.3)'} 
+                ],
+                indicatorCombination: "Das Volumen sollte bei den ersten beiden bärischen Kerzen (insbesondere bei der Gap-Kerze) hoch sein. Bei der dritten (korrigierenden bullischen) Kerze ist geringeres Volumen wünschenswert."
+            },
+            {
+                id: 'downside_tasuki_gap',
+                name: 'Downside Tasuki Gap',
+                description: 'Ein bärisches Fortsetzungsmuster. 1. Eine lange bärische Kerze. 2. Eine weitere bärische Kerze, die mit einem Gap nach unten eröffnet. 3. Eine bullische Kerze, die in das Gap hinein eröffnet und schließt, aber das Gap nicht vollständig schließt.',
+                interpretation: 'Das Gap stellt eine starke bärische Dynamik dar. Die dritte Kerze ist ein Versuch der Bullen, das Gap zu schließen, scheitert aber. Dies bestätigt die bärische Stärke und deutet auf eine Fortsetzung des Abwärtstrends hin.',
+                type: 'Bärische Fortsetzung',
+                candles: [
+                    { open: 70, high: 72, low: 50, close: 52, trend: 'downtrend' }, 
+                    { open: 45, high: 47, low: 35, close: 37 }, 
+                    { open: 40, high: 48, low: 39, close: 46 }
+                ],
+                keyFeatures: [
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, direction: 'down', color: 'rgba(239,68,68,0.3)'},
+                    { type: 'body', candleIndex: 2, color: 'rgba(250,204,21,0.3)'} 
+                ],
+                indicatorCombination: "Das Volumen sollte bei der zweiten Kerze (Gap Down) ansteigen. Bei der dritten (bullischen) Kerze ist geringeres Volumen typisch."
+            },
+            {
+                id: 'falling_three_methods',
+                name: 'Falling Three Methods',
+                description: 'Ein bärisches Fortsetzungsmuster. Es beginnt mit einer langen bärischen Kerze, gefolgt von drei (oder mehr) kleinen bullischen Kerzen, die innerhalb der Spanne der ersten Kerze bleiben. Das Muster endet mit einer weiteren langen bärischen Kerze, die unter dem Schlusskurs der ersten langen bärischen Kerze schließt.',
+                interpretation: 'Zeigt eine Pause oder Konsolidierung innerhalb eines Abwärtstrends an, bevor der Trend fortgesetzt wird. Die kleinen bullischen Kerzen stellen eine vorübergehende Erholung dar, aber die Bären gewinnen wieder die Kontrolle.',
+                type: 'Bärische Fortsetzung',
+                candles: [
+                    { open: 70, high: 72, low: 40, close: 42, trend: 'downtrend' },
+                    { open: 45, high: 48, low: 43, close: 46 },
+                    { open: 48, high: 51, low: 46, close: 49 },
+                    { open: 50, high: 53, low: 48, close: 51 },
+                    { open: 55, high: 57, low: 25, close: 30 }
+                ],
+                keyFeatures: [
+                    { type: 'body_range', candleIndex: 0, color: 'rgba(250,204,21,0.2)'}, 
+                    { type: 'body', candleIndex: 4, color: 'rgba(239,68,68,0.4)'} 
+                ],
+                indicatorCombination: "Das Volumen sollte bei der ersten und letzten (langen bärischen) Kerze relativ hoch sein. Während der Konsolidierungsphase (kleine bullische Kerzen) ist ein geringeres Volumen typisch."
+            },
+            {
+                id: 'in_neck_line',
+                name: 'In Neck Line',
+                description: 'Ein bärisches Fortsetzungsmuster, ähnlich der On Neck Line. 1. Eine lange bärische Kerze. 2. Eine kleine bullische Kerze, die unterhalb des Tiefs der ersten Kerze eröffnet (Gap Down) und leicht in den Körper der ersten Kerze schließt, aber unterhalb der Mitte.',
+                interpretation: 'Ähnlich wie On Neck, aber die Bullen zeigen etwas mehr Stärke, indem sie in den Körper der vorherigen Kerze schließen. Dennoch wird meist eine Fortsetzung des Abwärtstrends erwartet, wenn der Schlusskurs der zweiten Kerze nicht signifikant ist.',
+                type: 'Bärische Fortsetzung',
+                candles: [
+                    { open: 60, high: 61, low: 40, close: 42, trend: 'downtrend' },
+                    { open: 38, high: 48, low: 37, close: 44 }
+                ],
+                keyFeatures: [
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, direction: 'down', color: 'rgba(250,204,21,0.3)' },
+                    { type: 'body', candleIndex: 1, color: 'rgba(34,197,94,0.3)'}
+                ],
+                indicatorCombination: "Keine starke Volumenindikation, aber ein Anstieg bei der Fortsetzung des Abwärtstrends wäre bestätigend. Das Muster ist stärker, wenn es unterhalb eines wichtigen gleitenden Durchschnitts auftritt."
+            },
+            {
+                id: 'on_neck_line',
+                name: 'On Neck Line',
+                description: 'Ein bärisches Fortsetzungsmuster, das in einem Abwärtstrend auftritt. 1. Eine lange bärische Kerze. 2. Eine kleine bullische Kerze, die unterhalb des Tiefs der ersten Kerze eröffnet (Gap Down) und nahe dem Tief der ersten Kerze schließt (die Schlusskurse sind fast gleich).',
+                interpretation: 'Die Bullen versuchen eine Erholung, scheitern aber daran, den Preis signifikant über das Tief der vorherigen Kerze zu heben. Dies deutet auf eine Fortsetzung des Abwärtstrends hin.',
+                type: 'Bärische Fortsetzung',
+                candles: [
+                    { open: 60, high: 61, low: 40, close: 42, trend: 'downtrend' },
+                    { open: 38, high: 45, low: 37, close: 41.5 }
+                ],
+                 keyFeatures: [
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, direction: 'down', color: 'rgba(250,204,21,0.3)' },
+                    { type: 'line', yValue1Property: 'close', candleIndex1: 0, yValue2Property: 'close', candleIndex2: 1, color: '#FACC15', lineWidth: 2, dashed: true }
+                ],
+                indicatorCombination: "Ähnlich wie In Neck Line. Ein MACD, der im bärischen Bereich bleibt oder ein bärisches Crossover zeigt, kann das Signal unterstützen."
+            },
+            {
+                id: 'separating_lines_bearish',
+                name: 'Separating Lines (Bearish)',
+                description: 'Ein bärisches Fortsetzungsmuster. 1. In einem Abwärtstrend erscheint eine lange bullische Kerze. 2. Am nächsten Tag eröffnet der Markt mit einem Gap nach unten auf dem gleichen Eröffnungskurs wie die vorherige bullische Kerze und schließt als lange bärische Kerze.',
+                interpretation: 'Die bullische Kerze scheint eine Umkehr anzudeuten, aber das Gap Down zum vorherigen Eröffnungskurs und die starke bärische Bewegung am zweiten Tag negieren die bullische Implikation und signalisieren eine Fortsetzung des Abwärtstrends.',
+                type: 'Bärische Fortsetzung',
+                candles: [{ open: 40, high: 62, low: 38, close: 60, trend: 'downtrend' }, { open: 40, high: 42, low: 20, close: 22 }],
+                keyFeatures: [
+                    { type: 'line', yValue1Property: 'open', candleIndex1: 0, yValue2Property: 'open', candleIndex2: 1, color: '#FACC15', lineWidth: 2, dashed: true } 
+                ],
+                indicatorCombination: "Ein Anstieg des Volumens bei der zweiten (bärischen) Kerze kann die Stärke der Trendfortsetzung unterstreichen. Das Muster ist stärker, wenn es unterhalb eines wichtigen gleitenden Durchschnitts auftritt."
+            },
+            {
+                id: 'thrusting_line',
+                name: 'Thrusting Line',
+                description: 'Ein Muster, das in einem Abwärtstrend auftritt. 1. Eine lange bärische Kerze. 2. Eine bullische Kerze, die unter dem Tief der ersten Kerze eröffnet (Gap Down) und in den Körper der ersten Kerze schließt, aber nicht über deren Mitte hinausgeht.',
+                interpretation: 'Wird oft als bärisches Fortsetzungsmuster angesehen, da die Bullen nicht genug Kraft haben, den Preis über die Mitte der vorherigen bärischen Kerze zu drücken. Wenn jedoch der Preis in den folgenden Tagen über das Hoch der Thrusting Line steigt, kann es ein Fehlsignal sein und eine bullische Umkehr andeuten.',
+                type: 'Bärische Fortsetzung',
+                candles: [
+                    { open: 60, high: 61, low: 40, close: 42, trend: 'downtrend' },
+                    { open: 38, high: 52, low: 37, close: 49 }
+                ],
+                keyFeatures: [
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, direction: 'down', color: 'rgba(250,204,21,0.3)' },
+                    { type: 'body', candleIndex: 1, color: 'rgba(34,197,94,0.3)'}
+                ],
+                indicatorCombination: "Keine starke spezifische Volumenindikation. Das Muster ist schwächer als ein Piercing Line und sollte mit Vorsicht behandelt werden; eine Bestätigung durch weitere bärische Kerzen ist wichtig."
+            },
+            {
+                id: 'two_black_gapping_candles',
+                name: 'Two Black Gapping Candles',
+                description: 'Ein bärisches Fortsetzungsmuster, das nach einem deutlichen Hoch in einem Aufwärtstrend auftritt. 1. Eine bärische Kerze, die mit einem Gap nach unten von der vorherigen (bullischen) Kerze eröffnet. 2. Eine weitere bärische Kerze, die mit einem Gap nach unten von der ersten bärischen Kerze eröffnet und tiefer schließt.',
+                interpretation: 'Die aufeinanderfolgenden Gaps nach unten signalisieren eine starke bärische Dynamik und eine wahrscheinliche Fortsetzung des Abwärtstrends. Dieses Muster ist besonders stark, wenn es nach einem Top auftritt.',
+                type: 'Bärische Fortsetzung',
+                candles: [
+                    { open: 65, high: 66, low: 50, close: 52, trend: 'uptrend_peak' }, 
+                    { open: 48, high: 49, low: 35, close: 38 }  
+                ],
+                keyFeatures: [
+                    { type: 'gap', candleIndex1: 0, candleIndex2: 1, direction: 'down', color: 'rgba(239,68,68,0.3)'} 
+                ],
+                indicatorCombination: "Das Volumen kann bei den Gapping-Kerzen ansteigen, was die bärische Dynamik bestätigt. Ein Bruch wichtiger Unterstützungsniveaus nach dem Muster verstärkt das Signal."
+            },
+            // Bärische Stärke/Fortsetzung
+            {
+                id: 'bearish_marubozu',
+                name: 'Bearish Marubozu',
+                description: 'Eine bärische Marubozu ist eine lange rote (oder schwarze) Kerze ohne obere oder untere Schatten. Der Eröffnungskurs ist gleich dem Höchstkurs und der Schlusskurs ist gleich dem Tiefstkurs.',
+                interpretation: 'Zeigt extreme bärische Stärke. Die Verkäufer kontrollierten den Preis von der Eröffnung bis zum Schluss. Kann den Beginn eines bärischen Trends oder die Fortsetzung eines Abwärtstrends signalisieren.',
+                type: 'Bärische Stärke/Fortsetzung',
+                candles: [{ open: 70, high: 70, low: 40, close: 40, trend: 'any' }],
+                keyFeatures: [{ type: 'body', candleIndex: 0 }],
+                indicatorCombination: "Ein hohes Volumen bei einer Bearish Marubozu bestätigt die Stärke der Verkäufer. In einem Aufwärtstrend kann sie nach einer überkauften Phase (RSI > 70) eine starke Umkehr einleiten."
+            },
+            // NEU: Umkehrsignale durch Dochte
+            {
+                id: 'retracing_wicks',
+                name: 'Retracing Wicks',
+                type: 'Umkehrsignale durch Dochte',
+                description: 'Nach einem Aufwärtstrend bilden zwei oder mehr Kerzen lange obere Dochte auf einem ähnlichen Preisniveau (Widerstand). Die zweite Docht-Kerze schließt bereits bärisch und signalisiert den beginnenden Trendwechsel. Eine starke rote Folgekerze bestätigt die Umkehr.',
+                interpretation: 'Die langen Dochte zeigen wiederholte Ablehnung höherer Preise. Der Farbwechsel zur roten Kerze beim zweiten Test ist das entscheidende Signal, dass die Verkäufer die Oberhand gewinnen. Die nachfolgende rote Kerze bestätigt die neue Abwärtsdynamik.',
+                candles: [
+                    { open: 50, high: 60, low: 48, close: 58, trend: 'uptrend' },
+                    { open: 58, high: 82, low: 57, close: 70 }, // Erster Docht
+                    { open: 70, high: 81.5, low: 62, close: 64 }, // Zweiter Docht, bärisch
+                    { open: 64, high: 65, low: 40, close: 45 }  // Starke bärische Bestätigungskerze
+                ],
+                keyFeatures: [
+                    { type: 'shadow', candleIndex: 1, shadowType: 'upper' },
+                    { type: 'shadow', candleIndex: 2, shadowType: 'upper' },
+                    { type: 'line', yValue1Property: 'high', candleIndex1: 1, yValue2Property: 'high', candleIndex2: 2, color: '#FACC15', lineWidth: 2, dashed: true },
+                    { type: 'body', candleIndex: 3, color: 'rgba(239, 68, 68, 0.4)', borderColor: '#EF4444' }
+                ],
+                indicatorCombination: "Das Signal ist stärker, wenn die Docht-Kerzen bei hohem Volumen auftreten. Eine bärische Divergenz bei Oszillatoren (RSI, MACD) erhöht die Aussagekraft."
+            },
+            {
+                id: 'advancing_wicks',
+                name: 'Advancing Wicks',
+                type: 'Umkehrsignale durch Dochte',
+                description: 'Nach einem Abwärtstrend bilden zwei oder mehr Kerzen lange untere Dochte auf einem ähnlichen Preisniveau (Unterstützung). Die zweite Docht-Kerze schließt bereits bullisch und signalisiert den beginnenden Trendwechsel. Eine starke grüne Folgekerze bestätigt die Umkehr.',
+                interpretation: 'Die langen Dochte zeigen wiederholte Ablehnung tieferer Preise. Der Farbwechsel zur grünen Kerze beim zweiten Test ist das entscheidende Signal, dass die Käufer die Oberhand gewinnen. Die nachfolgende grüne Kerze bestätigt die neue Aufwärtsdynamik.',
+                candles: [
+                    { open: 90, high: 92, low: 75, close: 78, trend: 'downtrend' },
+                    { open: 78, high: 79, low: 48, close: 62 }, // Erster Docht
+                    { open: 62, high: 68, low: 49, close: 67 }, // Zweiter Docht, bullisch
+                    { open: 67, high: 90, low: 66, close: 88 }  // Starke bullische Bestätigungskerze
+                ],
+                keyFeatures: [
+                    { type: 'shadow', candleIndex: 1, shadowType: 'lower' },
+                    { type: 'shadow', candleIndex: 2, shadowType: 'lower' },
+                    { type: 'line', yValue1Property: 'low', candleIndex1: 1, yValue2Property: 'low', candleIndex2: 2, color: '#FACC15', lineWidth: 2, dashed: true },
+                    { type: 'body', candleIndex: 3, color: 'rgba(34, 197, 94, 0.4)', borderColor: '#22C55E' }
+                ],
+                indicatorCombination: "Das Signal wird durch hohes Volumen bei den Docht-Kerzen und der bullischen Bestätigungskerze verstärkt. Eine bullische Divergenz im RSI oder MACD macht eine erfolgreiche Umkehr wahrscheinlicher."
+            }
+        ];
+
+        const candlestickPatterns = INTERNAL_ALL_PATTERNS.map(pattern => {
+            const candlesWithDefaults = pattern.candles.map(candle => ({ ...candle }));
+            // Ensure all extended info fields are present, falling back to defaults if not specified in INTERNAL_ALL_PATTERNS
+            return { 
+                ...defaultPatternInfoExtension, // Apply defaults first
+                ...pattern,                     // Then specific pattern data (will overwrite defaults if present)
+                candles: candlesWithDefaults 
+            };
+        });
+
+
+        const canvas = document.getElementById('candlestickCanvas');
+        const ctx = canvas.getContext('2d');
+        const highlightContainer = document.getElementById('highlightContainer'); 
+        const patternListContainer = document.getElementById('patternList');
+        const patternNameEl = document.getElementById('patternName');
+        const patternDescriptionEl = document.getElementById('patternDescription');
+        const patternInterpretationEl = document.getElementById('patternInterpretation');
+        const patternTypeEl = document.getElementById('patternType');
+        const favoriteToggleButton = document.getElementById('favoriteToggleButton');
+
+        // Referenz für das neue Info-Feld
+        const patternIndicatorCombinationEl = document.getElementById('patternIndicatorCombination');
+
+
+        let currentPatternId = null;
+        let favorites = []; 
+
+        const starFilledSVG = `
+            <svg class="favorite-star-icon" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.959a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.368 2.446a1 1 0 00-.364 1.118l1.287 3.959c.3.921-.755 1.688-1.54 1.118l-3.368-2.446a1 1 0 00-1.176 0l-3.368 2.446c-.784.57-1.838-.197-1.539-1.118l1.287-3.959a1 1 0 00-.364-1.118L2.24 9.386c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69L9.049 2.927z"/>
+            </svg>`;
+        const starOutlineSVG = `
+            <svg class="favorite-star-icon" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.959a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.368 2.446a1 1 0 00-.364 1.118l1.287 3.959c.3.921-.755 1.688-1.54 1.118l-3.368-2.446a1 1 0 00-1.176 0l-3.368 2.446c-.784.57-1.838-.197-1.539-1.118l1.287-3.959a1 1 0 00-.364-1.118L2.24 9.386c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69L9.049 2.927z" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            </svg>`;
+
+        function loadFavorites() {
+            const storedFavorites = localStorage.getItem('candlestickAppFavorites');
+            if (storedFavorites) {
+                favorites = JSON.parse(storedFavorites);
+            }
+        }
+
+        function saveFavorites() {
+            localStorage.setItem('candlestickAppFavorites', JSON.stringify(favorites));
+        }
+
+        function isFavorite(patternId) {
+            return favorites.includes(patternId);
+        }
+
+        function toggleFavorite() {
+            if (!currentPatternId) return;
+            const index = favorites.indexOf(currentPatternId);
+            if (index > -1) {
+                favorites.splice(index, 1); 
+            } else {
+                favorites.push(currentPatternId); 
+            }
+            saveFavorites();
+            updateFavoriteButtonStatus();
+            populatePatternList(); 
+            setActiveButton(currentPatternId);
+        }
+
+        function updateFavoriteButtonStatus() {
+            if (!currentPatternId) {
+                favoriteToggleButton.innerHTML = starOutlineSVG;
+                favoriteToggleButton.classList.remove('favorite-button-active');
+                favoriteToggleButton.classList.add('favorite-button-inactive');
+                favoriteToggleButton.setAttribute('aria-label', 'Zu Favoriten hinzufügen');
+                return;
+            }
+            if (isFavorite(currentPatternId)) {
+                favoriteToggleButton.innerHTML = starFilledSVG;
+                favoriteToggleButton.classList.add('favorite-button-active');
+                favoriteToggleButton.classList.remove('favorite-button-inactive');
+                favoriteToggleButton.setAttribute('aria-label', 'Aus Favoriten entfernen');
+            } else {
+                favoriteToggleButton.innerHTML = starOutlineSVG;
+                favoriteToggleButton.classList.remove('favorite-button-active');
+                favoriteToggleButton.classList.add('favorite-button-inactive');
+                favoriteToggleButton.setAttribute('aria-label', 'Zu Favoriten hinzufügen');
+            }
+        }
+
+        favoriteToggleButton.addEventListener('click', toggleFavorite);
+        
+        function roundRect(ctx, x, y, width, height, radius) {
+            if (width < 2 * radius) radius = width / 2;
+            if (height < 2 * radius) radius = height / 2;
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.arcTo(x + width, y, x + width, y + height, radius);
+            ctx.arcTo(x + width, y + height, x, y + height, radius);
+            ctx.arcTo(x, y + height, x, y, radius);
+            ctx.arcTo(x, y, x + width, y, radius);
+            ctx.closePath();
+        }
+
+
+        function drawCandlestickChart(pattern) {
+            const candles = pattern.candles;
+            const numCandles = candles.length;
+
+            const container = canvas.parentElement;
+            const dpi = window.devicePixelRatio || 1;
+            canvas.width = container.clientWidth * dpi;
+            canvas.height = container.clientHeight * dpi; 
+            canvas.style.width = container.clientWidth + 'px';
+            canvas.style.height = container.clientHeight + 'px';
+            ctx.scale(dpi, dpi);
+            
+            const canvasWidth = canvas.clientWidth;
+            const canvasHeight = canvas.clientHeight; 
+
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            
+            let minPrice = Infinity;
+            let maxPrice = -Infinity;
+            
+            candles.forEach(candle => {
+                minPrice = Math.min(minPrice, candle.low);
+                maxPrice = Math.max(maxPrice, candle.high);
+            });
+
+            const pricePadding = (maxPrice - minPrice) * 0.15;
+            minPrice -= pricePadding;
+            maxPrice += pricePadding;
+            if (minPrice < 0 && candles.every(c => c.low >=0)) minPrice = 0;
+            if (maxPrice === minPrice) { 
+                maxPrice += 10;
+                minPrice = Math.max(0, minPrice -10); 
+            }
+
+            const priceRange = maxPrice - minPrice;
+            const candleWidth = canvasWidth / (numCandles + 2); 
+            const wickLineWidth = 4 * dpi; 
+            const bodyMaxWidth = candleWidth * 0.7; 
+            const cornerRadius = 10; 
+
+            const bullishColor = '#22C55E'; 
+            const bearishColor = '#EF4444'; 
+            const dojiColor = '#9CA3AF';    
+            const wickColor = '#6B7280';    
+            const trendLineColor = '#4B5563'; 
+            
+            ctx.lineCap = 'round'; 
+
+            function getY(price) { 
+                if (priceRange === 0) return canvasHeight / 2; 
+                return canvasHeight - ((price - minPrice) / priceRange) * canvasHeight; 
+            }
+            
+            const candleCoords = [];
+
+            const firstCandleData = candles[0];
+            if (firstCandleData.trend && firstCandleData.trend !== 'any') {
+                ctx.beginPath();
+                ctx.strokeStyle = trendLineColor;
+                ctx.lineWidth = 2 * dpi; 
+                ctx.setLineDash([5 * dpi, 3 * dpi]); 
+                const trendStartX = candleWidth * 0.5; 
+                const trendEndX = candleWidth * 1.5 - (bodyMaxWidth / 2) - 10; 
+                let trendStartY, trendEndY;
+                let firstCandleRelevantY;
+
+                if (firstCandleData.trend === 'downtrend' || firstCandleData.trend === 'uptrend_peak') {
+                     firstCandleRelevantY = getY(Math.max(firstCandleData.open, firstCandleData.close, firstCandleData.high)); 
+                } else { 
+                     firstCandleRelevantY = getY(Math.min(firstCandleData.open, firstCandleData.close, firstCandleData.low));
+                }
+                
+                if (firstCandleData.trend === 'downtrend') {
+                    trendStartY = firstCandleRelevantY - canvasHeight * 0.25; 
+                    trendEndY = firstCandleRelevantY + canvasHeight * 0.05;   
+                } else { 
+                    trendStartY = firstCandleRelevantY + canvasHeight * 0.25; 
+                    trendEndY = firstCandleRelevantY - canvasHeight * 0.05;  
+                }
+                ctx.moveTo(trendStartX, trendStartY);
+                ctx.lineTo(trendEndX, trendEndY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            candles.forEach((candle, index) => {
+                const x = candleWidth * (index + 1.5) ; 
+                const openY = getY(candle.open);
+                const closeY = getY(candle.close);
+                const highY = getY(candle.high);
+                const lowY = getY(candle.low);
+
+                candleCoords.push({ x, openY, closeY, highY, lowY, candle });
+
+                ctx.beginPath();
+                ctx.strokeStyle = wickColor;
+                ctx.lineWidth = wickLineWidth; 
+                ctx.moveTo(x, highY);
+                ctx.lineTo(x, lowY);
+                ctx.stroke();
+
+                const bodyHeight = Math.abs(openY - closeY);
+                const bodyY = Math.min(openY, closeY);
+                let bodyColor = dojiColor;
+                if (candle.close > candle.open) {
+                    bodyColor = bullishColor;
+                } else if (candle.close < candle.open) {
+                    bodyColor = bearishColor;
+                }
+                
+                if (bodyHeight < 1 * dpi && Math.abs(candle.open - candle.close) < 0.1) { 
+                    ctx.beginPath();
+                    ctx.strokeStyle = bodyColor; 
+                    ctx.lineWidth = Math.max(2 * dpi, wickLineWidth); 
+                    ctx.moveTo(x - bodyMaxWidth / 2, openY);
+                    ctx.lineTo(x + bodyMaxWidth / 2, openY);
+                    ctx.stroke();
+                } else {
+                    ctx.fillStyle = bodyColor;
+                    roundRect(ctx, x - bodyMaxWidth / 2, bodyY, bodyMaxWidth, bodyHeight, cornerRadius * dpi);
+                    ctx.fill();
+                }
+            });
+
+            if (pattern.keyFeatures) {
+                pattern.keyFeatures.forEach(feature => {
+                    const coord = feature.candleIndex !== undefined ? candleCoords[feature.candleIndex] : null;
+                    ctx.fillStyle = feature.color || 'rgba(250, 204, 21, 0.3)'; 
+                    ctx.strokeStyle = feature.borderColor || '#FACC15'; 
+                    ctx.lineWidth = feature.lineWidth || (2 * dpi); 
+                    const highlightRadius = cornerRadius * dpi; 
+                    
+                    if (feature.type === 'body' && coord) {
+                        const bodyY = Math.min(coord.openY, coord.closeY); 
+                        const bodyHeight = Math.abs(coord.openY - coord.closeY);
+                        const minHighlightHeight = 2 * dpi;
+                        const actualBodyHeight = bodyHeight < minHighlightHeight && Math.abs(coord.candle.open - coord.candle.close) < 0.1 ? minHighlightHeight : bodyHeight;
+                        const actualBodyY = bodyHeight < minHighlightHeight && Math.abs(coord.candle.open - coord.candle.close) < 0.1 ? coord.openY - (minHighlightHeight / 2) : bodyY;
+                        
+                        roundRect(ctx, coord.x - bodyMaxWidth / 2, actualBodyY, bodyMaxWidth, actualBodyHeight, highlightRadius);
+                        ctx.fill();
+                        if (feature.borderColor) {
+                            roundRect(ctx, coord.x - bodyMaxWidth / 2, actualBodyY, bodyMaxWidth, actualBodyHeight, highlightRadius);
+                            ctx.stroke();
+                        }
+                    } else if (feature.type === 'shadow' && coord) {
+                         if (feature.shadowType === 'lower') {
+                            const shadowTop = Math.max(coord.openY, coord.closeY);
+                            ctx.beginPath();
+                            ctx.moveTo(coord.x, shadowTop);
+                            ctx.lineTo(coord.x, coord.lowY);
+                            ctx.stroke();
+                        } else if (feature.shadowType === 'upper') {
+                            const shadowBottom = Math.min(coord.openY, coord.closeY);
+                            ctx.beginPath();
+                            ctx.moveTo(coord.x, shadowBottom);
+                            ctx.lineTo(coord.x, coord.highY);
+                            ctx.stroke();
+                        }
+                    } else if (feature.type === 'engulf' && candleCoords[feature.candleIndex1] && candleCoords[feature.candleIndex2]) {
+                        const c1 = candleCoords[feature.candleIndex1].candle;
+                        const c2 = candleCoords[feature.candleIndex2].candle;
+                        const c2Coord = candleCoords[feature.candleIndex2];
+
+                        const c2BodyTopY = getY(Math.max(c2.open, c2.close)); 
+                        const c2BodyBottomY = getY(Math.min(c2.open, c2.close)); 
+                        
+                        const engulfX = c2Coord.x - bodyMaxWidth / 2;
+                        const engulfHeight = Math.abs(c2BodyTopY - c2BodyBottomY);
+
+                        roundRect(ctx, engulfX - 2, Math.min(c2BodyTopY, c2BodyBottomY), bodyMaxWidth + 4, engulfHeight, highlightRadius);
+                        ctx.fill();
+                         if (feature.borderColor) {
+                            roundRect(ctx, engulfX -2 , Math.min(c2BodyTopY, c2BodyBottomY), bodyMaxWidth + 4, engulfHeight, highlightRadius);
+                            ctx.stroke();
+                        }
+                    } else if (feature.type === 'gap' && candleCoords[feature.candleIndex1] && candleCoords[feature.candleIndex2]) {
+                        const c1 = candleCoords[feature.candleIndex1];
+                        const c2 = candleCoords[feature.candleIndex2];
+                        let gapY1, gapY2;
+                        
+                        if (feature.direction === 'up') { 
+                            gapY1 = c1.highY; 
+                            gapY2 = c2.lowY;  
+                        } else if (feature.direction === 'down') { 
+                            gapY1 = c2.highY; 
+                            gapY2 = c1.lowY;  
+                        } else { 
+                             gapY1 = c1.highY; 
+                             gapY2 = c2.lowY; 
+                             if (c1.lowY < c2.highY) { 
+                                gapY1 = c2.highY;
+                                gapY2 = c1.lowY;
+                             }
+                        }
+                        
+                        const gapX = (c1.x + c2.x) / 2 - (bodyMaxWidth / 4) ;
+                        const gapHeight = Math.abs(gapY1 - gapY2);
+                        const gapRectY = Math.min(gapY1, gapY2);
+
+                        if (gapHeight > 1 * dpi) { 
+                            roundRect(ctx, gapX, gapRectY, bodyMaxWidth / 2, gapHeight, highlightRadius);
+                            ctx.fill();
+                            if (feature.borderColor) {
+                                roundRect(ctx, gapX, gapRectY, bodyMaxWidth / 2, gapHeight, highlightRadius);
+                                ctx.stroke();
+                            }
+                        }
+                    } else if (feature.type === 'low_point' && coord) {
+                        ctx.beginPath();
+                        ctx.arc(coord.x, coord.lowY, feature.radius || 5, 0, 2 * Math.PI, false);
+                        ctx.fill();
+                        if (feature.borderColor) {
+                             ctx.strokeStyle = feature.borderColor;
+                             ctx.stroke();
+                        }
+                    }  else if (feature.type === 'high_point' && coord) { 
+                        ctx.beginPath();
+                        ctx.arc(coord.x, coord.highY, feature.radius || 5, 0, 2 * Math.PI, false);
+                        ctx.fill();
+                        if (feature.borderColor) {
+                             ctx.strokeStyle = feature.borderColor;
+                             ctx.stroke();
+                        }
+                    } else if (feature.type === 'line' && candleCoords[feature.candleIndex1] && candleCoords[feature.candleIndex2]) {
+                        const coord1 = candleCoords[feature.candleIndex1];
+                        const coord2 = candleCoords[feature.candleIndex2];
+                        const yVal1 = coord1.candle[feature.yValue1Property]; 
+                        const yVal2 = coord2.candle[feature.yValue2Property]; 
+                        const y1 = getY(yVal1); 
+                        const y2 = getY(yVal2); 
+                        
+                        ctx.beginPath();
+                        ctx.strokeStyle = feature.color || '#FACC15';
+                        ctx.lineWidth = feature.lineWidth || (2 * dpi); 
+                        if (feature.dashed) {
+                            ctx.setLineDash([5 * dpi, 3 * dpi]);
+                        }
+                        ctx.moveTo(coord1.x, y1);
+                        ctx.lineTo(coord2.x, y2);
+                        ctx.stroke();
+                        ctx.setLineDash([]); 
+                    } else if (feature.type === 'body_inside_body' && candleCoords[feature.candleIndex1] && candleCoords[feature.candleIndex2]) {
+                        const coordOuter = candleCoords[feature.candleIndex1];
+                        const coordInner = candleCoords[feature.candleIndex2];
+
+                        const innerBodyY = Math.min(coordInner.openY, coordInner.closeY);
+                        const innerBodyHeight = Math.abs(coordInner.openY - coordInner.closeY);
+                        
+                        roundRect(ctx, coordInner.x - bodyMaxWidth / 2, innerBodyY, bodyMaxWidth, innerBodyHeight, highlightRadius);
+                        ctx.fill();
+                        if (feature.borderColor) {
+                           roundRect(ctx, coordInner.x - bodyMaxWidth / 2, innerBodyY, bodyMaxWidth, innerBodyHeight, highlightRadius);
+                           ctx.stroke();
+                        }
+                    } else if (feature.type === 'penetration' && candleCoords[feature.candleIndex1] && candleCoords[feature.candleIndex2]) {
+                        const c1 = candleCoords[feature.candleIndex1].candle;
+                        const c2 = candleCoords[feature.candleIndex2].candle;
+                        const c1Coord = candleCoords[feature.candleIndex1];
+                        const c2Coord = candleCoords[feature.candleIndex2];
+
+                        const c1BodyMiddleY = getY((c1.open + c1.close) / 2);
+                        const c2CloseY = getY(c2.close);
+                        
+                        if (c2.close > (c1.open + c1.close) / 2 && c2.close < Math.max(c1.open, c1.close)) { // For Piercing
+                            const penetrationX = c2Coord.x - bodyMaxWidth / 2;
+                            const penetrationY = c2CloseY; 
+                            const penetrationBottomY = c1BodyMiddleY; 
+                            const penetrationHeight = Math.abs(penetrationY - penetrationBottomY);
+
+                            roundRect(ctx, penetrationX, Math.min(penetrationY, penetrationBottomY), bodyMaxWidth, penetrationHeight, highlightRadius);
+                            ctx.fill();
+                            if (feature.borderColor) {
+                               roundRect(ctx, penetrationX, Math.min(penetrationY, penetrationBottomY), bodyMaxWidth, penetrationHeight, highlightRadius);
+                               ctx.stroke();
+                            }
+                        } else if (c2.close < (c1.open + c1.close) / 2 && c2.close > Math.min(c1.open, c1.close)) { // For Dark Cloud Cover
+                            const penetrationX = c2Coord.x - bodyMaxWidth / 2;
+                            const penetrationTopY = c1BodyMiddleY;
+                            const penetrationY = c2CloseY; 
+                            const penetrationHeight = Math.abs(penetrationY - penetrationTopY);
+
+                            roundRect(ctx, penetrationX, Math.min(penetrationY, penetrationTopY), bodyMaxWidth, penetrationHeight, highlightRadius);
+                            ctx.fill();
+                            if (feature.borderColor) {
+                               roundRect(ctx, penetrationX, Math.min(penetrationY, penetrationTopY), bodyMaxWidth, penetrationHeight, highlightRadius);
+                               ctx.stroke();
+                            }
+                        }
+                    } else if (feature.type === 'body_range' && coord) { 
+                        const bodyTopY = getY(coord.candle.high);
+                        const bodyBottomY = getY(coord.candle.low);
+                        const bodyHeight = Math.abs(bodyTopY - bodyBottomY);
+                        roundRect(ctx, coord.x - bodyMaxWidth / 1.8, Math.min(bodyTopY, bodyBottomY), bodyMaxWidth * 1.1, bodyHeight, highlightRadius / 2); 
+                        ctx.fill();
+                        if (feature.borderColor) {
+                            roundRect(ctx, coord.x - bodyMaxWidth / 1.8, Math.min(bodyTopY, bodyBottomY), bodyMaxWidth * 1.1, bodyHeight, highlightRadius / 2);
+                            ctx.stroke();
+                        }
+                    }
+                });
+            }
+        }
+
+        function displayPatternInfo(pattern) {
+            patternNameEl.textContent = pattern.name;
+            patternDescriptionEl.innerHTML = pattern.description; 
+            patternInterpretationEl.innerHTML = pattern.interpretation;
+            patternTypeEl.textContent = pattern.type;
+            
+            // Displaying the "indicatorCombination" field
+            const patternIndicatorCombinationEl = document.getElementById('patternIndicatorCombination');
+            if (patternIndicatorCombinationEl) { 
+                 patternIndicatorCombinationEl.innerHTML = pattern.indicatorCombination || defaultPatternInfoExtension.indicatorCombination;
+            }
+            updateFavoriteButtonStatus(); 
+        }
+
+        function setActiveButton(patternIdToActivate) {
+            const buttons = patternListContainer.querySelectorAll('.pattern-select-button');
+            buttons.forEach(button => {
+                if (button.dataset.patternId === patternIdToActivate) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+        }
+
+        function selectPattern(patternId) {
+            const pattern = candlestickPatterns.find(p => p.id === patternId);
+            if (pattern) {
+                currentPatternId = patternId;
+                drawCandlestickChart(pattern);
+                displayPatternInfo(pattern);
+                setActiveButton(patternId);
+            }
+        }
+
+        function createPatternButton(pattern, isFavContext = false) {
+            const button = document.createElement('button');
+            button.className = 'pattern-select-button'; 
+            
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = pattern.name;
+            button.appendChild(nameSpan);
+
+            if (!isFavContext && isFavorite(pattern.id)) { 
+                const starIcon = document.createElement('span');
+                starIcon.innerHTML = starFilledSVG;
+                starIcon.classList.add('favorite-button-active'); 
+                starIcon.style.marginLeft = '0.5rem'; 
+                button.appendChild(starIcon);
+            }
+            
+            button.dataset.patternId = pattern.id;
+            button.addEventListener('click', () => selectPattern(pattern.id));
+            return button;
+        }
+
+
+        function populatePatternList() {
+            patternListContainer.innerHTML = ''; 
+
+            if (favorites.length > 0) {
+                const favHeader = document.createElement('h3');
+                favHeader.className = 'pattern-category-header'; 
+                favHeader.style.color = 'var(--color-accent-yellow)'; 
+                favHeader.textContent = "Favoriten ⭐";
+                patternListContainer.appendChild(favHeader);
+
+                favorites.forEach(favId => {
+                    const pattern = candlestickPatterns.find(p => p.id === favId);
+                    if (pattern) {
+                        const button = createPatternButton(pattern, true); 
+                        patternListContainer.appendChild(button);
+                    }
+                });
+            }
+
+            const categorizedPatterns = {
+                'Bullische Umkehr': [],
+                'Bullische Fortsetzung': [],
+                'Bullische Stärke/Fortsetzung': [],
+                'Bärische Umkehr': [],
+                'Bärische Fortsetzung': [],
+                'Bärische Stärke/Fortsetzung': [],
+                'Unentschlossenheit': [],
+                'Umkehrsignale durch Dochte': []
+            };
+
+            candlestickPatterns.forEach(pattern => {
+                if (categorizedPatterns[pattern.type]) {
+                    categorizedPatterns[pattern.type].push(pattern);
+                } else {
+                    if (!categorizedPatterns['Andere']) categorizedPatterns['Andere'] = [];
+                    categorizedPatterns['Andere'].push(pattern);
+                }
+            });
+            
+            const categoryOrder = [
+                'Bullische Umkehr', 'Bullische Fortsetzung', 'Bullische Stärke/Fortsetzung',
+                'Bärische Umkehr', 'Bärische Fortsetzung', 'Bärische Stärke/Fortsetzung',
+                'Unentschlossenheit', 'Umkehrsignale durch Dochte', 'Andere'
+            ];
+
+            let firstCategoryAfterFavorites = true;
+            categoryOrder.forEach(categoryName => {
+                const patternsInCategory = categorizedPatterns[categoryName];
+                if (patternsInCategory && patternsInCategory.length > 0) {
+                    const header = document.createElement('h3');
+                    header.className = 'pattern-category-header';
+                    if (favorites.length > 0 && firstCategoryAfterFavorites) {
+                        header.classList.add('with-favorites-separator');
+                        firstCategoryAfterFavorites = false;
+                    }
+                    header.textContent = categoryName;
+                    patternListContainer.appendChild(header);
+
+                    patternsInCategory.sort((a, b) => a.name.localeCompare(b.name));
+
+                    patternsInCategory.forEach(pattern => {
+                        const button = createPatternButton(pattern, false);
+                        patternListContainer.appendChild(button);
+                    });
+                }
+            });
+            
+            if (!currentPatternId && candlestickPatterns.length > 0) {
+                if (favorites.length > 0) {
+                    const firstFavPattern = candlestickPatterns.find(p => p.id === favorites[0]);
+                    if (firstFavPattern) {
+                        currentPatternId = firstFavPattern.id;
+                    }
+                }
+                if (!currentPatternId) {
+                    let firstPatternToSelect = null;
+                    for (const category of categoryOrder) {
+                        if (categorizedPatterns[category] && categorizedPatterns[category].length > 0) {
+                            firstPatternToSelect = categorizedPatterns[category][0].id;
+                            break;
+                        }
+                    }
+                    if (firstPatternToSelect) {
+                        currentPatternId = firstPatternToSelect;
+                    } else {
+                         currentPatternId = candlestickPatterns[0].id;
+                    }
+                }
+            }
+            if(currentPatternId) {
+                selectPattern(currentPatternId);
+            }
+        }
+        
+        loadFavorites(); 
+        populatePatternList();
+        updateFavoriteButtonStatus(); 
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                 const pattern = candlestickPatterns.find(p => p.id === currentPatternId);
+                 if(pattern) drawCandlestickChart(pattern);
+            }, 250); 
+        });
+
+        // Theme Toggle Logic
+        const themeToggleButton = document.getElementById('theme-toggle');
+        const sunIcon = `<svg class="theme-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`;
+        const moonIcon = `<svg class="theme-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>`;
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                document.body.classList.remove('theme-dark');
+                document.body.classList.add('theme-light');
+                themeToggleButton.innerHTML = moonIcon;
+            } else {
+                document.body.classList.remove('theme-light');
+                document.body.classList.add('theme-dark');
+                themeToggleButton.innerHTML = sunIcon;
+            }
+            // Re-draw chart after theme change to update colors
+            if(currentPatternId) {
+                selectPattern(currentPatternId);
+            }
+        }
+
+        themeToggleButton.addEventListener('click', () => {
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            applyTheme(newTheme);
+        });
+        
+        // Initial theme setup
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        applyTheme(savedTheme);
+
+
+    </script>
+</body>
+</html>

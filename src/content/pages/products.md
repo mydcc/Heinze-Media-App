@@ -1,7 +1,7 @@
 ---
 title: "Products"
-date: "2025-06-13T21:36:23.000Z"
+date: "Fri, 13 Jun 2025 21:36:23 +0000"
 slug: "products"
-type: "page"
 ---
 
+<!-- wp:edd/downloads {"columns":2} /-->

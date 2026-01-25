@@ -1,80 +1,145 @@
 ---
 title: "Solutions"
-date: "2024-01-23T19:37:36.000Z"
+date: "Tue, 23 Jan 2024 19:37:36 +0000"
 slug: "solutions"
-type: "page"
 ---
 
-# Solutions
+<!-- wp:uagb/container {"block_id":"f2293a43","minHeightDesktop":200,"alignItemsTablet":"center","alignItemsMobile":"center","backgroundType":"image","backgroundImageDesktop":{"id":227,"title":"","filename":"cubes-header-scaled.jpg","url":"https://heinze-media.com/wp-content/uploads/2024/04/cubes-header-scaled-1.jpg","link":"https://heinze-media.com/contact/cubes-header/","alt":"cubes-header","author":"4","description":"","caption":"","name":"cubes-header","status":"inherit","uploadedTo":39,"date":"2024-04-28T13:01:18.000Z","modified":"2024-04-28T13:01:30.000Z","menuOrder":0,"mime":"image/jpeg","type":"image","subtype":"jpeg","icon":"https://heinze-media.com/wp-includes/images/media/default.svg","dateFormatted":"April 28, 2024","nonces":{"update":"3cfed65a64","delete":"a8cd6c5d9c","edit":"8521e046e3"},"editLink":"https://heinze-media.com/wp-admin/post.php?post=227\u0026amp;action=edit","meta":false,"authorName":"Patrick Heinze","authorLink":"https://heinze-media.com/wp-admin/profile.php","uploadedToTitle":"Contact","uploadedToLink":"https://heinze-media.com/wp-admin/post.php?post=39\u0026amp;action=edit","filesizeInBytes":152625,"filesizeHumanReadable":"149 KB","context":"","originalImageURL":"https://heinze-media.com/wp-content/uploads/2024/04/cubes-header-scaled-1.jpg","originalImageName":"cubes-header.jpg","height":1408,"width":2560,"orientation":"landscape","sizes":{"thumbnail":{"height":150,"width":150,"url":"https://heinze-media.com/wp-content/uploads/2024/04/cubes-header-150x150.jpg","orientation":"landscape"},"medium":{"height":165,"width":300,"url":"https://heinze-media.com/wp-content/uploads/2024/04/cubes-header-300x165.jpg","orientation":"landscape"},"large":{"height":563,"width":1024,"url":"https://heinze-media.com/wp-content/uploads/2024/04/cubes-header-1024x563.jpg","orientation":"landscape"},"full":{"url":"https://heinze-media.com/wp-content/uploads/2024/04/cubes-header-scaled-1.jpg","height":1408,"width":2560,"orientation":"landscape"},"cmplz_banner_image":{"height":100,"width":350,"url":"https://heinze-media.com/wp-content/uploads/2024/04/cubes-header-350x100.jpg","orientation":"landscape"}},"compat":{"item":"","meta":""}},"backgroundPositionDesktop":{"x":0.6,"y":0.6},"backgroundImageColor":"rgba(67,63,102,0.2)","boxShadowColor":"var(\u002d\u002dast-global-color-3)","boxShadowBlur":80,"boxShadowSpread":-40,"boxShadowPosition":"inset","topPaddingDesktop":0,"bottomPaddingDesktop":0,"leftPaddingDesktop":0,"rightPaddingDesktop":0,"paddingLink":false,"bottomMarginDesktop":42,"marginLink":false,"variationSelected":true,"isBlockRootParent":true,"overlayType":"color"} -->
+<div class="wp-block-uagb-container uagb-block-f2293a43 alignfull uagb-is-root-container"><div class="uagb-container-inner-blocks-wrap"><!-- wp:uagb/advanced-heading {"block_id":"7cebb033","classMigrate":true,"headingDescToggle":false,"headingAlign":"center","headingColor":"var(\u002d\u002dast-global-color-4)","headingTag":"h1","headFontWeight":"900","headFontSizeType":"em","headFontSize":4,"headShadowColor":"rgba(67,63,102,0.38)"} -->
+<div class="wp-block-uagb-advanced-heading uagb-block-7cebb033"><h1 class="uagb-heading-text">Solutions</h1></div>
+<!-- /wp:uagb/advanced-heading --></div></div>
+<!-- /wp:uagb/container -->
 
-## Designing and Creating Immersive Experiences
+<!-- wp:uagb/container {"block_id":"f6548596","alignItemsTablet":"center","alignItemsMobile":"center","topPaddingDesktop":0,"bottomPaddingDesktop":42,"leftPaddingDesktop":0,"rightPaddingDesktop":0,"paddingLink":false,"variationSelected":true,"isBlockRootParent":true} -->
+<div class="wp-block-uagb-container uagb-block-f6548596 alignfull uagb-is-root-container"><div class="uagb-container-inner-blocks-wrap"><!-- wp:uagb/advanced-heading {"block_id":"421ddf85","classMigrate":true,"headingDescToggle":true,"headingAlign":"center","subHeadingColor":"","separatorColor":"var(\u002d\u002dast-global-color-3)","seperatorStyle":"solid","separatorHeight":3,"separatorWidth":100,"separatorWidthType":"px","subHeadFontSize":1.2,"subHeadFontSizeType":"em","UAGLoggedOut":true,"UAGDisplayConditions":"none"} -->
+<div class="wp-block-uagb-advanced-heading uagb-block-421ddf85"><h2 class="uagb-heading-text">Designing and Creating Immersive Experiences</h2><div class="uagb-separator"></div><p class="uagb-desc-text">HM delivers full service design, development and management solutions that accelerate partners' unique strategy and vision.</p></div>
+<!-- /wp:uagb/advanced-heading --></div></div>
+<!-- /wp:uagb/container -->
 
-HM delivers full service design, development and management solutions that accelerate partners' unique strategy and vision.
+<!-- wp:uagb/container {"block_id":"b678863d","innerContentWidth":"alignfull","widthType":"vw","innerContentCustomWidthDesktop":100,"innerContentCustomWidthType":"vw","directionDesktop":"row","alignItemsDesktop":"stretch","alignItemsTablet":"stretch","alignItemsMobile":"stretch","topPaddingDesktop":0,"bottomPaddingDesktop":0,"leftPaddingDesktop":0,"rightPaddingDesktop":0,"variationSelected":true,"rowGapDesktop":0,"columnGapDesktop":0,"isBlockRootParent":true,"equalHeight":true,"childrenWidthDesktop":"equal","layout":"flex"} -->
+<div class="wp-block-uagb-container uagb-layout-flex uagb-block-b678863d alignfull uagb-is-root-container"><!-- wp:uagb/container {"block_id":"9123be77","widthDesktop":50,"backgroundType":"color","backgroundColor":"#f8f9fb","topPaddingDesktop":4,"bottomPaddingDesktop":4,"rightPaddingDesktop":4,"paddingType":"%","paddingLink":false,"widthSetByUser":true} -->
+<div class="wp-block-uagb-container uagb-block-9123be77"><!-- wp:uagb/advanced-heading {"block_id":"27c70215","classMigrate":true,"headingDescToggle":false,"subHeadingColor":"","headingTag":"h3","blockTopPadding":0,"blockRightPadding":0,"blockLeftPadding":0,"blockBottomPadding":0} -->
+<div class="wp-block-uagb-advanced-heading uagb-block-27c70215"><h3 class="uagb-heading-text">Helping your company harness the Metaverse</h3></div>
+<!-- /wp:uagb/advanced-heading -->
 
-### Helping your company harness the Metaverse
+<!-- wp:paragraph {"fontSize":"medium"} -->
+<p class="has-medium-font-size">Hundreds of companies, including your competitors, are already actively working on business Metaverse experiences. As a visionary, forward-thinking company, you can harness the Metaverse to accomplish objectives more quickly and gain a significant advantage in your industry.</p>
+<!-- /wp:paragraph -->
 
-Hundreds of companies, including your competitors, are already actively working on business Metaverse experiences. As a visionary, forward-thinking company, you can harness the Metaverse to accomplish objectives more quickly and gain a significant advantage in your industry.
+<!-- wp:paragraph {"fontSize":"medium"} -->
+<p class="has-medium-font-size">With cutting-edge technology and support from HS, your organization can showcase products and services in immersive, innovative ways, improve team collaboration, and take advantage of new training and remote business opportunities.</p>
+<!-- /wp:paragraph -->
 
-With cutting-edge technology and support from HS, your organization can showcase products and services in immersive, innovative ways, improve team collaboration, and take advantage of new training and remote business opportunities.
+<!-- wp:paragraph {"fontSize":"medium"} -->
+<p class="has-medium-font-size"><a href="https://heinze-media.com/contact/" data-type="page" data-id="39">Contact us today</a> to discover how to leverage metaverse technology to solve your biggest business challenges.</p>
+<!-- /wp:paragraph -->
 
-[Contact us today](https://heinze-media.com/contact/) to discover how to leverage metaverse technology to solve your biggest business challenges.
+<!-- wp:uagb/buttons {"block_id":"945e7634","classMigrate":true,"childMigrate":true,"align":"left"} -->
+<div class="wp-block-uagb-buttons uagb-buttons__outer-wrap uagb-btn__default-btn uagb-btn-tablet__default-btn uagb-btn-mobile__default-btn uagb-block-945e7634"><div class="uagb-buttons__wrap uagb-buttons-layout-wrap "><!-- wp:uagb/buttons-child {"block_id":"c265482f","fontWeight":"600","label":"XR STUDIO","link":"/xr-studio","transform":"","decoration":"underline","btnBorderTopWidth":1,"btnBorderLeftWidth":1,"btnBorderRightWidth":1,"btnBorderBottomWidth":1,"btnBorderStyle":"solid","btnBorderColor":"#333","btnBorderHColor":"#333","letterSpacing":2} -->
+<div class="wp-block-uagb-buttons-child uagb-buttons__outer-wrap uagb-block-c265482f wp-block-button"><div class="uagb-button__wrapper"><a class="uagb-buttons-repeater wp-block-button__link" aria-label="" href="/xr-studio" rel="follow noopener" target="_self" role="button"><div class="uagb-button__link">XR STUDIO</div></a></div></div>
+<!-- /wp:uagb/buttons-child --></div></div>
+<!-- /wp:uagb/buttons --></div>
+<!-- /wp:uagb/container -->
 
-[
+<!-- wp:uagb/container {"block_id":"8ca046a6","widthDesktop":50,"alignItemsDesktop":"stretch","alignItemsTablet":"stretch","alignItemsMobile":"stretch","backgroundType":"image","backgroundImageDesktop":{"uploading":false,"date":1714322520000,"filename":"virtual-reality.jpg","menuOrder":0,"uploadedTo":33,"type":"image","subtype":"jpeg","id":361,"title":"","url":"https://heinze-media.com/wp-content/uploads/2024/04/virtual-reality.jpg","link":"https://heinze-media.com/solutions/virtual-reality/","alt":"","author":"4","description":"","caption":"","name":"virtual-reality","status":"inherit","modified":1714322520000,"mime":"image/jpeg","icon":"https://heinze-media.com/wp-includes/images/media/default.svg","dateFormatted":"April 28, 2024","nonces":{"update":"7c51bada57","delete":"c1e0b91ef6","edit":"2c891c316f"},"editLink":"https://heinze-media.com/wp-admin/post.php?post=361\u0026amp;action=edit","meta":false,"authorName":"Patrick Heinze","authorLink":"https://heinze-media.com/wp-admin/profile.php","uploadedToTitle":"Solutions","uploadedToLink":"https://heinze-media.com/wp-admin/post.php?post=33\u0026amp;action=edit","filesizeInBytes":944580,"filesizeHumanReadable":"922 KB","context":"","height":1280,"width":1920,"orientation":"landscape","sizes":{"thumbnail":{"height":150,"width":150,"url":"https://heinze-media.com/wp-content/uploads/2024/04/virtual-reality-150x150.jpg","orientation":"landscape"},"medium":{"height":200,"width":300,"url":"https://heinze-media.com/wp-content/uploads/2024/04/virtual-reality-300x200.jpg","orientation":"landscape"},"large":{"height":683,"width":1024,"url":"https://heinze-media.com/wp-content/uploads/2024/04/virtual-reality-1024x683.jpg","orientation":"landscape"},"full":{"url":"https://heinze-media.com/wp-content/uploads/2024/04/virtual-reality.jpg","height":1280,"width":1920,"orientation":"landscape"},"cmplz_banner_image":{"height":100,"width":350,"url":"https://heinze-media.com/wp-content/uploads/2024/04/virtual-reality-350x100.jpg","orientation":"landscape"}},"compat":{"item":"","meta":""}},"topPaddingDesktop":0,"bottomPaddingDesktop":0,"leftPaddingDesktop":0,"rightPaddingDesktop":0,"widthSetByUser":true,"equalHeight":true} -->
+<div class="wp-block-uagb-container uagb-block-8ca046a6"></div>
+<!-- /wp:uagb/container --></div>
+<!-- /wp:uagb/container -->
 
-XR STUDIO
+<!-- wp:uagb/container {"block_id":"251d9896","innerContentWidth":"alignfull","widthType":"vw","innerContentCustomWidthDesktop":100,"innerContentCustomWidthType":"vw","directionDesktop":"row","alignItemsDesktop":"stretch","alignItemsTablet":"stretch","alignItemsMobile":"stretch","topPaddingDesktop":0,"bottomPaddingDesktop":0,"leftPaddingDesktop":0,"rightPaddingDesktop":0,"variationSelected":true,"rowGapDesktop":0,"columnGapDesktop":0,"isBlockRootParent":true,"equalHeight":true,"childrenWidthDesktop":"equal","layout":"flex"} -->
+<div class="wp-block-uagb-container uagb-layout-flex uagb-block-251d9896 alignfull uagb-is-root-container"><!-- wp:uagb/container {"block_id":"0ce3b324","widthDesktop":50,"alignItemsDesktop":"stretch","alignItemsTablet":"stretch","alignItemsMobile":"stretch","backgroundType":"image","backgroundImageDesktop":{"id":328,"title":"","filename":"technology.jpg","url":"https://heinze-media.com/wp-content/uploads/2024/04/technology.jpg","link":"https://heinze-media.com/solutions/technology/","alt":"","author":"4","description":"","caption":"","name":"technology","status":"inherit","uploadedTo":33,"date":"2024-04-28T16:05:01.000Z","modified":"2024-04-28T16:05:01.000Z","menuOrder":0,"mime":"image/jpeg","type":"image","subtype":"jpeg","icon":"https://heinze-media.com/wp-includes/images/media/default.svg","dateFormatted":"April 28, 2024","nonces":{"update":"2138afbfb4","delete":"b071d863d9","edit":"996a2a1ac2"},"editLink":"https://heinze-media.com/wp-admin/post.php?post=328\u0026amp;action=edit","meta":false,"authorName":"Patrick Heinze","authorLink":"https://heinze-media.com/wp-admin/profile.php","uploadedToTitle":"Solutions","uploadedToLink":"https://heinze-media.com/wp-admin/post.php?post=33\u0026amp;action=edit","filesizeInBytes":202077,"filesizeHumanReadable":"197 KB","context":"","height":699,"width":1280,"orientation":"landscape","sizes":{"thumbnail":{"height":150,"width":150,"url":"https://heinze-media.com/wp-content/uploads/2024/04/technology-150x150.jpg","orientation":"landscape"},"medium":{"height":164,"width":300,"url":"https://heinze-media.com/wp-content/uploads/2024/04/technology-300x164.jpg","orientation":"landscape"},"large":{"height":559,"width":1024,"url":"https://heinze-media.com/wp-content/uploads/2024/04/technology-1024x559.jpg","orientation":"landscape"},"full":{"url":"https://heinze-media.com/wp-content/uploads/2024/04/technology.jpg","height":699,"width":1280,"orientation":"landscape"}},"compat":{"item":"","meta":""}},"backgroundPositionDesktop":{"x":0,"y":0.5},"topPaddingDesktop":0,"bottomPaddingDesktop":0,"leftPaddingDesktop":0,"rightPaddingDesktop":0,"widthSetByUser":true,"equalHeight":true} -->
+<div class="wp-block-uagb-container uagb-block-0ce3b324"></div>
+<!-- /wp:uagb/container -->
 
-](/xr-studio)
+<!-- wp:uagb/container {"block_id":"d1206cb8","widthDesktop":50,"backgroundType":"color","backgroundColor":"#f8f9fb","topPaddingDesktop":4,"bottomPaddingDesktop":4,"rightPaddingDesktop":4,"paddingType":"%","paddingLink":false,"widthSetByUser":true} -->
+<div class="wp-block-uagb-container uagb-block-d1206cb8"><!-- wp:uagb/advanced-heading {"block_id":"b6e28045","classMigrate":true,"headingDescToggle":false,"subHeadingColor":"","headingTag":"h3","blockTopPadding":0,"blockRightPadding":0,"blockLeftPadding":0,"blockBottomPadding":0} -->
+<div class="wp-block-uagb-advanced-heading uagb-block-b6e28045"><h3 class="uagb-heading-text">All things Design and Development</h3></div>
+<!-- /wp:uagb/advanced-heading -->
 
-### All things Design and Development
+<!-- wp:paragraph {"style":{"spacing":{"padding":{"right":"var:preset|spacing|80"}}},"fontSize":"medium"} -->
+<p class="has-medium-font-size" style="padding-right:var(--wp--preset--spacing--80)">HM is where innovation meets execution. With our expertise in immersive design, high-quality 3D modeling with cutting-edge technology, we craft bespoke digital solutions to meet your exact requirements.</p>
+<!-- /wp:paragraph -->
 
-HM is where innovation meets execution. With our expertise in immersive design, high-quality 3D modeling with cutting-edge technology, we craft bespoke digital solutions to meet your exact requirements.
+<!-- wp:paragraph {"style":{"spacing":{"padding":{"right":"var:preset|spacing|80"}}},"fontSize":"medium"} -->
+<p class="has-medium-font-size" style="padding-right:var(--wp--preset--spacing--80)">Our detailed approach ensures immersive experiences, engaging apps and videos that tell compelling stories. Partnering with us unlocks huge digital potential for our clients, enhancing the customer experience and driving business growth.</p>
+<!-- /wp:paragraph -->
 
-Our detailed approach ensures immersive experiences, engaging apps and videos that tell compelling stories. Partnering with us unlocks huge digital potential for our clients, enhancing the customer experience and driving business growth.
+<!-- wp:paragraph {"style":{"spacing":{"padding":{"right":"var:preset|spacing|80"}}},"fontSize":"medium"} -->
+<p class="has-medium-font-size" style="padding-right:var(--wp--preset--spacing--80)">Our holistic strategy not only enhances your brand's digital presence, but also delivers tangible results. By merging creativity and technology, we empower companies to succeed in the digital age and turn visions into tangible successes.</p>
+<!-- /wp:paragraph -->
 
-Our holistic strategy not only enhances your brand's digital presence, but also delivers tangible results. By merging creativity and technology, we empower companies to succeed in the digital age and turn visions into tangible successes.
+<!-- wp:uagb/buttons {"block_id":"f6d9f1ac","classMigrate":true,"childMigrate":true,"align":"left"} -->
+<div class="wp-block-uagb-buttons uagb-buttons__outer-wrap uagb-btn__default-btn uagb-btn-tablet__default-btn uagb-btn-mobile__default-btn uagb-block-f6d9f1ac"><div class="uagb-buttons__wrap uagb-buttons-layout-wrap "><!-- wp:uagb/buttons-child {"block_id":"ff4cfcd6","fontWeight":"600","label":"OUR WORK","link":"/work","transform":"","decoration":"underline","btnBorderTopWidth":1,"btnBorderLeftWidth":1,"btnBorderRightWidth":1,"btnBorderBottomWidth":1,"btnBorderStyle":"solid","btnBorderColor":"#333","btnBorderHColor":"#333","letterSpacing":2} -->
+<div class="wp-block-uagb-buttons-child uagb-buttons__outer-wrap uagb-block-ff4cfcd6 wp-block-button"><div class="uagb-button__wrapper"><a class="uagb-buttons-repeater wp-block-button__link" aria-label="" href="/work" rel="follow noopener" target="_self" role="button"><div class="uagb-button__link">OUR WORK</div></a></div></div>
+<!-- /wp:uagb/buttons-child --></div></div>
+<!-- /wp:uagb/buttons --></div>
+<!-- /wp:uagb/container --></div>
+<!-- /wp:uagb/container -->
 
-[
+<!-- wp:spacer {"height":"40px"} -->
+<div style="height:40px" aria-hidden="true" class="wp-block-spacer"></div>
+<!-- /wp:spacer -->
 
-OUR WORK
+<!-- wp:uagb/advanced-heading {"block_id":"e56f38bf","classMigrate":true,"headingDescToggle":false,"headingAlign":"center","subHeadingColor":"","separatorColor":"var(\u002d\u002dast-global-color-3)","seperatorStyle":"solid","separatorHeight":3,"separatorWidth":100,"separatorWidthType":"px","headFontWeight":"900","subHeadFontSize":1.2,"subHeadFontSizeType":"em","UAGLoggedOut":true,"UAGDisplayConditions":"none"} -->
+<div class="wp-block-uagb-advanced-heading uagb-block-e56f38bf"><h2 class="uagb-heading-text">Solutions</h2><div class="uagb-separator"></div></div>
+<!-- /wp:uagb/advanced-heading -->
 
-](/work)
+<!-- wp:uagb/container {"block_id":"2a8af5d6","directionDesktop":"row","alignItemsDesktop":"flex-start","alignItemsTablet":"stretch","alignItemsMobile":"stretch","backgroundType":"image","topPaddingDesktop":0,"bottomPaddingDesktop":0,"leftPaddingDesktop":0,"rightPaddingDesktop":0,"topMarginDesktop":0,"bottomMarginDesktop":0,"leftMarginDesktop":0,"rightMarginDesktop":0,"marginLink":false,"variationSelected":true,"isBlockRootParent":true} -->
+<div class="wp-block-uagb-container uagb-block-2a8af5d6 alignfull uagb-is-root-container"><div class="uagb-container-inner-blocks-wrap"><!-- wp:uagb/container {"block_id":"18bc212e","widthDesktop":33,"topPaddingDesktop":10,"bottomPaddingDesktop":10,"leftPaddingDesktop":10,"rightPaddingDesktop":10,"topMarginDesktop":0,"bottomMarginDesktop":0,"leftMarginDesktop":0,"rightMarginDesktop":0,"widthSetByUser":true} -->
+<div class="wp-block-uagb-container uagb-block-18bc212e"><!-- wp:uagb/info-box {"classMigrate":true,"headingAlign":"left","headingColor":"","subHeadingColor":"","iconimgPosition":"left-title","headFontSize":24,"headSpace":0,"block_id":"58045265","seperatorStyle":"solid","seperatorWidth":62,"separatorWidthType":"px","seperatorThickness":3,"showIcon":false,"blockMarginLink":false,"btnBorderTopWidth":1,"btnBorderLeftWidth":1,"btnBorderRightWidth":1,"btnBorderBottomWidth":1,"btnBorderTopLeftRadius":0,"btnBorderTopRightRadius":0,"btnBorderBottomLeftRadius":0,"btnBorderBottomRightRadius":0,"btnBorderStyle":"solid","btnBorderColor":"#333"} -->
+<div class="wp-block-uagb-info-box uagb-block-58045265 uagb-infobox__content-wrap  uagb-infobox-icon-left-title uagb-infobox-left uagb-infobox-image-valign-top"><div class="uagb-ifb-content"><div class="uagb-ifb-left-title-image"><div class="uagb-ifb-title-wrap"><h3 class="uagb-ifb-title">IMMERSIVE XR</h3></div></div><div class="uagb-ifb-separator"></div><p class="uagb-ifb-desc">Partner with us to create immersive, engaging experiences.<br><br>We can manage all aspects of the project, including concept, design, development, management of Metaverse, AR/VR/XR apps, Avatars, &amp; experiences across many platforms.</p></div></div>
+<!-- /wp:uagb/info-box --></div>
+<!-- /wp:uagb/container -->
 
-## Solutions
+<!-- wp:uagb/container {"block_id":"7be188ea","widthDesktop":33,"widthSetByUser":true} -->
+<div class="wp-block-uagb-container uagb-block-7be188ea"><!-- wp:uagb/info-box {"classMigrate":true,"headingAlign":"left","headingColor":"","iconimgPosition":"left-title","headFontSize":24,"headSpace":0,"block_id":"b84a5a37","seperatorStyle":"solid","seperatorWidth":62,"separatorWidthType":"px","seperatorThickness":3,"showIcon":false,"blockTopPadding":0,"blockRightPadding":0,"blockLeftPadding":0,"blockBottomPadding":0,"btnBorderTopWidth":1,"btnBorderLeftWidth":1,"btnBorderRightWidth":1,"btnBorderBottomWidth":1,"btnBorderTopLeftRadius":0,"btnBorderTopRightRadius":0,"btnBorderBottomLeftRadius":0,"btnBorderBottomRightRadius":0,"btnBorderStyle":"solid","btnBorderColor":"#333"} -->
+<div class="wp-block-uagb-info-box uagb-block-b84a5a37 uagb-infobox__content-wrap  uagb-infobox-icon-left-title uagb-infobox-left uagb-infobox-image-valign-top"><div class="uagb-ifb-content"><div class="uagb-ifb-left-title-image"><div class="uagb-ifb-title-wrap"><h3 class="uagb-ifb-title">DEVELOPMENT</h3></div></div><div class="uagb-ifb-separator"></div><p class="uagb-ifb-desc">Trust the development of your technology to an experienced team.<br><br>Unity, Websites, API | SDK Integrations, eCommerce, Banking, Web3, WordPress &amp; CMS, Database/Backend</p></div></div>
+<!-- /wp:uagb/info-box --></div>
+<!-- /wp:uagb/container -->
 
-### IMMERSIVE XR
+<!-- wp:uagb/container {"block_id":"535f9d19","widthDesktop":33,"widthSetByUser":true} -->
+<div class="wp-block-uagb-container uagb-block-535f9d19"><!-- wp:uagb/info-box {"classMigrate":true,"headingAlign":"left","headingColor":"","iconimgPosition":"left-title","headFontSize":24,"headSpace":0,"block_id":"e8bff4a0","seperatorStyle":"solid","seperatorWidth":62,"separatorWidthType":"px","seperatorThickness":3,"showIcon":false,"blockTopPadding":0,"blockRightPadding":0,"blockLeftPadding":0,"blockBottomPadding":0,"btnBorderTopWidth":1,"btnBorderLeftWidth":1,"btnBorderRightWidth":1,"btnBorderBottomWidth":1,"btnBorderTopLeftRadius":0,"btnBorderTopRightRadius":0,"btnBorderBottomLeftRadius":0,"btnBorderBottomRightRadius":0,"btnBorderStyle":"solid","btnBorderColor":"#333"} -->
+<div class="wp-block-uagb-info-box uagb-block-e8bff4a0 uagb-infobox__content-wrap  uagb-infobox-icon-left-title uagb-infobox-left uagb-infobox-image-valign-top"><div class="uagb-ifb-content"><div class="uagb-ifb-left-title-image"><div class="uagb-ifb-title-wrap"><h3 class="uagb-ifb-title">DESIGN</h3></div></div><div class="uagb-ifb-separator"></div><p class="uagb-ifb-desc">You deserve technology that’s both attractive and easy to use.<br><br>Our experienced designers bring your project to life across web, mobile, video, metaverse, AR/VR, software applications and brand identity.</p></div></div>
+<!-- /wp:uagb/info-box --></div>
+<!-- /wp:uagb/container --></div></div>
+<!-- /wp:uagb/container -->
 
-Partner with us to create immersive, engaging experiences.  
-  
-We can manage all aspects of the project, including concept, design, development, management of Metaverse, AR/VR/XR apps, Avatars, & experiences across many platforms.
+<!-- wp:uagb/container {"block_id":"9adc66bb","directionDesktop":"row","alignItemsDesktop":"flex-start","alignItemsTablet":"stretch","alignItemsMobile":"stretch","backgroundType":"image","variationSelected":true,"isBlockRootParent":true} -->
+<div class="wp-block-uagb-container uagb-block-9adc66bb alignfull uagb-is-root-container"><div class="uagb-container-inner-blocks-wrap"><!-- wp:uagb/container {"block_id":"6dc29a76","widthDesktop":33,"widthSetByUser":true} -->
+<div class="wp-block-uagb-container uagb-block-6dc29a76"><!-- wp:uagb/info-box {"classMigrate":true,"headingAlign":"left","headingColor":"","iconimgPosition":"left-title","headFontSize":24,"headSpace":0,"block_id":"cd580b29","seperatorStyle":"solid","seperatorWidth":62,"separatorWidthType":"px","seperatorThickness":3,"showIcon":false,"blockTopPadding":0,"blockRightPadding":0,"blockLeftPadding":0,"blockBottomPadding":0,"btnBorderTopWidth":1,"btnBorderLeftWidth":1,"btnBorderRightWidth":1,"btnBorderBottomWidth":1,"btnBorderTopLeftRadius":0,"btnBorderTopRightRadius":0,"btnBorderBottomLeftRadius":0,"btnBorderBottomRightRadius":0,"btnBorderStyle":"solid","btnBorderColor":"#333"} -->
+<div class="wp-block-uagb-info-box uagb-block-cd580b29 uagb-infobox__content-wrap  uagb-infobox-icon-left-title uagb-infobox-left uagb-infobox-image-valign-top"><div class="uagb-ifb-content"><div class="uagb-ifb-left-title-image"><div class="uagb-ifb-title-wrap"><h3 class="uagb-ifb-title">GAMES</h3></div></div><div class="uagb-ifb-separator"></div><p class="uagb-ifb-desc">Tap into the power of play to engage, activate and grow your business.<br><br>We create native iOS &amp; Android Games, HTML5 Games, eSports Competitions, Edutainment Games, Brand Arcades, Tournament Platforms</p></div></div>
+<!-- /wp:uagb/info-box --></div>
+<!-- /wp:uagb/container -->
 
-### DEVELOPMENT
+<!-- wp:uagb/container {"block_id":"a9d0d6fd","widthDesktop":33,"widthSetByUser":true} -->
+<div class="wp-block-uagb-container uagb-block-a9d0d6fd"><!-- wp:uagb/info-box {"classMigrate":true,"headingAlign":"left","headingColor":"","iconimgPosition":"left-title","headFontSize":24,"headSpace":0,"block_id":"ac016e84","seperatorStyle":"solid","seperatorWidth":62,"separatorWidthType":"px","seperatorThickness":3,"showIcon":false,"blockTopPadding":0,"blockRightPadding":0,"blockLeftPadding":0,"blockBottomPadding":0,"btnBorderTopWidth":1,"btnBorderLeftWidth":1,"btnBorderRightWidth":1,"btnBorderBottomWidth":1,"btnBorderTopLeftRadius":0,"btnBorderTopRightRadius":0,"btnBorderBottomLeftRadius":0,"btnBorderBottomRightRadius":0,"btnBorderStyle":"solid","btnBorderColor":"#333"} -->
+<div class="wp-block-uagb-info-box uagb-block-ac016e84 uagb-infobox__content-wrap  uagb-infobox-icon-left-title uagb-infobox-left uagb-infobox-image-valign-top"><div class="uagb-ifb-content"><div class="uagb-ifb-left-title-image"><div class="uagb-ifb-title-wrap"><h3 class="uagb-ifb-title">3D &amp; MOTION GRAPHICS</h3></div></div><div class="uagb-ifb-separator"></div><p class="uagb-ifb-desc">Create compelling stories with high-quality graphics.<br><br>We have experience and expertise with 3D object and character design, 3D animation, motion graphics for video, and creating interactive experiences.</p></div></div>
+<!-- /wp:uagb/info-box --></div>
+<!-- /wp:uagb/container -->
 
-Trust the development of your technology to an experienced team.  
-  
-Unity, Websites, API | SDK Integrations, eCommerce, Banking, Web3, WordPress & CMS, Database/Backend
+<!-- wp:uagb/container {"block_id":"c722456c","widthDesktop":33,"widthSetByUser":true} -->
+<div class="wp-block-uagb-container uagb-block-c722456c"><!-- wp:uagb/info-box {"classMigrate":true,"tempHeadingDesc":"Mobile apps and platforms power business operations and drive growth. Don’t miss out! \u003cbr\u003e\u003cbr\u003eHS delivers custom app and platform design \u0026amp; development for iOS \u0026amp; Android, web apps, AR/VR/XR, video streaming and other app \u0026amp; smart device platforms.","headingAlign":"left","headingColor":"","iconimgPosition":"left-title","headFontSize":24,"headSpace":0,"block_id":"82563368","seperatorStyle":"solid","seperatorWidth":62,"separatorWidthType":"px","seperatorThickness":3,"showIcon":false,"btnBorderTopWidth":1,"btnBorderLeftWidth":1,"btnBorderRightWidth":1,"btnBorderBottomWidth":1,"btnBorderTopLeftRadius":0,"btnBorderTopRightRadius":0,"btnBorderBottomLeftRadius":0,"btnBorderBottomRightRadius":0,"btnBorderStyle":"solid","btnBorderColor":"#333"} -->
+<div class="wp-block-uagb-info-box uagb-block-82563368 uagb-infobox__content-wrap  uagb-infobox-icon-left-title uagb-infobox-left uagb-infobox-image-valign-top"><div class="uagb-ifb-content"><div class="uagb-ifb-left-title-image"><div class="uagb-ifb-title-wrap"><h3 class="uagb-ifb-title">APPS</h3></div></div><div class="uagb-ifb-separator"></div><p class="uagb-ifb-desc">Mobile apps and platforms power business operations and drive growth. Don’t miss out!&nbsp;<br><br>HS delivers custom app and platform design &amp; development for iOS &amp; Android, web apps, AR/VR/XR, video streaming and other app &amp; smart device platforms.</p></div></div>
+<!-- /wp:uagb/info-box --></div>
+<!-- /wp:uagb/container --></div></div>
+<!-- /wp:uagb/container -->
 
-### DESIGN
+<!-- wp:uagb/container {"block_id":"b1241134","minHeightDesktop":572,"justifyContentDesktop":"flex-start","backgroundType":"image","backgroundImageDesktop":{"uploading":false,"date":"2024-04-29T18:52:39.000Z","filename":"footer-bg.svg","menuOrder":0,"uploadedTo":33,"id":403,"title":"","url":"https://heinze-media.com/wp-content/uploads/2024/04/footer-bg.svg","link":"https://heinze-media.com/solutions/footer-bg/","alt":"Patrick Heinze","author":"4","description":"","caption":"","name":"footer-bg","status":"inherit","modified":"2024-04-29T18:52:47.000Z","mime":"image/svg+xml","type":"image","subtype":"svg+xml","icon":"https://heinze-media.com/wp-includes/images/media/default.svg","dateFormatted":"April 29, 2024","nonces":{"update":"9cf88ca9c2","delete":"0234c73204","edit":"d3fdc6c569"},"editLink":"https://heinze-media.com/wp-admin/post.php?post=403\u0026amp;action=edit","meta":false,"authorName":"Patrick Heinze","authorLink":"https://heinze-media.com/wp-admin/profile.php","uploadedToTitle":"Solutions","uploadedToLink":"https://heinze-media.com/wp-admin/post.php?post=33\u0026amp;action=edit","filesizeInBytes":28506,"filesizeHumanReadable":"28 KB","context":"","sizes":{"full":{"url":"https://heinze-media.com/wp-content/uploads/2024/04/footer-bg.svg"}},"compat":{"item":"","meta":""},"svg":"\n\n  \n  \n  \n    \n    \n      \n    \n    \n      \n    \n    \n      \n    \n    \n      \n    \n  \n  \n    \n    \n    \n    \n    \n    \n    \n  \n  \n    \n      \n      \n    \n    \n      \n      \n    \n    \n      \n      \n    \n    \n      \n      \n    \n    \n      \n      \n    \n    \n      \n      \n    \n    \n      \n      \n    \n    \n      \n      \n    \n    \n      \n      \n    \n    \n      \n      \n    \n    \n      \n      \n      \n    \n  \n\n"},"topPaddingDesktop":80,"bottomPaddingDesktop":80,"leftPaddingDesktop":0,"rightPaddingDesktop":0,"paddingLink":false,"variationSelected":true,"isBlockRootParent":true} -->
+<div class="wp-block-uagb-container uagb-block-b1241134 alignfull uagb-is-root-container"><div class="uagb-container-inner-blocks-wrap"><!-- wp:uagb/advanced-heading {"block_id":"832c0986","classMigrate":true,"headingDescToggle":false,"headingAlign":"center","headingColor":"var(\u002d\u002dast-global-color-4)","separatorColor":"var(\u002d\u002dast-global-color-3)","seperatorStyle":"solid","separatorWidth":6} -->
+<div class="wp-block-uagb-advanced-heading uagb-block-832c0986"><h2 class="uagb-heading-text">Connect</h2><div class="uagb-separator"></div></div>
+<!-- /wp:uagb/advanced-heading -->
 
-You deserve technology that’s both attractive and easy to use.  
-  
-Our experienced designers bring your project to life across web, mobile, video, metaverse, AR/VR, software applications and brand identity.
+<!-- wp:uagb/container {"block_id":"44681a82","directionDesktop":"row","variationSelected":true,"isBlockRootParent":true} -->
+<div class="wp-block-uagb-container uagb-block-44681a82 alignfull uagb-is-root-container"><div class="uagb-container-inner-blocks-wrap"><!-- wp:uagb/container {"block_id":"72a243e3","widthDesktop":12,"widthSetByUser":true} -->
+<div class="wp-block-uagb-container uagb-block-72a243e3"></div>
+<!-- /wp:uagb/container -->
 
-### GAMES
+<!-- wp:uagb/container {"block_id":"abd0e8b5","widthDesktop":62,"widthSetByUser":true} -->
+<div class="wp-block-uagb-container uagb-block-abd0e8b5"><!-- wp:fluentfom/guten-block {"formId":"1"} /--></div>
+<!-- /wp:uagb/container -->
 
-Tap into the power of play to engage, activate and grow your business.  
-  
-We create native iOS & Android Games, HTML5 Games, eSports Competitions, Edutainment Games, Brand Arcades, Tournament Platforms
-
-### 3D & MOTION GRAPHICS
-
-Create compelling stories with high-quality graphics.  
-  
-We have experience and expertise with 3D object and character design, 3D animation, motion graphics for video, and creating interactive experiences.
-
-### APPS
-
-Mobile apps and platforms power business operations and drive growth. Don’t miss out!   
-  
-HS delivers custom app and platform design & development for iOS & Android, web apps, AR/VR/XR, video streaming and other app & smart device platforms.
-
-## Connect
+<!-- wp:uagb/container {"block_id":"caf7bac9","widthDesktop":12,"widthSetByUser":true} -->
+<div class="wp-block-uagb-container uagb-block-caf7bac9"></div>
+<!-- /wp:uagb/container --></div></div>
+<!-- /wp:uagb/container --></div></div>
+<!-- /wp:uagb/container -->

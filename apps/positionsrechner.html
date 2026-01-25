@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Positionsgrößen-Rechner Dashboard v2.3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/decimal.js@10.3.1/decimal.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f172a; --bg-secondary: #1e293b; --bg-tertiary: #334155;
+            --text-primary: #e2e8f0; --text-secondary: #94a3b8; --border-color: #475569;
+            --accent-color: #38bdf8; --accent-color-hover: #0ea5e9;
+            --success-color: #22c55e; --danger-color: #ef4444; --warning-color: #facc15;
+            --shadow-tooltip: 0 30px 90px -20px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--border-color);
+            --btn-default-bg: #475569; --btn-default-hover-bg: #64748b; --btn-default-text: #e2e8f0;
+            --btn-danger-bg: #991b1b; --btn-danger-hover-bg: #b91c1c; --btn-danger-text: #e2e8f0;
+            --btn-accent-bg: #0ea5e9; --btn-accent-hover: #0284c7; --btn-accent-text: #e2e8f0;
+            --toggle-bg-off: #475569; --toggle-bg-on: #0ea5e9; --toggle-circle-bg: #ffffff;
+        }
+        .theme-light {
+            --bg-primary: #f1f5f9; --bg-secondary: #ffffff; --bg-tertiary: #e2e8f0;
+            --text-primary: #1e293b; --text-secondary: #64748b; --border-color: #cbd5e1;
+            --shadow-tooltip: 0 30px 90px -20px rgba(0, 0, 0, 0.1), 0 0 0 1px var(--border-color);
+            --btn-default-bg: #94a3b8; --btn-default-hover-bg: #cbd5e1; --btn-default-text: #1e293b;
+            --btn-danger-bg: #ef4444; --btn-danger-hover-bg: #dc2626; --btn-danger-text: #ffffff;
+            --btn-accent-bg: #38bdf8; --btn-accent-hover-bg: #0ea5e9; --btn-accent-text: #ffffff;
+            --toggle-bg-off: #94a3b8; --toggle-bg-on: #38bdf8; --toggle-circle-bg: #ffffff;
+        }
+        .theme-meteor {
+            --bg-primary: #1a202c; --bg-secondary: #2d3748; --bg-tertiary: #4a5568;
+            --text-primary: #e2e8f0; --text-secondary: #a0aec0; --border-color: #718096;
+            --accent-color: #f6ad55; --accent-color-hover: #ed8936;
+            --success-color: #48bb78; --danger-color: #f56565; --warning-color: #ecc94b;
+            --btn-default-bg: #4a5568; --btn-default-hover-bg: #718096; --btn-default-text: #e2e8f0;
+            --btn-danger-bg: #c53030; --btn-danger-hover-bg: #9b2c2c; --btn-danger-text: #e2e8f0;
+            --btn-accent-bg: #ed8936; --btn-accent-hover-bg: #dd6b20; --btn-accent-text: #1a202c;
+            --toggle-bg-off: #4a5568; --toggle-bg-on: #ed8936; --toggle-circle-bg: #ffffff;
+        }
+        .theme-vip {
+            --bg-primary: #121212; --bg-secondary: #1e1e1e; --bg-tertiary: #2c2c2c;
+            --text-primary: #e0e0e0; --text-secondary: #b0b0b0; --border-color: #444;
+            --accent-color: #d4af37; --accent-color-hover: #c7a02f;
+            --success-color: #4caf50; --danger-color: #f44336; --warning-color: #ffc107;
+            --btn-default-bg: #444; --btn-default-hover-bg: #555; --btn-default-text: #e0e0e0;
+            --btn-danger-bg: #b71c1c; --btn-danger-hover-bg: #d32f2f; --btn-danger-text: #e0e0e0;
+            --btn-accent-bg: #d4af37; --btn-accent-hover-bg: #c7a02f; --btn-accent-text: #121212;
+            --toggle-bg-off: #444; --toggle-bg-on: #d4af37; --toggle-circle-bg: #121212;
+        }
+        .theme-matrix {
+            --bg-primary: #000000; --bg-secondary: #0D0D0D; --bg-tertiary: #1a1a1a;
+            --text-primary: #00ff41; --text-secondary: #00b32d; --border-color: #00802b;
+            --accent-color: #00ff41; --accent-color-hover: #00e639;
+            --success-color: #00ff41; --danger-color: #ff0000; --warning-color: #ffff00;
+            --btn-default-bg: #00802b; --btn-default-hover-bg: #00b32d; --btn-default-text: #000000;
+            --btn-danger-bg: #990000; --btn-danger-hover-bg: #cc0000; --btn-danger-text: #000000;
+            --btn-accent-bg: #00ff41; --btn-accent-hover-bg: #00e639; --btn-accent-text: #000000;
+            --toggle-bg-off: #00802b; --toggle-bg-on: #00ff41; --toggle-circle-bg: #000000;
+        }
+        .theme-dracula {
+            --bg-primary: #282a36; --bg-secondary: #383a59; --bg-tertiary: #44475a;
+            --text-primary: #f8f8f2; --text-secondary: #bd93f9; --border-color: #6272a4;
+            --accent-color: #ff79c6; --accent-color-hover: #ff92d0;
+            --success-color: #50fa7b; --danger-color: #ff5555; --warning-color: #f1fa8c;
+            --btn-default-bg: #44475a; --btn-default-hover-bg: #6272a4; --btn-default-text: #f8f8f2;
+            --btn-danger-bg: #ff5555; --btn-danger-hover-bg: #ff6e6e; --btn-danger-text: #282a36;
+            --btn-accent-bg: #ff79c6; --btn-accent-hover-bg: #ff92d0; --btn-accent-text: #282a36;
+            --toggle-bg-off: #44475a; --toggle-bg-on: #bd93f9; --toggle-circle-bg: #f8f8f2;
+        }
+        .theme-solarized-light {
+            --bg-primary: #fdf6e3; --bg-secondary: #eee8d5; --bg-tertiary: #e7e1cf;
+            --text-primary: #657b83; --text-secondary: #586e75; --border-color: #93a1a1;
+            --accent-color: #268bd2; --accent-color-hover: #1e6a9e;
+            --success-color: #859900; --danger-color: #dc322f; --warning-color: #b58900;
+            --btn-default-bg: #93a1a1; --btn-default-hover-bg: #839496; --btn-default-text: #fdf6e3;
+            --btn-danger-bg: #dc322f; --btn-danger-hover-bg: #cb4b16; --btn-danger-text: #fdf6e3;
+            --btn-accent-bg: #268bd2; --btn-accent-hover-bg: #1e6a9e; --btn-accent-text: #fdf6e3;
+            --toggle-bg-off: #93a1a1; --toggle-bg-on: #268bd2; --toggle-circle-bg: #fdf6e3;
+        }
+        .theme-nord {
+            --bg-primary: #2e3440; --bg-secondary: #3b4252; --bg-tertiary: #434c5e;
+            --text-primary: #d8dee9; --text-secondary: #e5e9f0; --border-color: #4c566a;
+            --accent-color: #88c0d0; --accent-color-hover: #8fbcbb;
+            --success-color: #a3be8c; --danger-color: #bf616a; --warning-color: #ebcb8b;
+            --btn-default-bg: #434c5e; --btn-default-hover-bg: #4c566a; --btn-default-text: #d8dee9;
+            --btn-danger-bg: #bf616a; --btn-danger-hover-bg: #d08770; --btn-danger-text: #2e3440;
+            --btn-accent-bg: #88c0d0; --btn-accent-hover-bg: #8fbcbb; --btn-accent-text: #2e3440;
+            --toggle-bg-off: #434c5e; --toggle-bg-on: #88c0d0; --toggle-circle-bg: #d8dee9;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-primary); color: var(--text-primary); transition: background-color 0.3s, color 0.3s; position: relative; }
+        .calculator-wrapper { background-color: var(--bg-secondary); }
+        .input-field { background-color: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary); }
+        .input-field:disabled { background-color: var(--bg-secondary); cursor: not-allowed; opacity: 0.7; }
+        .input-field.invalid { border-color: var(--danger-color); box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger-color) 40%, transparent); }
+        .tp-percent.locked-input { background-color: var(--bg-primary); cursor: not-allowed; }
+        .section-header { background-color: var(--bg-tertiary); padding: 0.5rem 1rem; border-radius: 0.375rem; margin-bottom: 1rem; font-weight: 600; color: var(--text-primary); display: flex; justify-content: space-between; align-items: center; }
+        .result-group { background-color: var(--bg-primary); padding: 1rem; border-radius: 0.5rem; margin-top: 1.5rem; }
+        .result-item { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; padding: 0.75rem 0; border-bottom: 1px solid var(--bg-tertiary); }
+        .result-item:last-child { border-bottom: none; }
+        .result-label { color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem; margin-right: 1rem; }
+        .result-value { color: var(--text-primary); font-weight: 600; text-align: right; word-break: break-all; flex-grow: 1; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        
+        .trade-type-switch button { padding: 0.5rem 1rem; border-radius: 0.375rem; transition: all 0.2s ease-in-out; border: 1px solid transparent; }
+        .trade-type-switch button.active { font-weight: 700; }
+        .trade-type-switch button.long.active { background-color: #166534; border-color: var(--success-color); color: white; }
+        .trade-type-switch button.short.active { background-color: #991b1b; border-color: var(--danger-color); color: white; }
+        .trade-type-switch button:not(.active) { background-color: var(--bg-tertiary); color: var(--text-primary); }
+        .trade-type-switch { background-color: var(--bg-tertiary); }
+
+        .atr-toggle-track { background-color: var(--toggle-bg-off); transition: background-color 0.3s; }
+        input[type="checkbox"]:checked + .atr-toggle-track { background-color: var(--toggle-bg-on); }
+        .atr-toggle-track::after { background-color: var(--toggle-circle-bg); border-color: var(--border-color); transition: transform 0.3s, background-color 0.3s, border-color 0.3s; }
+        input[type="checkbox"]:checked + .atr-toggle-track::after { transform: translateX(calc(100% + 2px)); border-color: var(--toggle-circle-bg); }
+
+        .tooltip { position: relative; display: inline-block; cursor: pointer; }
+        .tooltip .tooltiptext { visibility: hidden; width: 220px; background-color: var(--bg-tertiary); color: var(--text-primary); text-align: center; border-radius: 6px; padding: 5px; position: absolute; z-index: 10; bottom: 125%; left: 50%; margin-left: -110px; opacity: 0; transition: opacity 0.3s; font-size: 0.8rem; font-weight: 400; }
+        .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+        .tooltip-icon { width: 1rem; height: 1rem; border-radius: 99px; background-color: var(--border-color); color: var(--text-primary); font-size: 0.7rem; text-align: center; line-height: 1rem; }
+        .copy-btn, .price-fetch-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; transition: color 0.2s; }
+        .copy-btn:hover, .price-fetch-btn:hover { color: var(--success-color); }
+        .copy-feedback, .save-feedback { color: var(--success-color); font-size: 0.8rem; visibility: hidden; opacity: 0; transition: all 0.3s; }
+        .visual-bar-container { background-color: var(--bg-primary); padding: 2.5rem 1rem 2.5rem 1rem; border-radius: 0.5rem; margin-top: 1.5rem; position: relative; }
+        .visual-bar { height: 1.5rem; position: relative; display: flex; border-radius: 0.375rem; overflow: visible; background-color: var(--bg-tertiary); }
+        .loss-zone { background-color: var(--danger-color); position: absolute; height: 100%;}
+        .gain-zone { background-color: var(--success-color); position: absolute; height: 100%;}
+        .bar-marker { position: absolute; top: -0.25rem; bottom: -0.25rem; width: 20px; display: flex; flex-direction: column; align-items: center; cursor: pointer; transform: translateX(-50%); }
+        .bar-marker::before { content: ''; position: absolute; left: 50%; transform: translateX(-50%); width: 4px; height: 100%; background-color: var(--text-primary); }
+        .bar-marker span { position: absolute; font-size: 0.75rem; background-color: var(--bg-tertiary); padding: 0.1rem 0.3rem; border-radius: 0.25rem; white-space: nowrap; }
+        .bar-marker:not(.entry-marker) span { bottom: 100%; margin-bottom: 0.25rem; box-shadow: var(--shadow-tooltip); }
+        .entry-marker span { top: 100%; margin-top: 0.25rem; }
+        .tp-tooltip { position: absolute; background-color: var(--bg-tertiary); color: var(--text-primary); padding: 0.5rem; border-radius: 0.5rem; font-size: 0.8rem; white-space: nowrap; z-index: 60; visibility: hidden; opacity: 0; transition: opacity 0.2s, visibility 0.2s; pointer-events: none; transform: translateX(-50%); box-shadow: var(--shadow-tooltip); }
+        .tp-tooltip::before { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 5px solid var(--bg-tertiary); }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 50; visibility: hidden; opacity: 0; transition: all 0.3s ease-in-out; }
+        .modal-content { background-color: var(--bg-secondary); padding: 2rem; border-radius: 1rem; max-width: 90vw; max-height: 90vh; overflow-y: auto; }
+        .journal-table { width: 100%; border-collapse: collapse; }
+        .journal-table th, .journal-table td { padding: 0.75rem; border: 1px solid var(--border-color); text-align: left; font-size: 0.875rem; }
+        .journal-table th { background-color: var(--bg-tertiary); }
+        .notes-cell { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; transition: all 0.2s ease-in-out; }
+        .notes-cell.expanded { white-space: pre-wrap; overflow: visible; text-overflow: clip; max-width: 400px; }
+        .journal-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0.5rem; margin-bottom: 1.5rem; }
+        .stat-card { background-color: var(--bg-primary); padding: 0.75rem; border-radius: 0.5rem; text-align: center; }
+        .stat-value { font-size: 1.25rem; font-weight: 700; }
+        .stat-label { font-size: 0.75rem; color: var(--text-secondary); }
+        .suggestion-item { background-color: var(--bg-secondary); padding: 0.5rem 1rem; cursor: pointer; color: var(--text-primary); }
+        .suggestion-item:hover { background-color: var(--accent-color); color: #ffffff; }
+        
+        .prose h3 { margin-top: 1.5em; margin-bottom: 0.5em; font-size: 1.25rem; font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3em;}
+        .prose p { margin-bottom: 1em; line-height: 1.6; }
+        .prose ul { list-style-type: disc; margin-left: 1.5em; margin-bottom: 1em; }
+        .prose li { margin-bottom: 0.5em; }
+        .prose strong { color: var(--text-primary); font-weight: 600; }
+        .prose code { background-color: var(--bg-tertiary); padding: 0.2em 0.4em; margin: 0; font-size: 85%; border-radius: 3px; }
+        .price-loaded-flash { animation: price-flash 0.7s ease-out; }
+        @keyframes price-flash {
+            0% { background-color: var(--bg-tertiary); }
+            30% { background-color: color-mix(in srgb, var(--accent-color) 50%, var(--bg-tertiary)); }
+            100% { background-color: var(--bg-tertiary); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <script>
+        (function() {
+            try {
+                const themes = ['dark', 'light', 'meteor', 'vip', 'matrix', 'dracula', 'solarized-light', 'nord'];
+                const theme = localStorage.getItem('theme') || 'dark';
+                if (themes.includes(theme) && theme !== 'dark') {
+                    document.body.classList.add('theme-' + theme);
+                }
+            } catch (e) {
+                console.warn("Could not access localStorage to set theme.", e);
+            }
+        })();
+    </script>
+
+    <main class="w-full max-w-4xl mx-auto calculator-wrapper rounded-2xl shadow-2xl p-6 sm:p-8 fade-in">
+        
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold">Trading Dashboard</h1>
+            <div class="flex items-center gap-2">
+                <select id="preset-loader" class="input-field px-3 py-2 rounded-md text-sm"><option value="">Preset laden...</option></select>
+                <button id="save-preset-btn" class="text-sm bg-slate-700 hover:bg-slate-600 text-white font-bold p-2 rounded-lg" title="Aktuelle Eingaben als Preset speichern">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="pointer-events-none" viewBox="0 0 16 16"><path d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09z"/></svg>
+                </button>
+                <button id="delete-preset-btn" class="text-sm bg-red-800 hover:bg-red-700 text-white font-bold p-2 rounded-lg" title="Ausgewähltes Preset löschen" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="pointer-events-none" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5zM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06zm3 0l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06zm3 .5a.5.5 0 0 0-1 0v8.5a.5.5 0 0 0 1 0v-8.5z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                </button>
+                <button id="reset-btn" class="text-sm bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-lg">Reset</button>
+                <button id="theme-switcher" class="text-sm bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-lg">🌙</button>
+                <button id="view-journal-btn" class="text-sm bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-4 rounded-lg">Journal</button>
+            </div>
+        </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+            <div>
+                <h2 class="section-header" id="trade-type-label">Allgemein</h2>
+                <div class="grid grid-cols-1 gap-4 mb-4">
+                    <div class="trade-type-switch p-1 rounded-lg flex" role="radiogroup" aria-labelledby="trade-type-label">
+                        <button id="btn-long" class="long w-1/2 active" role="radio" aria-checked="true">Long</button>
+                        <button id="btn-short" class="short w-1/2" role="radio" aria-checked="false">Short</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" inputmode="decimal" id="leverage" class="input-field w-full h-full px-4 py-2 rounded-md" placeholder="Hebel (z.B. 10x)" value="1">
+                        <input type="text" inputmode="decimal" id="fees" class="input-field w-full px-4 py-2 rounded-md" placeholder="Gebühren pro Trade (%)" value="0.1">
+                    </div>
+                </div>
+                
+                <h2 class="section-header !mt-6">Portfolio</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" inputmode="decimal" id="accountSize" class="input-field w-full px-4 py-2 rounded-md" placeholder="Konto Guthaben">
+                    <input type="text" inputmode="decimal" id="riskPercentage" class="input-field w-full px-4 py-2 rounded-md" placeholder="Risiko je Trade (%)">
+                </div>
+            </div>
+            
+            <div>
+                <h2 class="section-header">Trade Setup</h2>
+                <div class="relative mb-4">
+                    <input type="text" id="symbol" class="input-field w-full px-4 py-2 rounded-md pr-10" placeholder="Symbol (z.B. BTCUSDT)" autocomplete="off">
+                    <button id="price-fetch-btn" class="price-fetch-btn absolute top-1/2 right-2 -translate-y-1/2" title="Live-Preis holen">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8.5 5.5a.5.5 0 0 0-1 0v3.354l-1.46-1.47a.5.5 0 0 0-.708.708l2.146 2.147a.5.5 0 0 0 .708 0l2.146-2.147a.5.5 0 0 0-.708-.708L8.5 8.854V5.5z"/><path d="M8 16a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm7-8a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg>
+                    </button>
+                    <div id="symbol-suggestions" class="absolute top-full left-0 w-full rounded-md shadow-lg mt-1 hidden overflow-hidden border border-[var(--border-color)] z-20"></div>
+                </div>
+                <input type="text" inputmode="decimal" id="entryPrice" class="input-field w-full px-4 py-2 rounded-md mb-4" placeholder="Kaufpreis">
+                
+                <div class="p-2 rounded-lg mb-4" style="background-color: var(--bg-tertiary);">
+                    <div class="flex justify-end mb-2">
+                        <label class="flex items-center cursor-pointer"><span class="mr-2 text-sm">ATR Stop-Loss</span><input type="checkbox" id="use-atr-sl" class="sr-only peer" role="switch" aria-checked="false"><div class="atr-toggle-track relative w-11 h-6 peer-focus:outline-none rounded-full peer after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:border after:rounded-full after:h-5 after:w-5"></div></label>
+                    </div>
+                    <div id="manual-sl-group"><input type="text" inputmode="decimal" id="stopLossPrice" class="input-field w-full px-4 py-2 rounded-md" placeholder="Manueller Stopp Loss"></div>
+                    <div id="atr-sl-group" class="hidden grid grid-cols-2 gap-2"><input type="text" inputmode="decimal" id="atrValue" class="input-field w-full px-4 py-2 rounded-md" placeholder="ATR Wert"><input type="text" inputmode="decimal" id="atrMultiplier" class="input-field w-full px-4 py-2 rounded-md" placeholder="Multiplikator" value="1.5"></div>
+                    <div id="atr-formula-display" class="text-center text-xs text-sky-300 mt-2 hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <section class="mt-4 md:col-span-2">
+            <h2 class="section-header">
+                <span>Take-Profit Ziele (Partiell)</span>
+                <div class="flex items-center gap-2">
+                    <div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Hier sehen Sie die berechneten Kennzahlen für jeden Ihrer partiellen Take-Profit-Ziele.</span></div>
+                    <button id="add-tp-btn" class="text-sky-400 hover:text-sky-300" title="Weiteres Ziel hinzufügen" tabindex="-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+                    </button>
+                </div>
+            </h2>
+            <div id="take-profit-list" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+        </section>
+
+        <div id="error-message" class="text-red-400 text-center text-sm font-medium mt-4 hidden md:col-span-2"></div>
+
+        <section id="results" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-x-8">
+            <div>
+                <div class="result-group">
+                    <h2 class="section-header">Zusammenfassung</h2>
+                    <div class="result-item">
+                        <span class="result-label">
+                            Positionsgröße
+                            <button id="lock-position-size-btn" class="copy-btn ml-2" title="Positionsgröße sperren/entsperren">
+                                <svg class="lock-icon-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-4 0H8V6c0-2.21 1.79-4 4-4s4 1.79 4 4v2z"/></svg>
+                                <svg class="lock-icon-closed hidden" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>
+                            </button>
+                            <button id="copy-btn" class="copy-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg></button>
+                            <span id="copy-feedback" class="copy-feedback">Kopiert!</span>
+                        </span>
+                        <span id="positionSize" class="result-value text-lg text-green-400"></span>
+                    </div>
+                    <div class="result-item"><span class="result-label">Max. Verlust (Netto)<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Der maximale Betrag, den Sie bei diesem Trade verlieren können, einschließlich aller Gebühren.</span></div></span><span id="netLoss" class="result-value text-red-400"></span></div>
+                    <div class="result-item"><span class="result-label">Benötigte Margin<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Das Kapital, das von Ihrem Konto für diesen Trade blockiert wird.</span></div></span><span id="requiredMargin" class="result-value"></span></div>
+                    <div class="result-item">
+                        <span class="result-label">Gesch. Liquidationspreis<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Geschätzter Preis, bei dem Ihre Position liquidiert wird.</span></div></span>
+                        <span id="liquidationPrice" class="result-value text-warning-color"></span>
+                    </div>
+                    <div class="result-item"><span class="result-label">Break-Even Preis<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Der Kurs, bei dem Ihr Trade unter Berücksichtigung der Gebühren null Gewinn/Verlust macht.</span></div></span><span id="breakEvenPrice" class="result-value text-sky-400"></span></div>
+                </div>
+                <div id="total-metrics-group" class="result-group">
+                    <h2 class="section-header">Gesamt-Trade Metriken<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Übersicht über die wichtigsten Kennzahlen für den gesamten Trade.</span></div></h2>
+                    <div class="result-item"><span class="result-label">Risiko pro Trade (Währung)<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Der absolute Geldbetrag, den Sie maximal riskieren.</span></div></span><span id="riskAmountCurrency" class="result-value text-red-400"></span></div>
+                    <div class="result-item"><span class="result-label">Gesamte Gebühren<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Die geschätzten Gesamtkosten für diesen Trade.</span></div></span><span id="totalFees" class="result-value"></span></div>
+                    <div class="result-item"><span class="result-label">Max. potenzieller Gewinn<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Der maximale Netto-Gewinn, wenn die gesamte Position zum besten TP geschlossen würde.</span></div></span><span id="maxPotentialProfit" class="result-value text-green-400"></span></div>
+                    <div class="result-item"><span class="result-label">Gewichtetes R/R<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Das durchschnittliche Chance-Risiko-Verhältnis aller Teilverkäufe.</span></div></span><span id="totalRR" class="result-value"></span></div>
+                    <div class="result-item"><span class="result-label">Gesamt Netto-Gewinn<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Der kumulierte Netto-Gewinn aus allen Teilverkäufen.</span></div></span><span id="totalNetProfit" class="result-value text-green-400"></span></div>
+                    <div class="result-item"><span class="result-label">Verkaufte Position<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Der Gesamtprozentsatz der verkauften Position.</span></div></span><span id="totalPercentSold" class="result-value"></span></div>
+                </div>
+            </div>
+            <div id="tp-results-container"></div>
+            <div id="visual-bar-container" class="visual-bar-container md:col-span-2"><h2 class="section-header text-center !mb-4">Trade Visualisierung</h2><div id="visual-bar" class="visual-bar"></div><div id="tp-tooltip" class="tp-tooltip"></div></div>
+            <footer class="md:col-span-2">
+                <textarea id="tradeNotes" class="input-field w-full px-4 py-2 rounded-md mb-4" rows="2" placeholder="Notizen zum Trade..."></textarea>
+                <div class="flex items-center gap-4">
+                    <button id="save-journal-btn" class="w-full bg-sky-600 hover:bg-sky-500 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg">Trade zum Journal hinzufügen</button>
+                    <button id="show-dashboard-readme-btn" class="bg-slate-600 hover:bg-slate-500 text-white font-bold p-3 rounded-lg" title="Anleitung anzeigen">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="pointer-events-none bi bi-book" viewBox="0 0 16 16"><path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.492-3.287.981V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.51.555 3.597 1.466v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.492-3.287.981V2.687z"/></svg>
+                    </button>
+                    <span id="save-feedback" class="save-feedback">Gespeichert!</span>
+                </div>
+            </footer>
+        </section>
+    </main>
+    
+    <div id="journal-modal" class="modal-overlay">
+        <div class="modal-content w-full h-full max-w-6xl">
+             <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Trade Journal</h2><button id="close-journal-btn" class="text-3xl">&times;</button></div>
+             <div id="journal-stats" class="journal-stats"></div>
+             <div class="flex gap-4 my-4"><input type="text" id="journal-search" class="input-field w-full px-3 py-2 rounded-md" placeholder="Symbol suchen..."><select id="journal-filter" class="input-field px-3 py-2 rounded-md"><option value="all">Alle</option><option value="Open">Offen</option><option value="Won">Gewonnen</option><option value="Lost">Verloren</option></select></div>
+            <div class="max-h-[calc(100vh-20rem)] overflow-auto">
+                <table id="journal-table" class="journal-table">
+                    <thead><tr><th>Datum</th><th>Symbol</th><th>Typ</th><th>Einstieg</th><th>SL</th><th>R/R</th><th>Status</th><th>Notizen</th><th>Aktion</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <h3 class="text-xl font-bold mt-6 mb-4">Performance pro Symbol</h3>
+            <div id="symbol-performance-stats" class="max-h-48 overflow-y-auto border border-[var(--border-color)] rounded-md p-2">
+                <table class="journal-table w-full">
+                    <thead><tr><th>Symbol</th><th>Trades</th><th>Gewinn %</th><th>Gesamt P/L</th></tr></thead>
+                    <tbody id="symbol-performance-table-body"></tbody>
+                </table>
+            </div>
+             <div class="flex items-center gap-4 mt-4">
+                <button id="export-csv-btn" class="bg-green-700 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2" title="Als CSV exportieren"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg><span>Exportieren</span></button>
+                <input type="file" id="import-csv-input" accept=".csv" class="hidden"/>
+                <button id="import-csv-btn" class="bg-blue-700 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2" title="CSV importieren"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 4.146a.5.5 0 0 0-.708 0L4.5 6.854a.5.5 0 1 0 .708.708L7.5 5.707V14.5a.5.5 0 0 0 1 0V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3z"/></svg><span>Importieren</span></button>
+                <button id="clear-journal-btn" class="bg-red-800 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2" title="Ganzes Journal leeren"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5zM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06zm3 0l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06zm3 .5a.5.5 0 0 0-1 0v8.5a.5.5 0 0 0 1 0v-8.5z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg><span>Alles löschen</span></button>
+                 <button id="show-journal-readme-btn" class="bg-slate-600 hover:bg-slate-500 text-white font-bold p-2.5 rounded-lg" title="Anleitung anzeigen"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="pointer-events-none bi bi-book" viewBox="0 0 16 16"><path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.492-3.287.981V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.51.555 3.597 1.466v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.492-3.287.981V2.687z"/></svg></button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="custom-modal-overlay" class="modal-overlay">
+        <div id="custom-modal-content" class="modal-content">
+            <h3 id="custom-modal-title" class="text-xl font-bold mb-4"></h3>
+            <div id="custom-modal-message" class="mb-4 max-h-[70vh] overflow-y-auto pr-2"></div>
+            <input type="text" id="custom-modal-input" class="input-field w-full px-3 py-2 rounded-md mb-4 hidden" placeholder="Eingabe...">
+            <div id="custom-modal-buttons" class="flex justify-end gap-4"></div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+    document.addEventListener('DOMContentLoaded', () => {
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                const context = this;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), delay);
+            };
+        }
+
+        function parseDecimal(value) {
+            if (value === null || value === undefined || value === '') return new Decimal(0);
+            const stringValue = String(value).replace(',', '.');
+            if (isNaN(stringValue) || stringValue.trim() === '') return new Decimal(0);
+            return new Decimal(stringValue);
+        }
+
+        const CONSTANTS = {
+            TRADE_TYPE_LONG: 'long',
+            TRADE_TYPE_SHORT: 'short',
+            LOCAL_STORAGE_SETTINGS_KEY: 'cryptoCalculatorSettings',
+            LOCAL_STORAGE_JOURNAL_KEY: 'tradeJournal',
+            LOCAL_STORAGE_PRESETS_KEY: 'cryptoCalculatorPresets',
+            LOCAL_STORAGE_THEME_KEY: 'theme',
+            STATUS_INVALID: 'INVALID',
+            STATUS_INCOMPLETE: 'INCOMPLETE',
+            STATUS_VALID: 'VALID',
+            SUGGESTED_SYMBOLS: ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'DOGEUSDT', 'ADAUSDT', 'AVAXUSDT', 'SHIBUSDT', 'DOTUSDT', 'LINKUSDT', 'TRXUSDT', 'MATICUSDT', 'LTCUSDT', 'BCHUSDT', 'ATOMUSDT', 'UNIUSDT', 'XLMUSDT', 'ETCUSDT', 'XMRUSDT', 'FILUSDT'],
+            DEFAULT_LEVERAGE: '1',
+            DEFAULT_FEES: '0.1',
+            DEFAULT_ATR_MULTIPLIER: '1.5'
+        };
+
+        const themes = ['dark', 'light', 'meteor', 'vip', 'matrix', 'dracula', 'solarized-light', 'nord'];
+        const themeIcons = {
+            dark: '🌙', light: '☀️', meteor: '☄️', vip: '💎', matrix: '💻', dracula: '🧛', 'solarized-light': '📜', nord: '🏔️'
+        };
+
+        const state = {
+            tradeType: CONSTANTS.TRADE_TYPE_LONG,
+            currentTradeData: {},
+            isPositionSizeLocked: false,
+            lockedPositionSize: null
+        };
+        
+        function setState(newState) { Object.assign(state, newState); }
+
+        const dom = {
+            body: document.body,
+            inputs: {
+                accountSize: document.getElementById('accountSize'), riskPercentage: document.getElementById('riskPercentage'),
+                entryPrice: document.getElementById('entryPrice'), stopLossPrice: document.getElementById('stopLossPrice'),
+                leverage: document.getElementById('leverage'), fees: document.getElementById('fees'),
+                symbol: document.getElementById('symbol'), atrValue: document.getElementById('atrValue'),
+                atrMultiplier: document.getElementById('atrMultiplier'), useAtrSl: document.getElementById('use-atr-sl'),
+                tradeNotes: document.getElementById('tradeNotes'),
+            },
+            buttons: {
+                btnLong: document.getElementById('btn-long'), btnShort: document.getElementById('btn-short'),
+                copyBtn: document.getElementById('copy-btn'), saveJournalBtn: document.getElementById('save-journal-btn'),
+                viewJournalBtn: document.getElementById('view-journal-btn'), closeJournalBtn: document.getElementById('close-journal-btn'),
+                clearJournalBtn: document.getElementById('clear-journal-btn'), resetBtn: document.getElementById('reset-btn'),
+                themeSwitcher: document.getElementById('theme-switcher'), priceFetchBtn: document.getElementById('price-fetch-btn'),
+                exportCsvBtn: document.getElementById('export-csv-btn'),
+                importCsvBtn: document.getElementById('import-csv-btn'),
+                importCsvInput: document.getElementById('import-csv-input'),
+                addTpBtn: document.getElementById('add-tp-btn'),
+                savePresetBtn: document.getElementById('save-preset-btn'),
+                presetLoader: document.getElementById('preset-loader'),
+                deletePresetBtn: document.getElementById('delete-preset-btn'),
+                lockPositionSizeBtn: document.getElementById('lock-position-size-btn'),
+                showDashboardReadmeBtn: document.getElementById('show-dashboard-readme-btn'),
+                showJournalReadmeBtn: document.getElementById('show-journal-readme-btn'),
+            },
+            results: {
+                positionSize: document.getElementById('positionSize'), requiredMargin: document.getElementById('requiredMargin'),
+                netLoss: document.getElementById('netLoss'), liquidationPrice: document.getElementById('liquidationPrice'), breakEvenPrice: document.getElementById('breakEvenPrice'),
+                totalRR: document.getElementById('totalRR'), totalNetProfit: document.getElementById('totalNetProfit'),
+                totalPercentSold: document.getElementById('totalPercentSold'),
+                riskAmountCurrency: document.getElementById('riskAmountCurrency'),
+                totalFees: document.getElementById('totalFees'),
+                maxPotentialProfit: document.getElementById('maxPotentialProfit'),
+                tpResultsContainer: document.getElementById('tp-results-container'),
+            },
+            ui: {
+                errorMessageDiv: document.getElementById('error-message'), copyFeedback: document.getElementById('copy-feedback'), 
+                saveFeedback: document.getElementById('save-feedback'), visualBar: document.getElementById('visual-bar'),
+                manualSlGroup: document.getElementById('manual-sl-group'), atrSlGroup: document.getElementById('atr-sl-group'),
+                atrFormulaDisplay: document.getElementById('atr-formula-display'),
+                journalModal: document.getElementById('journal-modal'), journalTableBody: document.querySelector('#journal-table tbody'),
+                journalStats: document.getElementById('journal-stats'), journalSearch: document.getElementById('journal-search'),
+                journalFilter: document.getElementById('journal-filter'),
+                totalMetricsGroup: document.getElementById('total-metrics-group'),
+                symbolSuggestions: document.getElementById('symbol-suggestions'),
+                tpList: document.getElementById('take-profit-list'),
+                tpTooltip: document.getElementById('tp-tooltip'),
+                customModalOverlay: document.getElementById('custom-modal-overlay'),
+                customModalContent: document.getElementById('custom-modal-content'),
+                customModalTitle: document.getElementById('custom-modal-title'),
+                customModalMessage: document.getElementById('custom-modal-message'),
+                customModalInput: document.getElementById('custom-modal-input'),
+                customModalButtons: document.getElementById('custom-modal-buttons'),
+                symbolPerformanceTableBody: document.getElementById('symbol-performance-table-body'),
+            }
+        };
+
+        const apiService = {
+            async fetchBinancePrice(symbol) {
+                const response = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+                if (!response.ok) throw new Error(`Symbol nicht gefunden oder API-Fehler (${response.status})`);
+                const data = await response.json();
+                return new Decimal(data.price);
+            }
+        };
+
+        const modalManager = {
+            _resolve: null,
+            show(title, message, type, defaultValue = '') {
+                return new Promise((resolve) => {
+                    this._resolve = resolve;
+                    dom.ui.customModalTitle.textContent = title;
+                    dom.ui.customModalMessage.innerHTML = message;
+                    dom.ui.customModalInput.value = defaultValue;
+                    dom.ui.customModalButtons.innerHTML = '';
+
+                    if (type === 'prompt') {
+                        dom.ui.customModalInput.classList.remove('hidden');
+                        const okBtn = document.createElement('button');
+                        okBtn.textContent = 'OK';
+                        okBtn.className = 'bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-4 rounded-lg';
+                        okBtn.onclick = () => this._handleModalConfirm(dom.ui.customModalInput.value);
+                        dom.ui.customModalButtons.appendChild(okBtn);
+                    } else if (type === 'confirm') {
+                        dom.ui.customModalInput.classList.add('hidden');
+                        const yesBtn = document.createElement('button');
+                        yesBtn.textContent = 'Ja';
+                        yesBtn.className = 'bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-lg';
+                        yesBtn.onclick = () => this._handleModalConfirm(true);
+                        dom.ui.customModalButtons.appendChild(yesBtn);
+                        const noBtn = document.createElement('button');
+                        noBtn.textContent = 'Nein';
+                        noBtn.className = 'bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-lg';
+                        noBtn.onclick = () => this._handleModalConfirm(false);
+                        dom.ui.customModalButtons.appendChild(noBtn);
+                    } else {
+                        dom.ui.customModalInput.classList.add('hidden');
+                        const okBtn = document.createElement('button');
+                        okBtn.textContent = 'OK';
+                        okBtn.className = 'bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-4 rounded-lg';
+                        okBtn.onclick = () => this._handleModalConfirm(true);
+                        dom.ui.customModalButtons.appendChild(okBtn);
+                    }
+                    dom.ui.customModalOverlay.style.visibility = 'visible';
+                    dom.ui.customModalOverlay.style.opacity = '1';
+                });
+            },
+            _handleModalConfirm(result) {
+                dom.ui.customModalOverlay.style.visibility = 'hidden';
+                dom.ui.customModalOverlay.style.opacity = '0';
+                if (this._resolve) this._resolve(result);
+                this._resolve = null;
+                dom.ui.customModalInput.classList.add('hidden');
+            }
+        };
+
+        const uiManager = {
+            showError(message, invalidFields = []) {
+                dom.ui.errorMessageDiv.textContent = message;
+                dom.ui.errorMessageDiv.classList.remove('hidden');
+                Object.values(dom.inputs).forEach(input => input.classList.remove('invalid'));
+                invalidFields.forEach(fieldName => dom.inputs[fieldName]?.classList.add('invalid'));
+            },
+            hideError() {
+                dom.ui.errorMessageDiv.textContent = '';
+                dom.ui.errorMessageDiv.classList.add('hidden');
+                Object.values(dom.inputs).forEach(input => input.classList.remove('invalid'));
+            },
+            clearResults(showGuidance = false) {
+                Object.values(dom.results).forEach(el => {
+                    if (el.id === 'tp-results-container') el.innerHTML = '';
+                    else el.textContent = '-';
+                });
+                dom.ui.visualBar.innerHTML = '';
+                dom.ui.atrFormulaDisplay.classList.add('hidden');
+                dom.buttons.saveJournalBtn.disabled = true;
+                dom.ui.totalMetricsGroup.classList.add('hidden');
+
+                if (showGuidance) {
+                    const guidanceElement = document.createElement('div');
+                    guidanceElement.className = 'text-center text-slate-500 py-8';
+                    guidanceElement.textContent = 'Bitte geben Sie die erforderlichen Handelsdaten ein, um die Berechnung zu starten.';
+                    dom.results.tpResultsContainer.appendChild(guidanceElement);
+                }
+            },
+            updateVisualBar(values, targets) {
+                dom.ui.visualBar.innerHTML = '';
+                const validTargetPrices = targets.map(t => t.price).filter(p => p.gt(0));
+                const allPrices = [values.entryPrice, values.stopLossPrice, ...validTargetPrices];
+                if (allPrices.some(p => p.lte(0))) return;
+                const highestPrice = Decimal.max(...allPrices);
+                const lowestPrice = Decimal.min(...allPrices);
+                const totalRange = highestPrice.minus(lowestPrice);
+                if (totalRange.lte(0)) return;
+
+                const slPos = values.stopLossPrice.minus(lowestPrice).dividedBy(totalRange).times(100);
+                const entryPos = values.entryPrice.minus(lowestPrice).dividedBy(totalRange).times(100);
+                
+                const lossZone = document.createElement('div');
+                lossZone.className = 'loss-zone';
+                const gainZone = document.createElement('div');
+                gainZone.className = 'gain-zone';
+
+                if (state.tradeType === CONSTANTS.TRADE_TYPE_LONG) {
+                    lossZone.style.left = `${slPos}%`;
+                    lossZone.style.width = `${entryPos.minus(slPos)}%`;
+                    gainZone.style.left = `${entryPos}%`;
+                    gainZone.style.width = `${new Decimal(100).minus(entryPos)}%`;
+                } else {
+                    gainZone.style.left = '0';
+                    gainZone.style.width = `${entryPos}%`;
+                    lossZone.style.left = `${entryPos}%`;
+                    lossZone.style.width = `${slPos.minus(entryPos)}%`;
+                }
+                dom.ui.visualBar.appendChild(lossZone);
+                dom.ui.visualBar.appendChild(gainZone);
+
+                const createMarker = (pos, label, isEntry = false, index = -1) => {
+                    const marker = document.createElement('div');
+                    marker.className = `bar-marker ${isEntry ? 'entry-marker' : ''}`;
+                    marker.style.left = `${pos}%`;
+                    const span = document.createElement('span');
+                    span.textContent = label;
+                    marker.appendChild(span);
+                    if (index !== -1) {
+                        marker.classList.add('tp-marker');
+                        marker.dataset.tpIndex = index;
+                    }
+                    return marker;
+                };
+
+                dom.ui.visualBar.appendChild(createMarker(slPos, 'SL'));
+                dom.ui.visualBar.appendChild(createMarker(entryPos, 'Einstieg', true));
+                
+                targets.forEach((tp, i) => {
+                    if ((state.tradeType === CONSTANTS.TRADE_TYPE_LONG && tp.price.gt(values.entryPrice)) || (state.tradeType === CONSTANTS.TRADE_TYPE_SHORT && tp.price.lt(values.entryPrice))) {
+                        const tpPos = tp.price.minus(lowestPrice).dividedBy(totalRange).times(100);
+                        dom.ui.visualBar.appendChild(createMarker(tpPos, `TP${i+1}`, false, i));
+                    }
+                });
+            },
+            createTpResultElement(tpIndex, rr, netProfit, percentSold, priceChangePercent, returnOnCapital, partialVolume) {
+                const resultGroup = document.createElement('div');
+                resultGroup.className = 'result-group !mt-0 md:!mt-6';
+                const rrColor = rr.gte(2) ? 'text-green-400' : rr.gte(1.5) ? 'text-yellow-400' : 'text-red-400';
+                const priceChangeColor = priceChangePercent.gt(0) ? 'text-green-400' : priceChangePercent.lt(0) ? 'text-red-400' : '';
+                const returnOnCapitalColor = returnOnCapital.gt(0) ? 'text-green-400' : returnOnCapital.lt(0) ? 'text-red-400' : '';
+                resultGroup.innerHTML = `<h2 class="section-header">Take Profit ${tpIndex} (${percentSold}%)</h2>
+                    <div class="result-item"><span class="result-label">Risk/Reward Ratio</span><span class="result-value ${rrColor}">${rr.toFixed(2)}</span></div>
+                    <div class="result-item"><span class="result-label">Netto-Gewinn<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Der geschätzte Gewinn für diesen Teilverkauf.</span></div></span><span class="result-value text-green-400">+${netProfit.toFixed(2)}</span></div>
+                    <div class="result-item"><span class="result-label">Preisänderung<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Die prozentuale Preisbewegung vom Einstieg.</span></div></span><span class="result-value ${priceChangeColor}">${priceChangePercent.toFixed(2)}%</span></div>
+                    <div class="result-item"><span class="result-label">Rendite auf Kapital<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Der prozentuale Gewinn im Verhältnis zum Kapital.</span></div></span><span class="result-value ${returnOnCapitalColor}">${returnOnCapital.toFixed(2)}%</span></div>
+                    <div class="result-item"><span class="result-label">Teilverkauf Volumen<div class="tooltip"><div class="tooltip-icon">?</div><span class="tooltiptext">Die Menge der Einheiten für diesen Teilverkauf.</span></div></span><span class="result-value">${partialVolume.toFixed(4)}</span></div>`;
+                return resultGroup;
+            },
+            toggleAtrInputs(shouldCalculate = true) {
+                dom.ui.manualSlGroup.classList.toggle('hidden', dom.inputs.useAtrSl.checked);
+                dom.ui.atrSlGroup.classList.toggle('hidden', !dom.inputs.useAtrSl.checked);
+                dom.inputs.stopLossPrice.disabled = dom.inputs.useAtrSl.checked;
+                if (dom.inputs.useAtrSl.checked) dom.inputs.stopLossPrice.value = '';
+                dom.inputs.useAtrSl.setAttribute('aria-checked', dom.inputs.useAtrSl.checked);
+                if (shouldCalculate) app.calculateAndDisplay();
+            },
+            setTradeType(type, shouldCalculate = true) {
+                setState({ tradeType: type });
+                dom.buttons.btnLong.classList.toggle('active', type === CONSTANTS.TRADE_TYPE_LONG);
+                dom.buttons.btnShort.classList.toggle('active', type === CONSTANTS.TRADE_TYPE_SHORT);
+                if (shouldCalculate) app.calculateAndDisplay();
+            },
+            showFeedback(element, duration = 2000, message = "Gespeichert!") {
+                element.textContent = message;
+                element.style.visibility = 'visible';
+                element.style.opacity = '1';
+                setTimeout(() => {
+                    element.style.visibility = 'hidden';
+                    element.style.opacity = '0';
+                }, duration);
+            },
+            setTheme(themeName) {
+                themes.forEach(t => dom.body.classList.remove(`theme-${t}`));
+                if (themeName !== 'dark' && themes.includes(themeName)) {
+                    dom.body.classList.add(`theme-${themeName}`);
+                }
+                dom.buttons.themeSwitcher.textContent = themeIcons[themeName] || '🌙';
+                try {
+                    localStorage.setItem(CONSTANTS.LOCAL_STORAGE_THEME_KEY, themeName);
+                } catch (e) {
+                    console.warn("Could not save theme to localStorage.", e);
+                }
+            },
+            updateSymbolSuggestions(suggestions) {
+                dom.ui.symbolSuggestions.innerHTML = '';
+                if (suggestions.length === 0) {
+                    dom.ui.symbolSuggestions.classList.add('hidden');
+                    return;
+                }
+                suggestions.forEach(symbol => {
+                    const item = document.createElement('div');
+                    item.textContent = symbol;
+                    item.className = 'suggestion-item';
+                    dom.ui.symbolSuggestions.appendChild(item);
+                });
+                dom.ui.symbolSuggestions.classList.remove('hidden');
+            }
+        };
+
+        const calculator = {
+            getAndValidateInputs() {
+                const requiredFieldMap = {
+                    accountSize: "Konto Guthaben",
+                    riskPercentage: "Risiko je Trade (%)",
+                    entryPrice: "Kaufpreis",
+                };
+
+                if (dom.inputs.useAtrSl.checked) {
+                    requiredFieldMap.atrValue = "ATR Wert";
+                    requiredFieldMap.atrMultiplier = "Multiplikator";
+                } else {
+                    requiredFieldMap.stopLossPrice = "Manueller Stopp Loss";
+                }
+
+                const emptyFields = Object.keys(requiredFieldMap).filter(field => !dom.inputs[field].value.trim());
+
+                if (emptyFields.length > 0) {
+                    return { status: CONSTANTS.STATUS_INCOMPLETE };
+                }
+
+                const values = {
+                    accountSize: parseDecimal(dom.inputs.accountSize.value),
+                    riskPercentage: parseDecimal(dom.inputs.riskPercentage.value),
+                    entryPrice: parseDecimal(dom.inputs.entryPrice.value),
+                    leverage: parseDecimal(dom.inputs.leverage.value),
+                    fees: parseDecimal(dom.inputs.fees.value),
+                    symbol: dom.inputs.symbol.value,
+                    useAtrSl: dom.inputs.useAtrSl.checked,
+                    atrValue: parseDecimal(dom.inputs.atrValue.value),
+                    atrMultiplier: parseDecimal(dom.inputs.atrMultiplier.value),
+                    stopLossPrice: parseDecimal(dom.inputs.stopLossPrice.value)
+                };
+                
+                dom.ui.atrFormulaDisplay.classList.add('hidden');
+                if (values.useAtrSl) {
+                    if (values.entryPrice.gt(0) && values.atrValue.gt(0) && values.atrMultiplier.gt(0)) {
+                        const operator = state.tradeType === CONSTANTS.TRADE_TYPE_LONG ? '-' : '+';
+                        values.stopLossPrice = state.tradeType === CONSTANTS.TRADE_TYPE_LONG
+                            ? values.entryPrice.minus(values.atrValue.times(values.atrMultiplier))
+                            : values.entryPrice.plus(values.atrValue.times(values.atrMultiplier));
+                        dom.ui.atrFormulaDisplay.innerHTML = `SL = ${values.entryPrice.toFixed(4)} ${operator} (${values.atrValue} × ${values.atrMultiplier}) = ${values.stopLossPrice.toFixed(4)}`;
+                        dom.ui.atrFormulaDisplay.classList.remove('hidden');
+                    } else if (values.atrValue.gt(0) && values.atrMultiplier.gt(0)) {
+                        // Entry price is missing, but we can't calculate yet.
+                        // This is not an error, just incomplete.
+                        return { status: CONSTANTS.STATUS_INCOMPLETE };
+                    }
+                }
+                
+                if (values.accountSize.lte(0) || values.riskPercentage.lte(0) || values.entryPrice.lte(0) || values.stopLossPrice.lte(0)) {
+                    return { status: CONSTANTS.STATUS_INCOMPLETE };
+                }
+
+                if (state.tradeType === CONSTANTS.TRADE_TYPE_LONG && values.entryPrice.lte(values.stopLossPrice)) {
+                    return { status: CONSTANTS.STATUS_INVALID, message: "Long: Stop-Loss muss unter dem Kaufpreis liegen.", fields: ['stopLossPrice', 'entryPrice'] };
+                }
+                if (state.tradeType === CONSTANTS.TRADE_TYPE_SHORT && values.entryPrice.gte(values.stopLossPrice)) {
+                    return { status: CONSTANTS.STATUS_INVALID, message: "Short: Stop-Loss muss über dem Verkaufspreis liegen.", fields: ['stopLossPrice', 'entryPrice'] };
+                }
+                
+                const targets = Array.from(dom.ui.tpList.querySelectorAll('.tp-row')).map(row => ({
+                    price: parseDecimal(row.querySelector('.tp-price').value),
+                    percent: parseDecimal(row.querySelector('.tp-percent').value),
+                }));
+
+                const totalPercent = targets.reduce((sum, t) => sum.plus(t.percent), new Decimal(0));
+                if (totalPercent.gt(100)) {
+                    return { status: CONSTANTS.STATUS_INVALID, message: `Die Summe der Verkaufsprozente (${totalPercent.toFixed(0)}%) darf 100% nicht überschreiten.`, fields: [] };
+                }
+
+                return { status: CONSTANTS.STATUS_VALID, data: { ...values, targets, totalPercentSold: totalPercent } };
+            },
+            calculateBaseMetrics(values) {
+                const riskAmount = values.accountSize.times(values.riskPercentage.div(100));
+                const riskPerUnit = values.entryPrice.minus(values.stopLossPrice).abs();
+                if (riskPerUnit.isZero()) return null;
+
+                const positionSize = riskAmount.div(riskPerUnit);
+                const orderVolume = positionSize.times(values.entryPrice);
+                const requiredMargin = values.leverage.gt(0) ? orderVolume.div(values.leverage) : orderVolume;
+                const entryFee = orderVolume.times(values.fees.div(100));
+                const slExitFee = positionSize.times(values.stopLossPrice).times(values.fees.div(100));
+                const netLoss = riskAmount.plus(entryFee).plus(slExitFee);
+                
+                const feeFactor = values.fees.div(100);
+                const breakEvenPrice = state.tradeType === CONSTANTS.TRADE_TYPE_LONG
+                    ? values.entryPrice.times(feeFactor.plus(1)).div(new Decimal(1).minus(feeFactor))
+                    : values.entryPrice.times(new Decimal(1).minus(feeFactor)).div(feeFactor.plus(1));
+
+                const liquidationPrice = values.leverage.gt(0) ? (state.tradeType === CONSTANTS.TRADE_TYPE_LONG
+                    ? values.entryPrice.times(new Decimal(1).minus(new Decimal(1).div(values.leverage)))
+                    : values.entryPrice.times(new Decimal(1).plus(new Decimal(1).div(values.leverage)))) : new Decimal(0);
+                
+                return { positionSize, requiredMargin, netLoss, breakEvenPrice, liquidationPrice, entryFee, riskAmount };
+            },
+            calculateIndividualTp(tpPrice, baseMetrics, values, tpPercent) {
+                const { positionSize, requiredMargin, riskAmount } = baseMetrics;
+                const gainPerUnit = tpPrice.minus(values.entryPrice).abs();
+                const positionPart = positionSize.times(tpPercent.div(100));
+                const grossProfitPart = gainPerUnit.times(positionPart);
+                const tpExitFeePart = positionPart.times(tpPrice).times(values.fees.div(100));
+                const entryFeePart = positionPart.times(values.entryPrice).times(values.fees.div(100));
+                const netProfit = grossProfitPart.minus(entryFeePart).minus(tpExitFeePart);
+                const riskForPart = riskAmount.times(tpPercent.div(100));
+                const riskRewardRatio = riskForPart.gt(0) ? netProfit.div(riskForPart) : new Decimal(0);
+                const priceChangePercent = values.entryPrice.gt(0) ? tpPrice.minus(values.entryPrice).div(values.entryPrice).times(100) : new Decimal(0);
+                const returnOnCapital = requiredMargin.gt(0) && tpPercent.gt(0) ? netProfit.div(requiredMargin.times(tpPercent.div(100))).times(100) : new Decimal(0);
+                return { netProfit, riskRewardRatio, priceChangePercent, returnOnCapital, partialVolume: positionPart };
+            },
+            calculateTotalMetrics(targets, baseMetrics, values) {
+                const { positionSize, entryFee, riskAmount } = baseMetrics;
+                let totalNetProfit = new Decimal(0);
+                let weightedRRSum = new Decimal(0);
+                let totalFees = new Decimal(0);
+
+                targets.forEach(tp => {
+                    if (tp.price.gt(0) && tp.percent.gt(0)) {
+                        const { netProfit, riskRewardRatio } = this.calculateIndividualTp(tp.price, baseMetrics, values, tp.percent);
+                        totalNetProfit = totalNetProfit.plus(netProfit);
+                        const entryFeePart = positionSize.times(tp.percent.div(100)).times(values.entryPrice).times(values.fees.div(100));
+                        const exitFeePart = positionSize.times(tp.percent.div(100)).times(tp.price).times(values.fees.div(100));
+                        totalFees = totalFees.plus(entryFeePart).plus(exitFeePart);
+                        weightedRRSum = weightedRRSum.plus(riskRewardRatio.times(tp.percent.div(100)));
+                    }
+                });
+                
+                const validTpPrices = targets.filter(t => t.price.gt(0)).map(t => t.price);
+                let maxPotentialProfit = new Decimal(0);
+                if (validTpPrices.length > 0) {
+                    const bestTpPrice = state.tradeType === CONSTANTS.TRADE_TYPE_LONG ? Decimal.max(...validTpPrices) : Decimal.min(...validTpPrices);
+                    const gainPerUnitFull = bestTpPrice.minus(values.entryPrice).abs();
+                    const grossProfitFull = gainPerUnitFull.times(positionSize);
+                    const exitFeeFull = positionSize.times(bestTpPrice).times(values.fees.div(100));
+                    maxPotentialProfit = grossProfitFull.minus(entryFee).minus(exitFeeFull);
+                }
+
+                const totalRR = values.totalPercentSold.gt(0) ? weightedRRSum.div(values.totalPercentSold.div(100)) : new Decimal(0);
+                return { totalNetProfit, totalRR, totalFees, maxPotentialProfit, riskAmount };
+            }
+        };
+
+        const app = {
+            init() {
+                this.addEventListeners();
+                try {
+                    const savedTheme = localStorage.getItem(CONSTANTS.LOCAL_STORAGE_THEME_KEY) || 'dark';
+                    uiManager.setTheme(savedTheme);
+                } catch (e) {
+                    console.warn("Could not load theme from localStorage on init.", e);
+                    uiManager.setTheme('dark');
+                }
+                this.loadSettings();
+                this.populatePresetLoader();
+                this.calculateAndDisplay();
+            },
+            
+            calculateAndDisplay() {
+                uiManager.hideError();
+                const validationResult = calculator.getAndValidateInputs();
+
+                if (validationResult.status === CONSTANTS.STATUS_INVALID) {
+                    uiManager.showError(validationResult.message, validationResult.fields);
+                    uiManager.clearResults();
+                    return;
+                }
+
+                if (validationResult.status === CONSTANTS.STATUS_INCOMPLETE) {
+                    uiManager.clearResults(true); // Pass true to show guidance message
+                    return;
+                }
+
+                let values = validationResult.data;
+                let baseMetrics;
+
+                if (state.isPositionSizeLocked && state.lockedPositionSize && state.lockedPositionSize.gt(0)) {
+                    const riskPerUnit = values.entryPrice.minus(values.stopLossPrice).abs();
+                    if (riskPerUnit.lte(0)) {
+                        uiManager.showError("Stop-Loss muss einen gültigen Abstand zum Einstiegspreis haben.", ['stopLossPrice', 'entryPrice']);
+                        return;
+                    }
+                    const riskAmount = riskPerUnit.times(state.lockedPositionSize);
+                    const newRiskPercentage = values.accountSize.isZero() ? new Decimal(0) : riskAmount.div(values.accountSize).times(100);
+                    
+                    dom.inputs.riskPercentage.value = newRiskPercentage.toFixed(2);
+                    values.riskPercentage = newRiskPercentage;
+                    
+                    baseMetrics = calculator.calculateBaseMetrics(values);
+                    if (baseMetrics) baseMetrics.positionSize = state.lockedPositionSize;
+                } else {
+                    baseMetrics = calculator.calculateBaseMetrics(values);
+                }
+
+                if (!baseMetrics || baseMetrics.positionSize.lte(0)) { 
+                    uiManager.clearResults(); 
+                    if (state.isPositionSizeLocked) this.togglePositionSizeLock(false);
+                    return; 
+                }
+
+                dom.buttons.saveJournalBtn.disabled = false;
+                dom.results.positionSize.textContent = `${baseMetrics.positionSize.toFixed(4)}`;
+                dom.results.requiredMargin.textContent = `${baseMetrics.requiredMargin.toFixed(2)}`;
+                dom.results.netLoss.textContent = `-${baseMetrics.netLoss.toFixed(2)}`;
+                const dp = values.entryPrice.decimalPlaces();
+                dom.results.liquidationPrice.textContent = `${baseMetrics.liquidationPrice.toFixed(dp)}`;
+                dom.results.breakEvenPrice.textContent = `${baseMetrics.breakEvenPrice.toFixed(dp)}`;
+                
+                dom.results.tpResultsContainer.innerHTML = '';
+                const calculatedTpDetails = [];
+                values.targets.forEach((tp, index) => {
+                    if (tp.price.gt(0) && tp.percent.gt(0)) {
+                        const details = calculator.calculateIndividualTp(tp.price, baseMetrics, values, tp.percent);
+                        if ((state.tradeType === 'long' && tp.price.gt(values.entryPrice)) || (state.tradeType === 'short' && tp.price.lt(values.entryPrice))) {
+                           const tpElement = uiManager.createTpResultElement(index + 1, details.riskRewardRatio, details.netProfit, tp.percent, details.priceChangePercent, details.returnOnCapital, details.partialVolume);
+                           dom.results.tpResultsContainer.appendChild(tpElement);
+                           calculatedTpDetails.push({ index, ...details });
+                        }
+                    }
+                });
+
+                const totalMetrics = calculator.calculateTotalMetrics(values.targets, baseMetrics, values);
+                if (values.totalPercentSold.gt(0)) {
+                    dom.results.totalRR.textContent = totalMetrics.totalRR.toFixed(2);
+                    dom.results.totalNetProfit.textContent = `+${totalMetrics.totalNetProfit.toFixed(2)}`;
+                    dom.results.totalPercentSold.textContent = `${values.totalPercentSold}%`;
+                    dom.results.riskAmountCurrency.textContent = `-${totalMetrics.riskAmount.toFixed(2)}`;
+                    dom.results.totalFees.textContent = `${totalMetrics.totalFees.toFixed(2)}`;
+                    dom.results.maxPotentialProfit.textContent = `+${totalMetrics.maxPotentialProfit.toFixed(2)}`;
+                    dom.ui.totalMetricsGroup.classList.remove('hidden');
+                } else {
+                    dom.ui.totalMetricsGroup.classList.add('hidden');
+                }
+                
+                setState({ currentTradeData: { ...values, ...baseMetrics, ...totalMetrics, tradeType: state.tradeType, status: 'Open', calculatedTpDetails } });
+                uiManager.updateVisualBar(values, values.targets);
+                this.saveSettings();
+            },
+
+            getJournal() {
+                try {
+                    const d = localStorage.getItem(CONSTANTS.LOCAL_STORAGE_JOURNAL_KEY) || '[]';
+                    const parsedData = JSON.parse(d);
+                    if (!Array.isArray(parsedData)) return [];
+                    return parsedData.map(trade => {
+                        const newTrade = { ...trade };
+                        Object.keys(newTrade).forEach(key => {
+                            if (['accountSize', 'riskPercentage', 'entryPrice', 'stopLossPrice', 'leverage', 'fees', 'atrValue', 'atrMultiplier', 'totalRR', 'totalNetProfit', 'netLoss', 'riskAmount', 'totalFees', 'maxPotentialProfit', 'positionSize'].includes(key)) {
+                                newTrade[key] = new Decimal(newTrade[key] || 0);
+                            }
+                        });
+                        if (newTrade.targets && Array.isArray(newTrade.targets)) {
+                            newTrade.targets = newTrade.targets.map(tp => ({ ...tp, price: new Decimal(tp.price || 0), percent: new Decimal(tp.percent || 0) }));
+                        }
+                        return newTrade;
+                    });
+                } catch (e) {
+                    console.warn("Could not load journal from localStorage.", e);
+                    uiManager.showError("Journal konnte nicht geladen werden.");
+                    return [];
+                }
+            },
+            saveJournal(d) {
+                try {
+                    localStorage.setItem(CONSTANTS.LOCAL_STORAGE_JOURNAL_KEY, JSON.stringify(d));
+                } catch (e) {
+                    console.warn("Could not save journal to localStorage.", e);
+                    uiManager.showError("Fehler beim Speichern des Journals. Der lokale Speicher ist möglicherweise voll oder blockiert.");
+                }
+            },
+            addTrade() {
+                if (!state.currentTradeData.positionSize || state.currentTradeData.positionSize.lte(0)) { uiManager.showError("Kann keinen ungültigen Trade speichern."); return; }
+                const journalData = this.getJournal();
+                journalData.push({ ...state.currentTradeData, notes: dom.inputs.tradeNotes.value, id: Date.now(), date: new Date().toISOString() });
+                this.saveJournal(journalData);
+                uiManager.showFeedback(dom.ui.saveFeedback);
+            },
+            updateTradeStatus(id, newStatus) {
+                const journalData = this.getJournal();
+                const tradeIndex = journalData.findIndex(t => t.id == id);
+                if (tradeIndex !== -1) { 
+                    journalData[tradeIndex].status = newStatus; 
+                    this.saveJournal(journalData); 
+                    this.renderJournal(); 
+                }
+            },
+            deleteTrade(id) { 
+                const d = this.getJournal().filter(t => t.id != id); 
+                this.saveJournal(d); 
+                this.renderJournal(); 
+            },
+            async clearJournal() {
+                const journal = this.getJournal();
+                if (journal.length === 0) {
+                    uiManager.showError("Das Journal ist bereits leer.");
+                    return;
+                }
+                if (await modalManager.show("Journal leeren", "Möchten Sie wirklich das gesamte Journal unwiderruflich löschen?", "confirm")) {
+                    this.saveJournal([]);
+                    this.renderJournal();
+                    uiManager.showFeedback(dom.ui.saveFeedback, 2000, "Journal geleert!");
+                }
+            },
+            renderJournal() {
+                const journalData = this.getJournal();
+                const searchTerm = dom.ui.journalSearch.value.toLowerCase();
+                const filterStatus = dom.ui.journalFilter.value;
+                const filteredData = journalData.filter(trade => (trade.symbol || '').toLowerCase().includes(searchTerm) && (filterStatus === 'all' || trade.status === filterStatus)).sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                dom.ui.journalTableBody.innerHTML = '';
+                if (filteredData.length === 0) {
+                    const emptyRow = document.createElement('tr');
+                    const cell = document.createElement('td');
+                    cell.colSpan = 9;
+                    cell.className = 'text-center text-slate-500 py-8';
+                    cell.textContent = journalData.length === 0 ? 'Noch keine Trades im Journal vorhanden.' : 'Keine Trades für die aktuellen Filter gefunden.';
+                    emptyRow.appendChild(cell);
+                    dom.ui.journalTableBody.appendChild(emptyRow);
+                } else {
+                    const fragment = document.createDocumentFragment();
+                    filteredData.forEach(trade => {
+                        const row = document.createElement('tr');
+                        const typeDisplay = trade.tradeType.charAt(0).toUpperCase() + trade.tradeType.slice(1);
+                        const typeColor = trade.tradeType === CONSTANTS.TRADE_TYPE_LONG ? 'text-green-400' : 'text-red-400';
+                        const rr = (trade.totalRR || new Decimal(0)).toFixed(2);
+                        const rrColor = new Decimal(rr).gte(2) ? 'text-green-400' : new Decimal(rr).gte(1.5) ? 'text-yellow-400' : 'text-red-400';
+                        row.innerHTML = `<td>${new Date(trade.date).toLocaleString('de-DE', {day:'2-digit', month: '2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit'})}</td>
+                        <td>${trade.symbol || '-'}</td><td class="${typeColor}">${typeDisplay}</td>
+                        <td>${trade.entryPrice.toFixed(4)}</td><td>${trade.stopLossPrice.toFixed(4)}</td>
+                        <td class="${rrColor}">${rr}</td>
+                        <td><select class="status-select input-field p-1" data-id="${trade.id}"><option value="Open" ${trade.status === 'Open' ? 'selected' : ''}>Offen</option><option value="Won" ${trade.status === 'Won' ? 'selected' : ''}>Gewonnen</option><option value="Lost" ${trade.status === 'Lost' ? 'selected' : ''}>Verloren</option></select></td>
+                        <td class="notes-cell" title="Klicken zum Ausklappen">${trade.notes || ''}</td>
+                        <td class="text-center"><button class="delete-trade-btn text-red-500 hover:text-red-400 p-1 rounded-full" data-id="${trade.id}" title="Löschen"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button></td>`;
+                        fragment.appendChild(row);
+                    });
+                    dom.ui.journalTableBody.appendChild(fragment);
+                }
+                this.renderStats(journalData);
+            },
+            
+            renderStats(journalData) {
+                const closedTrades = journalData.filter(t => t.status === 'Won' || t.status === 'Lost');
+                if (closedTrades.length === 0) {
+                    dom.ui.journalStats.innerHTML = '<div class="stat-card col-span-full text-center">Noch keine abgeschlossenen Trades zur Analyse vorhanden.</div>';
+                    dom.ui.symbolPerformanceTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-slate-500 py-4">Keine Daten</td></tr>';
+                    return;
+                }
+
+                const sortedClosedTrades = [...closedTrades].sort((a, b) => new Date(a.date) - new Date(b.date));
+                const wonTrades = closedTrades.filter(t => t.status === 'Won');
+                const lostTrades = closedTrades.filter(t => t.status === 'Lost');
+                const totalTrades = closedTrades.length;
+                const winRate = totalTrades > 0 ? (wonTrades.length / totalTrades) * 100 : 0;
+                
+                // Use totalNetProfit for wins and riskAmount for losses for more robust calculation
+                const totalProfit = wonTrades.reduce((sum, t) => sum.plus(t.totalNetProfit || 0), new Decimal(0));
+                const totalLoss = lostTrades.reduce((sum, t) => sum.plus(t.riskAmount || 0), new Decimal(0));
+                const profitFactor = totalLoss.gt(0) ? totalProfit.dividedBy(totalLoss) : totalProfit.gt(0) ? new Decimal(Infinity) : new Decimal(0);
+                
+                const avgRR = totalTrades > 0 ? closedTrades.reduce((sum, t) => sum.plus(t.totalRR || 0), new Decimal(0)).dividedBy(totalTrades) : new Decimal(0);
+
+                const avgWin = wonTrades.length > 0 ? totalProfit.dividedBy(wonTrades.length) : new Decimal(0);
+                const avgLossOnly = lostTrades.length > 0 ? totalLoss.dividedBy(lostTrades.length) : new Decimal(0);
+                const winLossRatio = avgLossOnly.gt(0) ? avgWin.dividedBy(avgLossOnly) : new Decimal(0);
+
+                const largestProfit = wonTrades.length > 0 ? Decimal.max(0, ...wonTrades.map(t => t.totalNetProfit || 0)) : new Decimal(0);
+                const largestLoss = lostTrades.length > 0 ? Decimal.max(0, ...lostTrades.map(t => t.riskAmount || 0)) : new Decimal(0);
+
+                let totalRMultiples = new Decimal(0);
+                let tradesWithRisk = 0;
+                closedTrades.forEach(trade => {
+                    if (trade.riskAmount && trade.riskAmount.gt(0)) {
+                        const rMultiple = trade.status === 'Won'
+                            ? (trade.totalNetProfit || new Decimal(0)).dividedBy(trade.riskAmount)
+                            : -1; // A loss is always -1R
+                        totalRMultiples = totalRMultiples.plus(rMultiple);
+                        tradesWithRisk++;
+                    }
+                });
+                const avgRMultiple = tradesWithRisk > 0 ? totalRMultiples.dividedBy(tradesWithRisk) : new Decimal(0);
+
+                let cumulativeProfit = new Decimal(0), peakEquity = new Decimal(0), maxDrawdown = new Decimal(0);
+                sortedClosedTrades.forEach(trade => {
+                    cumulativeProfit = trade.status === 'Won' ? cumulativeProfit.plus(trade.totalNetProfit || 0) : cumulativeProfit.minus(trade.riskAmount || 0);
+                    if (cumulativeProfit.gt(peakEquity)) peakEquity = cumulativeProfit;
+                    const drawdown = peakEquity.minus(cumulativeProfit);
+                    if (drawdown.gt(maxDrawdown)) maxDrawdown = drawdown;
+                });
+
+                const recoveryFactor = maxDrawdown.gt(0) ? cumulativeProfit.dividedBy(maxDrawdown) : new Decimal(0);
+                const lossRate = totalTrades > 0 ? (lostTrades.length / totalTrades) * 100 : 0;
+                const expectancy = (new Decimal(winRate/100).times(avgWin)).minus(new Decimal(lossRate/100).times(avgLossOnly));
+
+                let totalProfitLong = new Decimal(0), totalLossLong = new Decimal(0), totalProfitShort = new Decimal(0), totalLossShort = new Decimal(0);
+                closedTrades.forEach(trade => {
+                    if (trade.tradeType === CONSTANTS.TRADE_TYPE_LONG) {
+                        if (trade.status === 'Won') totalProfitLong = totalProfitLong.plus(trade.totalNetProfit || 0);
+                        else totalLossLong = totalLossLong.plus(trade.riskAmount || 0);
+                    } else {
+                        if (trade.status === 'Won') totalProfitShort = totalProfitShort.plus(trade.totalNetProfit || 0);
+                        else totalLossShort = totalLossShort.plus(trade.riskAmount || 0);
+                    }
+                });
+
+                let longestWinningStreak = 0, currentWinningStreak = 0, longestLosingStreak = 0, currentLosingStreak = 0, currentStreakText = 'N/A';
+                sortedClosedTrades.forEach(trade => {
+                    if (trade.status === 'Won') {
+                        currentWinningStreak++;
+                        currentLosingStreak = 0;
+                        if (currentWinningStreak > longestWinningStreak) longestWinningStreak = currentWinningStreak;
+                    } else {
+                        currentLosingStreak++;
+                        currentWinningStreak = 0;
+                        if (currentLosingStreak > longestLosingStreak) longestLosingStreak = currentLosingStreak;
+                    }
+                });
+                if (sortedClosedTrades.length > 0) {
+                    const lastIsWin = sortedClosedTrades[sortedClosedTrades.length - 1].status === 'Won';
+                    let streak = 0;
+                    for (let i = sortedClosedTrades.length - 1; i >= 0; i--) {
+                        if ((lastIsWin && sortedClosedTrades[i].status === 'Won') || (!lastIsWin && sortedClosedTrades[i].status === 'Lost')) streak++;
+                        else break;
+                    }
+                    currentStreakText = `${lastIsWin ? 'W' : 'L'}${streak}`;
+                }
+
+                const stats = [
+                    { label: 'Abgeschl. Trades', value: totalTrades, tooltip: 'Die Gesamtzahl aller abgeschlossenen (gewonnen oder verlorenen) Trades.' },
+                    { label: 'Trefferquote', value: `${winRate.toFixed(1)}%`, tooltip: 'Der prozentuale Anteil der gewinnbringenden Trades an allen abgeschlossenen Trades.' },
+                    { label: 'Profit Faktor', value: profitFactor.isFinite() ? profitFactor.toFixed(2) : '∞', tooltip: 'Das Verhältnis von Bruttogewinn zu Bruttoverlust. Ein Wert größer als 1 bedeutet, dass die Gewinne die Verluste übersteigen.' },
+                    { label: 'Erwartungswert', value: expectancy.toFixed(2), tooltip: 'Der durchschnittliche Betrag, den Sie pro Trade zu gewinnen oder zu verlieren erwarten. Ein positiver Wert deutet auf eine profitable Strategie hin.' },
+                    { label: 'Durchschn. R-Multiple', value: avgRMultiple.toFixed(2), tooltip: 'Der durchschnittliche Gewinn oder Verlust ausgedrückt als Vielfaches des ursprünglichen Risikos (R). Ein Wert von 1.5 bedeutet einen durchschnittlichen Gewinn von 1.5x des Risikos.' },
+                    { label: 'Durchschn. R/R', value: avgRR.toFixed(2), tooltip: 'Das durchschnittliche Chance-Risiko-Verhältnis über alle abgeschlossenen Trades.' },
+                    { label: 'Durchschn. Gewinn', value: avgWin.toFixed(2), tooltip: 'Der durchschnittliche Gewinnbetrag nur für alle gewonnenen Trades.' },
+                    { label: 'Durchschn. Verlust', value: avgLossOnly.toFixed(2), tooltip: 'Der durchschnittliche Verlustbetrag nur für alle verlorenen Trades.' },
+                    { label: 'Gewinn/Verlust Verhältnis', value: winLossRatio.toFixed(2), tooltip: 'Das Verhältnis vom durchschnittlichen Gewinn zum durchschnittlichen Verlust. Zeigt, wie viel größer die Gewinne im Vergleich zu den Verlusten sind.' },
+                    { label: 'Größter Gewinn', value: largestProfit.toFixed(2), tooltip: 'Der höchste Einzelgewinn aus allen abgeschlossenen Trades.' },
+                    { label: 'Größter Verlust', value: largestLoss.toFixed(2), tooltip: 'Der höchste Einzelverlust aus allen abgeschlossenen Trades.' },
+                    { label: 'Max. Drawdown', value: maxDrawdown.toFixed(2), tooltip: 'Der größte prozentuale oder absolute Rückgang des Kapitals von einem Höchststand. Misst das größte finanzielle Tief Ihrer Strategie.' },
+                    { label: 'Recovery Faktor', value: recoveryFactor.toFixed(2), tooltip: 'Das Verhältnis vom Gesamtnettogewinn zum maximalen Drawdown. Ein hoher Wert deutet auf eine gute Erholungsfähigkeit der Strategie hin.' },
+                    { label: 'Aktuelle Serie', value: currentStreakText, tooltip: 'Die aktuelle ununterbrochene Serie von Gewinnen (W) oder Verlusten (L).' },
+                    { label: 'Längste Gewinnserie', value: longestWinningStreak, tooltip: 'Die längste ununterbrochene Serie von Gewinntrades in Folge.' },
+                    { label: 'Längste Verlustserie', value: longestLosingStreak, tooltip: 'Die längste ununterbrochene Serie von Verlusttrades in Folge.' },
+                    { label: 'Long Gewinn', value: totalProfitLong.toFixed(2), tooltip: 'Der kumulierte Nettogewinn aus allen abgeschlossenen Long-Trades.' },
+                    { label: 'Long Verlust', value: totalLossLong.toFixed(2), tooltip: 'Der kumulierte Nettoverlust aus allen abgeschlossenen Long-Trades.' },
+                    { label: 'Short Gewinn', value: totalProfitShort.toFixed(2), tooltip: 'Der kumulierte Nettogewinn aus allen abgeschlossenen Short-Trades.' },
+                    { label: 'Short Verlust', value: totalLossShort.toFixed(2), tooltip: 'Der kumulierte Nettoverlust aus allen abgeschlossenen Short-Trades.' },
+                ];
+                dom.ui.journalStats.innerHTML = '';
+                const statsFragment = document.createDocumentFragment();
+                stats.forEach(s => {
+                    const card = document.createElement('div');
+                    card.className = 'stat-card';
+                    card.innerHTML = `<div class="stat-value">${s.value}</div><div class="stat-label tooltip">${s.label}<span class="tooltiptext !w-56">${s.tooltip}</span></div>`;
+                    statsFragment.appendChild(card);
+                });
+                dom.ui.journalStats.appendChild(statsFragment);
+
+                const symbolPerformance = {};
+                closedTrades.forEach(trade => {
+                    if (!symbolPerformance[trade.symbol]) {
+                        symbolPerformance[trade.symbol] = { totalTrades: 0, wonTrades: 0, totalProfitLoss: new Decimal(0) };
+                    }
+                    symbolPerformance[trade.symbol].totalTrades++;
+                    if (trade.status === 'Won') {
+                        symbolPerformance[trade.symbol].wonTrades++;
+                        symbolPerformance[trade.symbol].totalProfitLoss = symbolPerformance[trade.symbol].totalProfitLoss.plus(trade.totalNetProfit || 0);
+                    } else {
+                        symbolPerformance[trade.symbol].totalProfitLoss = symbolPerformance[trade.symbol].totalProfitLoss.minus(trade.riskAmount || 0);
+                    }
+                });
+
+                dom.ui.symbolPerformanceTableBody.innerHTML = '';
+                const perfFragment = document.createDocumentFragment();
+                const symbolKeys = Object.keys(symbolPerformance);
+
+                if (symbolKeys.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="4" class="text-center text-slate-500 py-4">Keine abgeschlossenen Trades zur Analyse.</td>`;
+                    perfFragment.appendChild(row);
+                } else {
+                    for (const symbol in symbolPerformance) {
+                        const data = symbolPerformance[symbol];
+                        const winRateSymbol = data.totalTrades > 0 ? (data.wonTrades / data.totalTrades) * 100 : 0;
+                        const profitLossColor = data.totalProfitLoss.gt(0) ? 'text-green-400' : data.totalProfitLoss.lt(0) ? 'text-red-400' : '';
+                        const row = document.createElement('tr');
+                        row.innerHTML = `<td>${symbol}</td><td>${data.totalTrades}</td><td>${winRateSymbol.toFixed(1)}%</td><td class="${profitLossColor}">${data.totalProfitLoss.toFixed(2)}</td>`;
+                        perfFragment.appendChild(row);
+                    }
+                }
+                dom.ui.symbolPerformanceTableBody.appendChild(perfFragment);
+            },
+
+            getInputsAsObject() {
+                return {
+                    accountSize: dom.inputs.accountSize.value, riskPercentage: dom.inputs.riskPercentage.value,
+                    leverage: dom.inputs.leverage.value, fees: dom.inputs.fees.value,
+                    tradeType: state.tradeType, useAtrSl: dom.inputs.useAtrSl.checked,
+                    atrMultiplier: dom.inputs.atrMultiplier.value, symbol: dom.inputs.symbol.value,
+                    targets: this.getTargetsFromUI(),
+                };
+            },
+            saveSettings() {
+                try {
+                    localStorage.setItem(CONSTANTS.LOCAL_STORAGE_SETTINGS_KEY, JSON.stringify(this.getInputsAsObject()));
+                } catch (e) {
+                    console.warn("Could not save settings to localStorage.", e);
+                }
+            },
+            loadSettings() {
+                try {
+                    const settingsJSON = localStorage.getItem(CONSTANTS.LOCAL_STORAGE_SETTINGS_KEY);
+                    if (!settingsJSON) {
+                        this.addTakeProfitRow();
+                        this.addTakeProfitRow();
+                        this.addTakeProfitRow();
+                        return;
+                    }
+                    const settings = JSON.parse(settingsJSON);
+                    if (settings) {
+                        Object.keys(settings).forEach(key => {
+                            if (key === 'targets') {
+                                if (settings.targets && Array.isArray(settings.targets)) {
+                                    settings.targets.forEach(tp => this.addTakeProfitRow(tp.price, tp.percent, tp.isLocked));
+                                }
+                            } else if (dom.inputs[key]) {
+                                if (dom.inputs[key].type === 'checkbox') dom.inputs[key].checked = settings[key];
+                                else dom.inputs[key].value = settings[key];
+                            }
+                        });
+                        uiManager.setTradeType(settings.tradeType || CONSTANTS.TRADE_TYPE_LONG, false);
+                        uiManager.toggleAtrInputs(false);
+                    }
+                } catch (e) {
+                    console.warn("Could not load settings from localStorage.", e);
+                }
+                if (dom.ui.tpList.children.length === 0) {
+                    this.addTakeProfitRow();
+                    this.addTakeProfitRow();
+                    this.addTakeProfitRow();
+                }
+            },
+            async savePreset() {
+                const presetName = await modalManager.show("Preset speichern", "Geben Sie einen Namen für Ihr Preset ein:", "prompt");
+                if (!presetName) return;
+                try {
+                    const presets = JSON.parse(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_PRESETS_KEY) || '{}');
+                    if (presets[presetName] && !(await modalManager.show("Überschreiben?", `Preset "${presetName}" existiert bereits. Möchten Sie es überschreiben?`, "confirm"))) return;
+                    presets[presetName] = this.getInputsAsObject();
+                    localStorage.setItem(CONSTANTS.LOCAL_STORAGE_PRESETS_KEY, JSON.stringify(presets));
+                    uiManager.showFeedback(dom.ui.saveFeedback);
+                    this.populatePresetLoader();
+                } catch (e) {
+                    console.error("Fehler beim Speichern des Presets:", e);
+                    uiManager.showError("Preset konnte nicht gespeichert werden. Der lokale Speicher ist möglicherweise voll oder blockiert.");
+                }
+            },
+            async deletePreset() {
+                const presetName = dom.buttons.presetLoader.value;
+                if (!presetName) return;
+                if (!(await modalManager.show("Preset löschen", `Preset "${presetName}" wirklich löschen?`, "confirm"))) return;
+                try {
+                    const presets = JSON.parse(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_PRESETS_KEY) || '{}');
+                    delete presets[presetName];
+                    localStorage.setItem(CONSTANTS.LOCAL_STORAGE_PRESETS_KEY, JSON.stringify(presets));
+                    this.populatePresetLoader();
+                } catch (e) { uiManager.showError("Preset konnte nicht gelöscht werden."); }
+            },
+            loadPreset(presetName) {
+                if (!presetName) return;
+                try {
+                    const presets = JSON.parse(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_PRESETS_KEY) || '{}');
+                    const preset = presets[presetName];
+                    if (preset) {
+                        this.resetAllInputs(false); // Clear inputs without recalculating yet
+                        Object.keys(preset).forEach(key => {
+                            if (key !== 'targets' && dom.inputs[key]) {
+                                if (dom.inputs[key].type === 'checkbox') dom.inputs[key].checked = preset[key];
+                                else dom.inputs[key].value = preset[key];
+                            }
+                        });
+                        uiManager.setTradeType(preset.tradeType || CONSTANTS.TRADE_TYPE_LONG, false);
+                        dom.inputs.useAtrSl.checked = preset.useAtrSl;
+                        uiManager.toggleAtrInputs(false);
+                        
+                        dom.ui.tpList.innerHTML = '';
+                        if (preset.targets && preset.targets.length > 0) {
+                            preset.targets.forEach(tp => this.addTakeProfitRow(tp.price, tp.percent, tp.isLocked));
+                        } else {
+                            [1, 2, 3].forEach(() => this.addTakeProfitRow());
+                        }
+                        
+                        this.calculateAndDisplay();
+                        if (preset.symbol) this.handleFetchPrice();
+                    }
+                } catch (e) {
+                    console.error("Fehler beim Laden des Presets:", e);
+                    uiManager.showError("Preset konnte nicht geladen werden.");
+                }
+            },
+            populatePresetLoader() {
+                try {
+                    const presets = JSON.parse(localStorage.getItem(CONSTANTS.LOCAL_STORAGE_PRESETS_KEY) || '{}');
+                    const presetNames = Object.keys(presets);
+                    const currentVal = dom.buttons.presetLoader.value;
+                    
+                    dom.buttons.presetLoader.innerHTML = ''; // Clear existing options
+
+                    if (presetNames.length === 0) {
+                        const option = document.createElement('option');
+                        option.value = "";
+                        option.textContent = "Keine Presets";
+                        dom.buttons.presetLoader.appendChild(option);
+                        dom.buttons.presetLoader.disabled = true;
+                    } else {
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = "";
+                        defaultOption.textContent = "Preset laden...";
+                        dom.buttons.presetLoader.appendChild(defaultOption);
+
+                        for (const name in presets) {
+                            const option = document.createElement('option');
+                            option.value = name;
+                            option.textContent = name;
+                            dom.buttons.presetLoader.appendChild(option);
+                        }
+                        dom.buttons.presetLoader.disabled = false;
+                    }
+                    
+                    dom.buttons.presetLoader.value = currentVal;
+                    dom.buttons.deletePresetBtn.disabled = !dom.buttons.presetLoader.value;
+                } catch (e) {
+                    console.warn("Could not populate presets from localStorage.", e);
+                    dom.buttons.presetLoader.innerHTML = '<option value="">Presets nicht verfügbar</option>';
+                    dom.buttons.deletePresetBtn.disabled = true;
+                    dom.buttons.presetLoader.disabled = true;
+                }
+            },
+            exportToCSV() {
+                const journalData = this.getJournal();
+                if (journalData.length === 0) { uiManager.showError("Journal ist leer."); return; }
+                const headers = ['ID', 'Datum', 'Uhrzeit', 'Symbol', 'Typ', 'Status', 'Konto Guthaben', 'Risiko %', 'Hebel', 'Gebuehren %', 'Einstieg', 'Stop Loss', 'Gewichtetes R/R', 'Gesamt Netto-Gewinn', 'Risiko pro Trade (Waehrung)', 'Gesamte Gebuehren', 'Max. potenzieller Gewinn', 'Notizen', ...Array.from({length: 5}, (_, i) => [`TP${i+1} Preis`, `TP${i+1} %`]).flat()];
+                const rows = journalData.map(trade => {
+                    const date = new Date(trade.date);
+                    const notes = trade.notes ? `"${trade.notes.replace(/"/g, '""').replace(/\n/g, ' ')}"` : ''; 
+                    const tpData = Array.from({length: 5}, (_, i) => [ (trade.targets[i]?.price || 0).toFixed(4), (trade.targets[i]?.percent || 0).toFixed(2) ]).flat();
+                    return [ trade.id, date.toLocaleDateString('de-DE'), date.toLocaleTimeString('de-DE'), trade.symbol, trade.tradeType, trade.status,
+                        trade.accountSize.toFixed(2), trade.riskPercentage.toFixed(2), trade.leverage.toFixed(2), trade.fees.toFixed(2), trade.entryPrice.toFixed(4), trade.stopLossPrice.toFixed(4),
+                        trade.totalRR.toFixed(2), trade.totalNetProfit.toFixed(2), trade.riskAmount.toFixed(2), trade.totalFees.toFixed(2), trade.maxPotentialProfit.toFixed(2), notes, ...tpData ].join(',');
+                });
+                const csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + rows.join("\n");
+                const link = document.createElement("a");
+                link.href = encodeURI(csvContent);
+                link.download = "TradeJournal.csv";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            },
+            importFromCSV(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const text = e.target.result;
+                    const lines = text.split('\n').filter(line => line.trim() !== '');
+                    if (lines.length < 2) { uiManager.showError("CSV ist leer oder hat nur Kopfzeile."); return; }
+                    const headers = lines[0].split(',').map(h => h.trim());
+                    const newEntries = lines.slice(1).map(line => {
+                        const values = line.split(',');
+                        return headers.reduce((obj, header, index) => { obj[header] = values[index]; return obj; }, {});
+                    }).map(entry => {
+                        try {
+                            const targets = [];
+                            for (let j = 1; j <= 5; j++) {
+                                if (entry[`TP${j} Preis`] && entry[`TP${j} %`]) {
+                                    targets.push({ price: entry[`TP${j} Preis`], percent: entry[`TP${j} %`], isLocked: false });
+                                }
+                            }
+                            return { id: parseInt(entry.ID), date: new Date(`${entry.Datum} ${entry.Uhrzeit}`).toISOString(), symbol: entry.Symbol, tradeType: entry.Typ.toLowerCase(), status: entry.Status,
+                                accountSize: entry['Konto Guthaben'], riskPercentage: entry['Risiko %'], leverage: entry.Hebel, fees: entry['Gebuehren %'], entryPrice: entry.Einstieg, stopLossPrice: entry['Stop Loss'],
+                                totalRR: entry['Gewichtetes R/R'], totalNetProfit: entry['Gesamt Netto-Gewinn'], riskAmount: entry['Risiko pro Trade (Waehrung)'], totalFees: entry['Gesamte Gebuehren'], maxPotentialProfit: entry['Max. potenzieller Gewinn'],
+                                notes: entry.Notizen ? entry.Notizen.replace(/""/g, '"').slice(1, -1) : '', targets };
+                        } catch { return null; }
+                    }).filter(Boolean);
+
+                    if (newEntries.length > 0) {
+                        const currentJournal = this.getJournal();
+                        const combined = [...currentJournal, ...newEntries];
+                        const unique = Array.from(new Map(combined.map(trade => [trade.id, trade])).values());
+                        this.saveJournal(unique);
+                        this.renderJournal();
+                        uiManager.showFeedback(dom.ui.saveFeedback);
+                    } else { uiManager.showError("Keine gültigen Einträge gefunden."); }
+                };
+                reader.readAsText(file);
+            },
+
+            addEventListeners() {
+                const debouncedCalculate = debounce(() => this.calculateAndDisplay(), 300);
+                Object.values(dom.inputs).forEach(i => i.addEventListener('input', debouncedCalculate));
+                
+                dom.buttons.btnLong.addEventListener('click', () => uiManager.setTradeType(CONSTANTS.TRADE_TYPE_LONG));
+                dom.buttons.btnShort.addEventListener('click', () => uiManager.setTradeType(CONSTANTS.TRADE_TYPE_SHORT));
+                dom.inputs.useAtrSl.addEventListener('change', () => uiManager.toggleAtrInputs(true));
+                dom.buttons.resetBtn.addEventListener('click', () => this.resetAllInputs());
+                dom.buttons.themeSwitcher.addEventListener('click', () => {
+                    try {
+                        const currentTheme = localStorage.getItem(CONSTANTS.LOCAL_STORAGE_THEME_KEY) || 'dark';
+                        const currentIndex = themes.indexOf(currentTheme);
+                        const nextIndex = (currentIndex + 1) % themes.length;
+                        uiManager.setTheme(themes[nextIndex]);
+                    } catch (e) { uiManager.setTheme('dark'); }
+                });
+                dom.buttons.priceFetchBtn.addEventListener('click', () => this.handleFetchPrice());
+                dom.buttons.addTpBtn.addEventListener('click', () => this.addTakeProfitRow());
+                dom.buttons.copyBtn.addEventListener('click', () => {
+                    const text = dom.results.positionSize.textContent;
+                    if (text && text !== '-') navigator.clipboard.writeText(text).then(() => uiManager.showFeedback(dom.ui.copyFeedback));
+                });
+
+                dom.buttons.savePresetBtn.addEventListener('click', () => this.savePreset());
+                dom.buttons.presetLoader.addEventListener('change', (e) => { this.loadPreset(e.target.value); dom.buttons.deletePresetBtn.disabled = !e.target.value; });
+                dom.buttons.deletePresetBtn.addEventListener('click', () => this.deletePreset());
+                dom.buttons.lockPositionSizeBtn.addEventListener('click', () => this.togglePositionSizeLock());
+
+                dom.buttons.viewJournalBtn.addEventListener('click', () => { this.renderJournal(); dom.ui.journalModal.style.visibility = 'visible'; dom.ui.journalModal.style.opacity = '1'; });
+                dom.buttons.closeJournalBtn.addEventListener('click', () => { dom.ui.journalModal.style.visibility = 'hidden'; dom.ui.journalModal.style.opacity = '0'; });
+                dom.buttons.saveJournalBtn.addEventListener('click', () => this.addTrade());
+                dom.buttons.clearJournalBtn.addEventListener('click', () => this.clearJournal());
+                dom.buttons.exportCsvBtn.addEventListener('click', () => this.exportToCSV());
+                dom.buttons.importCsvBtn.addEventListener('click', () => dom.buttons.importCsvInput.click());
+                dom.buttons.importCsvInput.addEventListener('change', (e) => e.target.files[0] && this.importFromCSV(e.target.files[0]));
+                dom.ui.journalSearch.addEventListener('input', () => this.renderJournal());
+                dom.ui.journalFilter.addEventListener('change', () => this.renderJournal());
+                dom.ui.journalTableBody.addEventListener('change', e => { if (e.target.classList.contains('status-select')) this.updateTradeStatus(e.target.dataset.id, e.target.value); });
+                dom.ui.journalTableBody.addEventListener('click', e => {
+                    const deleteBtn = e.target.closest('.delete-trade-btn');
+                    if (deleteBtn) this.deleteTrade(deleteBtn.dataset.id);
+                    if (e.target.classList.contains('notes-cell')) e.target.classList.toggle('expanded');
+                });
+
+                dom.buttons.showDashboardReadmeBtn.addEventListener('click', () => this.showReadme('dashboard'));
+                dom.buttons.showJournalReadmeBtn.addEventListener('click', () => this.showReadme('journal'));
+
+                this.setupTpListListeners();
+                this.setupSymbolAutocompleteListeners();
+                this.setupVisualBarListeners();
+            },
+            setupTpListListeners() {
+                dom.ui.tpList.addEventListener('click', (e) => {
+                    const removeBtn = e.target.closest('.remove-tp-btn');
+                    const lockBtn = e.target.closest('.lock-tp-btn');
+                    if (removeBtn) {
+                        removeBtn.closest('.tp-row').remove();
+                        this.updateTpLabels();
+                        this.calculateAndDisplay();
+                    } else if (lockBtn) {
+                        const percentInput = lockBtn.closest('.tp-row').querySelector('.tp-percent');
+                        const isLocked = percentInput.disabled;
+                        percentInput.disabled = !isLocked;
+                        percentInput.classList.toggle('locked-input', !isLocked);
+                        lockBtn.querySelector('.lock-icon-open').classList.toggle('hidden', !isLocked);
+                        lockBtn.querySelector('.lock-icon-closed').classList.toggle('hidden', isLocked);
+                        this.calculateAndDisplay();
+                    }
+                });
+                dom.ui.tpList.addEventListener('input', debounce((e) => {
+                    if (e.target.classList.contains('tp-percent')) this.adjustTpPercentages(e.target);
+                    this.calculateAndDisplay();
+                }, 300));
+            },
+            setupSymbolAutocompleteListeners() {
+                dom.inputs.symbol.addEventListener('input', () => {
+                    const query = dom.inputs.symbol.value.toUpperCase();
+                    if (!query) { uiManager.updateSymbolSuggestions([]); return; }
+                    const filtered = CONSTANTS.SUGGESTED_SYMBOLS.filter(s => s.startsWith(query));
+                    uiManager.updateSymbolSuggestions(filtered);
+                });
+                dom.ui.symbolSuggestions.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('suggestion-item')) {
+                        dom.inputs.symbol.value = e.target.textContent;
+                        uiManager.updateSymbolSuggestions([]);
+                        this.handleFetchPrice();
+                    }
+                });
+                document.addEventListener('click', (e) => {
+                    if (!dom.inputs.symbol.parentElement.contains(e.target)) dom.ui.symbolSuggestions.classList.add('hidden');
+                });
+            },
+            setupVisualBarListeners() {
+                dom.ui.visualBar.addEventListener('mouseover', (e) => {
+                    const tpMarker = e.target.closest('.tp-marker');
+                    if (tpMarker && state.currentTradeData.calculatedTpDetails) {
+                        const tpIndex = parseInt(tpMarker.dataset.tpIndex);
+                        const tpDetails = state.currentTradeData.calculatedTpDetails.find(d => d.index === tpIndex);
+                        if (tpDetails) {
+                            const rrColor = tpDetails.riskRewardRatio.gte(2) ? 'text-green-400' : tpDetails.riskRewardRatio.gte(1.5) ? 'text-yellow-400' : 'text-red-400';
+                            dom.ui.tpTooltip.innerHTML = `<div>Netto-Gewinn: <span class="text-green-400">+${tpDetails.netProfit.toFixed(2)}</span></div><div>R/R: <span class="${rrColor}">${tpDetails.riskRewardRatio.toFixed(2)}</span></div>`;
+                            const barRect = dom.ui.visualBar.getBoundingClientRect();
+                            const markerRect = tpMarker.getBoundingClientRect();
+                            dom.ui.tpTooltip.style.left = `${markerRect.left - barRect.left + markerRect.width / 2}px`;
+                            dom.ui.tpTooltip.style.top = `${tpMarker.offsetTop - dom.ui.tpTooltip.offsetHeight - 10}px`;
+                            dom.ui.tpTooltip.style.visibility = 'visible';
+                            dom.ui.tpTooltip.style.opacity = '1';
+                        }
+                    }
+                });
+                dom.ui.visualBar.addEventListener('mouseout', (e) => {
+                    if (e.target.closest('.tp-marker')) {
+                        dom.ui.tpTooltip.style.visibility = 'hidden';
+                        dom.ui.tpTooltip.style.opacity = '0';
+                    }
+                });
+            },
+            resetAllInputs(shouldCalculate = true) {
+                Object.values(dom.inputs).forEach(input => {
+                    if (input.type === 'checkbox') input.checked = false;
+                    else input.value = '';
+                });
+                dom.inputs.atrMultiplier.value = CONSTANTS.DEFAULT_ATR_MULTIPLIER;
+                dom.inputs.fees.value = CONSTANTS.DEFAULT_FEES;
+                dom.inputs.leverage.value = CONSTANTS.DEFAULT_LEVERAGE;
+                dom.ui.tpList.innerHTML = '';
+                this.addTakeProfitRow(); this.addTakeProfitRow(); this.addTakeProfitRow();
+                uiManager.setTradeType(CONSTANTS.TRADE_TYPE_LONG, false);
+                uiManager.toggleAtrInputs(false);
+                if (shouldCalculate) {
+                    this.calculateAndDisplay();
+                }
+            },
+            async handleFetchPrice() {
+                const symbol = dom.inputs.symbol.value.toUpperCase().replace('/', '');
+                if (!symbol) {
+                    uiManager.showError("Bitte geben Sie ein Symbol ein.");
+                    return;
+                }
+                dom.buttons.priceFetchBtn.classList.add('animate-spin');
+                try {
+                    const price = await apiService.fetchBinancePrice(symbol);
+                    dom.inputs.entryPrice.value = price.toDP(4);
+                    dom.inputs.entryPrice.classList.add('price-loaded-flash');
+                    setTimeout(() => dom.inputs.entryPrice.classList.remove('price-loaded-flash'), 700);
+                    this.calculateAndDisplay();
+                } catch (error) {
+                    uiManager.showError(error.message);
+                } finally {
+                    dom.buttons.priceFetchBtn.classList.remove('animate-spin');
+                }
+            },
+            togglePositionSizeLock(forceState) {
+                const shouldBeLocked = forceState !== undefined ? forceState : !state.isPositionSizeLocked;
+                if (shouldBeLocked && (!state.currentTradeData.positionSize || state.currentTradeData.positionSize.lte(0))) {
+                    uiManager.showError("Positionsgröße kann nicht gesperrt werden, solange sie ungültig ist.");
+                    return;
+                }
+                dom.inputs.riskPercentage.disabled = shouldBeLocked;
+                dom.buttons.lockPositionSizeBtn.querySelector('.lock-icon-open').classList.toggle('hidden', shouldBeLocked);
+                dom.buttons.lockPositionSizeBtn.querySelector('.lock-icon-closed').classList.toggle('hidden', !shouldBeLocked);
+                dom.inputs.riskPercentage.classList.toggle('locked-input', shouldBeLocked);
+                setState({ isPositionSizeLocked: shouldBeLocked, lockedPositionSize: shouldBeLocked ? state.currentTradeData.positionSize : null });
+                this.calculateAndDisplay();
+            },
+            addTakeProfitRow(price = '', percent = '', isLocked = false) {
+                const tpCount = dom.ui.tpList.children.length + 1;
+                const newRow = document.createElement('div');
+                newRow.className = 'tp-row flex items-center gap-2 p-2 rounded-lg';
+                newRow.style.backgroundColor = 'var(--bg-tertiary)';
+                newRow.innerHTML = `<div class="flex-grow">\n                        <label class="tp-label text-xs text-slate-400">Ziel ${tpCount}</label>\n                        <div class="grid grid-cols-2 gap-2">\n                            <input type="text" inputmode="decimal" class="tp-price input-field w-full px-4 py-2 rounded-md" placeholder="Preis" value="${price}">\n                            <input type="text" inputmode="decimal" class="tp-percent input-field w-full px-4 py-2 rounded-md ${isLocked ? 'locked-input' : ''}" placeholder="%" value="${percent}" ${isLocked ? 'disabled' : ''}>\n                        </div>\n                    </div>\n                    <button class="lock-tp-btn text-slate-400 hover:text-sky-400 p-1 self-center" title="Prozentsatz sperren/entsperren" tabindex="-1">\n                        <svg class="lock-icon-open ${isLocked ? 'hidden' : ''}" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-4 0H8V6c0-2.21 1.79-4 4-4s4 1.79 4 4v2z"/></svg>\n                        <svg class="lock-icon-closed ${!isLocked ? 'hidden' : ''}" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg>\n                    </button>\n                    <button class="remove-tp-btn text-red-500 hover:text-red-400 p-1 self-center" title="Dieses Ziel entfernen" tabindex="-1">\n                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="pointer-events-none" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>\n                    </button>`;
+                dom.ui.tpList.appendChild(newRow);
+            },
+            updateTpLabels() {
+                dom.ui.tpList.querySelectorAll('.tp-row').forEach((row, index) => {
+                    const label = row.querySelector('.tp-label');
+                    if (label) label.textContent = `Ziel ${index + 1}`;
+                });
+            },
+            getTargetsFromUI() {
+                return Array.from(dom.ui.tpList.querySelectorAll('.tp-row')).map(row => ({
+                    price: parseDecimal(row.querySelector('.tp-price').value),
+                    percent: parseDecimal(row.querySelector('.tp-percent').value),
+                    isLocked: row.querySelector('.tp-percent').disabled
+                }));
+            },
+            adjustTpPercentages(changedInput) {
+                const tpRows = Array.from(dom.ui.tpList.querySelectorAll('.tp-row'));
+                const tpInputs = tpRows.map(row => row.querySelector('.tp-percent'));
+
+                let sumOfLocked = new Decimal(0);
+                const unlockedInputs = [];
+                tpInputs.forEach(input => {
+                    if (input.disabled) {
+                        sumOfLocked = sumOfLocked.plus(parseDecimal(input.value));
+                    } else {
+                        unlockedInputs.push(input);
+                    }
+                });
+
+                let remainingPercent = new Decimal(100).minus(sumOfLocked);
+                if (remainingPercent.lt(0)) {
+                    uiManager.showError("Gesperrter Prozentsatz übersteigt 100%. Bitte anpassen.", []);
+                    return;
+                }
+
+                if (unlockedInputs.length > 0 && !changedInput.disabled) {
+                    let changedValue = parseDecimal(changedInput.value);
+                    
+                    // Ensure the changed value doesn't exceed the total remaining percentage
+                    if (changedValue.gt(remainingPercent)) {
+                        changedValue = remainingPercent;
+                        changedInput.value = changedValue.toFixed(0);
+                    }
+
+                    const otherUnlocked = unlockedInputs.filter(i => i !== changedInput);
+                    
+                    if (otherUnlocked.length > 0) {
+                        const sumToDistribute = remainingPercent.minus(changedValue);
+                        
+                        // Distribute remaining percentage proportionally to existing values
+                        let sumOfOthers = otherUnlocked.reduce((acc, input) => acc.plus(parseDecimal(input.value)), new Decimal(0));
+
+                        if (sumOfOthers.isZero()) { // If others are all 0, distribute evenly
+                            const evenSplit = sumToDistribute.div(otherUnlocked.length);
+                            otherUnlocked.forEach(input => input.value = evenSplit.toFixed(0));
+                        } else { // Distribute proportionally
+                            otherUnlocked.forEach(input => {
+                                const currentVal = parseDecimal(input.value);
+                                const proportion = currentVal.div(sumOfOthers);
+                                input.value = sumToDistribute.times(proportion).toFixed(0);
+                            });
+                        }
+                    }
+                }
+            },
+            showReadme(type) {
+                const content = type === 'dashboard' ? `...` : `...`; // Content omitted for brevity
+                modalManager.show(type === 'dashboard' ? "Anleitung: Dashboard" : "Anleitung: Journal", content, 'alert');
+            }
+        };
+
+        app.init();
+    });
+    })();
+    </script>
+</body>
+</html>

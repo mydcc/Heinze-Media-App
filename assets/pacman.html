@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pacman</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Verhindert Scrollbalken durch Canvas-Randeffekte */
+        }
+        #gameCanvas {
+            border: 5px solid #0000FF; /* Blauer Rand wie im Original */
+            background-color: #111; /* Dunklerer Hintergrund für den Spielbereich */
+            border-radius: 10px;
+            box-shadow: 0 0 20px #FFFF00, 0 0 30px #0000FF; /* Gelber und blauer Schein */
+        }
+        .controls, .info {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .info span {
+            margin: 0 15px;
+            font-size: 1.2em;
+        }
+        .button {
+            background-color: #FFFF00; /* Gelb */
+            color: #000000; /* Schwarz */
+            border: 2px solid #fff;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', cursive;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+        .button:hover {
+            background-color: #FFD700; /* Dunkleres Gelb */
+        }
+        .button:active {
+            transform: scale(0.95);
+        }
+        .button:disabled {
+            background-color: #555500;
+            cursor: not-allowed;
+        }
+        #touch-controls {
+            display: none; /* Standardmäßig ausgeblendet, wird per JS für Touch-Geräte eingeblendet */
+            margin-top: 15px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 200px; /* Feste Breite für das Control-Pad */
+        }
+        #touch-controls .button {
+            width: 100%;
+            height: 50px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* Pfeile für Touch-Buttons */
+        .arrow-up::before { content: "↑"; }
+        .arrow-down::before { content: "↓"; }
+        .arrow-left::before { content: "←"; }
+        .arrow-right::before { content: "→"; }
+
+        #message-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0,0,0,0.85);
+            color: #FFFF00;
+            padding: 30px;
+            border-radius: 15px;
+            border: 3px solid #FFFF00;
+            text-align: center;
+            z-index: 100;
+            font-size: 1.5em;
+            display: none; /* Standardmäßig ausgeblendet */
+            min-width: 300px;
+            box-shadow: 0 0 15px #FFFF00;
+        }
+        #message-box button {
+            margin-top: 20px;
+        }
+         #loadingIndicator {
+            font-size: 1em;
+            margin-top: 10px;
+        }
+         #ghostTimerDisplay {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #FFB8FF; /* Pink für Geister-Timer */
+        }
+
+        /* Responsive Anpassungen */
+        @media (max-width: 600px) {
+            #gameCanvas {
+                width: 95vw; 
+                height: auto; 
+            }
+            .info span {
+                font-size: 1em;
+            }
+            #touch-controls {
+                display: grid; 
+            }
+            .controls button:not(#touch-controls .button) { 
+                /* display: none; */ 
+            }
+            #message-box {
+                font-size: 1.2em;
+                padding: 20px;
+                min-width: 80vw;
+            }
+        }
+    </style>
+</head>
+<body class="bg-black flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="info mb-4 text-center">
+        <span id="score" class="text-yellow-400 text-2xl">Score: 0</span>
+        <span id="lives" class="text-red-500 text-2xl">Lives: 3</span>
+    </div>
+    <div id="ghostTimerDisplay" class="text-center">Geister starten in: 20s</div>
+
+
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="touch-controls" class="grid grid-cols-3 gap-2 mt-4">
+        <div></div> <button id="touch-up" class="button arrow-up"></button>
+        <div></div> <button id="touch-left" class="button arrow-left"></button>
+        <div></div> <button id="touch-right" class="button arrow-right"></button>
+        <div></div> <button id="touch-down" class="button arrow-down"></button>
+        <div></div> </div>
+
+    <div class="controls mt-4 text-center">
+        <button id="startButton" class="button">Start Game</button>
+        <button id="pauseButton" class="button">Pause</button>
+        </div>
+    <div id="loadingIndicator" class="hidden text-yellow-400 mt-2 text-center">Wird geladen... ✨</div>
+
+    <div id="message-box" class="hidden">
+        <p id="message-text"></p>
+        <button id="message-button" class="button">OK</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score');
+        const livesEl = document.getElementById('lives');
+        const startButton = document.getElementById('startButton');
+        const pauseButton = document.getElementById('pauseButton');
+        const loadingIndicatorEl = document.getElementById('loadingIndicator'); 
+        const ghostTimerDisplayEl = document.getElementById('ghostTimerDisplay');
+
+
+        const messageBox = document.getElementById('message-box');
+        const messageText = document.getElementById('message-text');
+        const messageButton = document.getElementById('message-button');
+
+        const touchUpButton = document.getElementById('touch-up');
+        const touchDownButton = document.getElementById('touch-down');
+        const touchLeftButton = document.getElementById('touch-left');
+        const touchRightButton = document.getElementById('touch-right');
+
+        const TILE_SIZE = 20; 
+        let COLS, ROWS; 
+
+        const WALL_COLOR = '#0000FF'; 
+        const PELLET_COLOR = '#FFFF00'; 
+        const POWER_PELLET_COLOR = '#FFA500'; 
+        const PACMAN_COLOR = '#FFFF00'; 
+        const GHOST_COLORS = ['#FF0000', '#FFB8FF', '#00FFFF', '#FFB852']; 
+
+        let map = []; 
+
+        let pacman = {
+            x: 0, y: 0, dx: 0, dy: 0,
+            radius: TILE_SIZE / 2 - 2,
+            angle1: 0.25 * Math.PI, angle2: 1.75 * Math.PI,
+            mouthOpen: true, speed: TILE_SIZE / 12, 
+            nextDx: 0, nextDy: 0, isRespawning: false 
+        };
+
+        let ghosts = [];
+        const GHOST_SPEED = TILE_SIZE / 32; // ANGEPASST: Geistergeschwindigkeit noch weiter reduziert (ca. 30% von TILE_SIZE/24)
+        let frightenedMode = false;
+        let frightenedTimer = 0;
+        const FRIGHTENED_DURATION = 7000; 
+
+        let score = 0;
+        let lives = 3;
+        let pelletsCount = 0;
+        let gameRunning = false;
+        let gamePaused = false;
+        let gameOver = false;
+        let currentRequestAnimationFrame;
+
+        const GHOST_RELEASE_DELAY = 20000; 
+        let ghostReleaseTimer = GHOST_RELEASE_DELAY;
+        let ghostsActive = false;
+
+        const initialMapLayout = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,2,1],[1,3,1,1,2,1,1,1,1,2,1,2,1,1,1,1,2,1,1,3,1],[1,2,1,1,2,1,1,1,1,2,1,2,1,1,1,1,2,1,1,2,1],[1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],[1,2,1,1,2,1,2,1,1,1,1,1,1,1,2,1,2,1,1,2,1],[1,2,2,2,2,1,2,2,2,1,1,2,2,2,1,2,2,2,2,2,1],[1,1,1,1,2,1,1,1,0,1,0,1,0,1,1,1,2,1,1,1,1],[0,0,0,1,2,1,0,5,5,5,5,0,0,0,0,1,2,1,0,0,0],[1,1,1,1,2,1,0,1,1,1,1,1,0,1,0,1,2,1,1,1,1],[1,2,2,2,2,2,0,1,0,0,0,0,0,1,0,2,2,2,2,2,1],[1,1,1,1,2,1,0,1,1,1,1,1,1,1,0,1,2,1,1,1,1],[0,0,0,1,2,1,0,0,0,0,4,0,0,0,0,1,2,1,0,0,0],[1,1,1,1,2,1,0,1,1,1,1,1,1,1,0,1,2,1,1,1,1],[1,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,2,1],[1,3,1,1,2,1,1,1,1,2,1,2,1,1,1,1,2,1,1,3,1],[1,2,2,1,2,2,2,2,2,2,0,2,2,2,2,2,2,1,2,2,1],[1,1,2,1,2,1,2,1,1,1,1,1,1,1,2,1,2,1,2,1,1],[1,2,2,2,2,1,2,2,2,1,1,2,2,2,1,2,2,2,2,2,1],[1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        ];
+
+        async function fetchLLMResponse(prompt) { /* ... unverändert ... */ 
+            loadingIndicatorEl.classList.remove('hidden'); 
+            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    console.error("API Error Response:", errorBody);
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                    console.error("Unexpected API response structure:", result);
+                    return "Konnte keine kreative Antwort generieren. Standardantwort wird verwendet.";
+                }
+            } catch (error) {
+                console.error('Error fetching LLM response:', error);
+                return "Fehler beim Abrufen der Antwort. Versuche es später erneut.";
+            } finally {
+                loadingIndicatorEl.classList.add('hidden'); 
+            }
+        }
+        function resizeCanvas() { /* ... unverändert ... */ 
+            const aspectRatio = initialMapLayout[0].length / initialMapLayout.length;
+            let canvasWidth = window.innerWidth * 0.8; 
+            if (window.innerWidth < 600) {
+                canvasWidth = window.innerWidth * 0.95; 
+            }
+            let canvasHeight = canvasWidth / aspectRatio;
+            const maxHeight = window.innerHeight * 0.7;
+            if (canvasHeight > maxHeight) {
+                canvasHeight = maxHeight;
+                canvasWidth = canvasHeight * aspectRatio;
+            }
+            canvas.width = Math.floor(canvasWidth / TILE_SIZE) * TILE_SIZE;
+            canvas.height = Math.floor(canvasHeight / TILE_SIZE) * TILE_SIZE;
+            COLS = initialMapLayout[0].length;
+            ROWS = initialMapLayout.length;
+            canvas.width = COLS * TILE_SIZE;
+            canvas.height = ROWS * TILE_SIZE;
+            if (gameRunning && !gamePaused) draw();
+        }
+        function initGame() { /* ... unverändert, setzt Geister-Timer ... */ 
+            map = JSON.parse(JSON.stringify(initialMapLayout)); 
+            pelletsCount = 0;
+            ghosts = [];
+            let ghostSpawnPoints = [];
+            for (let y = 0; y < ROWS; y++) {
+                for (let x = 0; x < COLS; x++) {
+                    if (map[y][x] === 2 || map[y][x] === 3) pelletsCount++;
+                    if (map[y][x] === 4) { 
+                        pacman.x = x * TILE_SIZE + TILE_SIZE / 2;
+                        pacman.y = y * TILE_SIZE + TILE_SIZE / 2;
+                        map[y][x] = 0; 
+                    }
+                    if (map[y][x] === 5) { 
+                        ghostSpawnPoints.push({x: x * TILE_SIZE + TILE_SIZE / 2, y: y * TILE_SIZE + TILE_SIZE / 2});
+                        map[y][x] = 0; 
+                    }
+                }
+            }
+            const numberOfGhostsToCreate = Math.min(ghostSpawnPoints.length, GHOST_COLORS.length);
+            for(let i = 0; i < numberOfGhostsToCreate; i++) {
+                 if(ghostSpawnPoints[i]) { 
+                    ghosts.push({
+                        x: ghostSpawnPoints[i].x, y: ghostSpawnPoints[i].y, dx: 0, dy: 0,
+                        radius: TILE_SIZE / 2 - 2, color: GHOST_COLORS[i],
+                        speed: GHOST_SPEED, isFrightened: false, isReturning: false, 
+                        targetX: 0, targetY: 0,
+                        lastMoveDir: null 
+                    });
+                }
+            }
+            pacman.dx = 0; pacman.dy = 0;
+            pacman.nextDx = 0; pacman.nextDy = 0;
+            frightenedMode = false; frightenedTimer = 0;
+            ghostReleaseTimer = GHOST_RELEASE_DELAY;
+            ghostsActive = false;
+            updateGhostTimerDisplay();
+        }
+        function resetPacmanAndGhosts() { /* ... unverändert, setzt Geister-Timer ... */ 
+            for (let y = 0; y < ROWS; y++) {
+                for (let x = 0; x < COLS; x++) {
+                    if (initialMapLayout[y][x] === 4) {
+                        pacman.x = x * TILE_SIZE + TILE_SIZE / 2;
+                        pacman.y = y * TILE_SIZE + TILE_SIZE / 2;
+                        break;
+                    }
+                }
+            }
+            pacman.dx = 0; pacman.dy = 0;
+            pacman.nextDx = 0; pacman.nextDy = 0;
+            let ghostSpawnPoints = [];
+             for (let y = 0; y < ROWS; y++) {
+                for (let x = 0; x < COLS; x++) {
+                     if (initialMapLayout[y][x] === 5) { 
+                        ghostSpawnPoints.push({x: x * TILE_SIZE + TILE_SIZE / 2, y: y * TILE_SIZE + TILE_SIZE / 2});
+                    }
+                }
+            }
+            ghosts.forEach((ghost, index) => {
+                const spawnPoint = ghostSpawnPoints[index % ghostSpawnPoints.length]; 
+                if (spawnPoint) {
+                    ghost.x = spawnPoint.x; ghost.y = spawnPoint.y;
+                } else {
+                    ghost.x = (COLS / 2) * TILE_SIZE + TILE_SIZE / 2; 
+                    ghost.y = (ROWS / 2) * TILE_SIZE + TILE_SIZE / 2;
+                }
+                ghost.dx = 0; ghost.dy = 0;
+                ghost.isFrightened = false; ghost.isReturning = false;
+                ghost.lastMoveDir = null;
+            });
+            frightenedMode = false; frightenedTimer = 0;
+            ghostReleaseTimer = GHOST_RELEASE_DELAY;
+            ghostsActive = false;
+            updateGhostTimerDisplay();
+        }
+        function startGame() { /* ... unverändert ... */ 
+            score = 0;
+            lives = 3;
+            updateUI(); 
+            initGame(); 
+            pacman.isRespawning = false; 
+            gameRunning = true;
+            gamePaused = false;
+            gameOver = false; 
+            startButton.textContent = "Restart Game";
+            pauseButton.textContent = "Pause";
+            pauseButton.disabled = false;
+            hideMessage();
+            if (currentRequestAnimationFrame) {
+                cancelAnimationFrame(currentRequestAnimationFrame);
+                currentRequestAnimationFrame = null; 
+            }
+            gameLoop();
+        }
+        function togglePause() { /* ... unverändert ... */ 
+            if (!gameRunning || gameOver) return; 
+            gamePaused = !gamePaused;
+            if (gamePaused) {
+                pauseButton.textContent = "Resume";
+                showMessage("Paused", false); 
+                if (currentRequestAnimationFrame) { 
+                    cancelAnimationFrame(currentRequestAnimationFrame);
+                    currentRequestAnimationFrame = null;
+                }
+            } else {
+                pauseButton.textContent = "Pause";
+                hideMessage();
+                if (!currentRequestAnimationFrame) { 
+                    gameLoop(); 
+                }
+            }
+        }
+        function updateUI() { /* ... unverändert ... */ 
+            scoreEl.textContent = `Score: ${score}`;
+            livesEl.textContent = `Lives: ${lives}`;
+        }
+        function updateGhostTimerDisplay() { /* ... unverändert ... */ 
+            if (!ghostsActive && gameRunning && !gamePaused) {
+                ghostTimerDisplayEl.textContent = `Geister starten in: ${Math.ceil(ghostReleaseTimer / 1000)}s`;
+                ghostTimerDisplayEl.classList.remove('hidden');
+            } else if (ghostsActive || !gameRunning) {
+                ghostTimerDisplayEl.classList.add('hidden');
+            }
+        }
+        function drawWall(x, y) { ctx.fillStyle = WALL_COLOR; ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE); }
+        function drawPellet(x, y) { ctx.beginPath(); ctx.arc(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2, TILE_SIZE / 5, 0, Math.PI * 2); ctx.fillStyle = PELLET_COLOR; ctx.fill(); ctx.closePath(); }
+        function drawPowerPellet(x, y) { ctx.beginPath(); ctx.arc(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2, TILE_SIZE / 3, 0, Math.PI * 2); ctx.fillStyle = POWER_PELLET_COLOR; ctx.fill(); ctx.closePath(); }
+        function drawPacman() { /* ... unverändert ... */ 
+            const originalAngle1 = 0.25 * Math.PI; const originalAngle2 = 1.75 * Math.PI;
+            let tempAngle1 = originalAngle1; let tempAngle2 = originalAngle2;
+            if (pacman.mouthOpen) { tempAngle1 = 0.25 * Math.PI; tempAngle2 = 1.75 * Math.PI; } 
+            else { tempAngle1 = 0.05 * Math.PI; tempAngle2 = 1.95 * Math.PI; }
+            let displayDx = pacman.dx; let displayDy = pacman.dy;
+            if (pacman.dx === 0 && pacman.dy === 0 && (pacman.nextDx !== 0 || pacman.nextDy !== 0)) { displayDx = pacman.nextDx; displayDy = pacman.nextDy; }
+            if (displayDx > 0) {} else if (displayDx < 0) { tempAngle1 += Math.PI; tempAngle2 += Math.PI; } 
+            else if (displayDy > 0) { tempAngle1 += 0.5 * Math.PI; tempAngle2 += 0.5 * Math.PI; } 
+            else if (displayDy < 0) { tempAngle1 -= 0.5 * Math.PI; tempAngle2 -= 0.5 * Math.PI; }
+            ctx.beginPath(); ctx.arc(pacman.x, pacman.y, pacman.radius, tempAngle1, tempAngle2);
+            ctx.lineTo(pacman.x, pacman.y); ctx.fillStyle = PACMAN_COLOR; ctx.fill(); ctx.closePath();
+            ctx.fillStyle = 'black'; let eyeX = pacman.x; let eyeY = pacman.y;
+            const eyeOffset = pacman.radius * 0.4; const eyeRadius = pacman.radius * 0.15;
+            if (displayDx > 0) { eyeX += eyeOffset / 2; eyeY -= eyeOffset; } 
+            else if (displayDx < 0) { eyeX -= eyeOffset / 2; eyeY -= eyeOffset; } 
+            else if (displayDy > 0) { eyeX += eyeOffset; eyeY -= eyeOffset / 2; } 
+            else if (displayDy < 0) { eyeX -= eyeOffset; eyeY += eyeOffset / 2; } 
+            else { eyeX += eyeOffset / 2; eyeY -= eyeOffset; }
+            ctx.beginPath(); ctx.arc(eyeX, eyeY, eyeRadius, 0, Math.PI * 2); ctx.fill(); ctx.closePath();
+        }
+        function drawGhost(ghost) { /* ... unverändert ... */ 
+            ctx.beginPath(); ctx.arc(ghost.x, ghost.y, ghost.radius, Math.PI, 0);
+            ctx.lineTo(ghost.x + ghost.radius, ghost.y + ghost.radius * 0.8);
+            const numSpikes = 5;
+            for (let i = 0; i < numSpikes; i++) { ctx.lineTo(ghost.x + ghost.radius - (i * (2 * ghost.radius / numSpikes)), ghost.y + ghost.radius * (i % 2 === 0 ? 0.8 : 1.2)); }
+            ctx.lineTo(ghost.x - ghost.radius, ghost.y + ghost.radius * 0.8); ctx.closePath();
+            if (ghost.isFrightened) { ctx.fillStyle = '#0000FF'; ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 2; ctx.stroke(); } 
+            else if (ghost.isReturning) { ctx.fillStyle = '#888888'; } else { ctx.fillStyle = ghost.color; }
+            ctx.fill();
+            ctx.fillStyle = 'white'; const eyeR = ghost.radius*0.3, eyeOX = ghost.radius*0.4, eyeOY = ghost.radius*0.3;
+            ctx.beginPath(); ctx.arc(ghost.x-eyeOX, ghost.y-eyeOY, eyeR, 0, Math.PI*2); ctx.arc(ghost.x+eyeOX, ghost.y-eyeOY, eyeR, 0, Math.PI*2); ctx.fill(); ctx.closePath();
+            ctx.fillStyle = 'black'; const pupR = eyeR*0.5; let pSX=0,pSY=0;
+            if(!ghost.isReturning){ const ang=Math.atan2(pacman.y-ghost.y,pacman.x-ghost.x); pSX=Math.cos(ang)*pupR*0.8; pSY=Math.sin(ang)*pupR*0.8; }
+            ctx.beginPath(); ctx.arc(ghost.x-eyeOX+pSX,ghost.y-eyeOY+pSY,pupR,0,Math.PI*2); ctx.arc(ghost.x+eyeOX+pSX,ghost.y-eyeOY+pSY,pupR,0,Math.PI*2); ctx.fill(); ctx.closePath();
+        }
+        function draw() { /* ... unverändert ... */ 
+            ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#111'; ctx.fillRect(0,0,canvas.width,canvas.height);
+            for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){if(map[y][x]===1)drawWall(x,y);else if(map[y][x]===2)drawPellet(x,y);else if(map[y][x]===3)drawPowerPellet(x,y);}
+            drawPacman(); ghosts.forEach(drawGhost);
+        }
+        function isWall(gridX, gridY) { /* ... unverändert ... */  if (gridX < 0 || gridX >= COLS || gridY < 0 || gridY >= ROWS) return true; return map[gridY] && map[gridY][gridX] === 1; }
+        function handleTunnel(entity) { /* ... unverändert ... */  if (entity.x < -entity.radius && entity.dx < 0) entity.x = canvas.width + entity.radius; else if (entity.x > canvas.width + entity.radius && entity.dx > 0) entity.x = -entity.radius; if (entity.y < -entity.radius && entity.dy < 0) entity.y = canvas.height + entity.radius; else if (entity.y > canvas.height + entity.radius && entity.dy > 0) entity.y = -entity.radius; }
+        function updatePacman() { /* ... unverändert ... */ 
+            const pacmanGridX = Math.floor(pacman.x / TILE_SIZE); const pacmanGridY = Math.floor(pacman.y / TILE_SIZE);
+            const alignmentThreshold = pacman.speed * 0.9; 
+            if (pacman.nextDx !== 0 || pacman.nextDy !== 0) {
+                let switchedDirection = false; const isCurrentlyStopped = (pacman.dx === 0 && pacman.dy === 0);
+                if (pacman.nextDx !== 0) {
+                    const canTurnHorizontally = isCurrentlyStopped || (Math.abs(pacman.y - (pacmanGridY * TILE_SIZE + TILE_SIZE / 2)) < alignmentThreshold);
+                    if (canTurnHorizontally) { if (!isWall(pacmanGridX + Math.sign(pacman.nextDx), pacmanGridY)) { pacman.y = pacmanGridY * TILE_SIZE + TILE_SIZE / 2; pacman.dx = pacman.nextDx; pacman.dy = 0; pacman.nextDx = 0; pacman.nextDy = 0; switchedDirection = true; } else if (isCurrentlyStopped) pacman.nextDx = 0; }
+                }
+                if (!switchedDirection && pacman.nextDy !== 0) {
+                    const canTurnVertically = isCurrentlyStopped || (Math.abs(pacman.x - (pacmanGridX * TILE_SIZE + TILE_SIZE / 2)) < alignmentThreshold);
+                    if (canTurnVertically) { if (!isWall(pacmanGridX, pacmanGridY + Math.sign(pacman.nextDy))) { pacman.x = pacmanGridX * TILE_SIZE + TILE_SIZE / 2; pacman.dy = pacman.nextDy; pacman.dx = 0; pacman.nextDx = 0; pacman.nextDy = 0; } else if (isCurrentlyStopped) pacman.nextDy = 0; }
+                }
+            }
+            let potentialNextX = pacman.x + pacman.dx; let potentialNextY = pacman.y + pacman.dy;
+            const collisionMargin = 0.01; 
+            if (pacman.dx !== 0) {
+                let lX = pacman.dx > 0 ? pacman.x + pacman.radius + pacman.dx : pacman.x - pacman.radius + pacman.dx;
+                const lGX = Math.floor(lX / TILE_SIZE);
+                const tY = Math.floor((pacman.y - pacman.radius * 0.9) / TILE_SIZE), mY = Math.floor(pacman.y / TILE_SIZE), bY = Math.floor((pacman.y + pacman.radius * 0.9) / TILE_SIZE);
+                if (isWall(lGX, tY) || isWall(lGX, mY) || isWall(lGX, bY)) { potentialNextX = pacman.dx > 0 ? lGX * TILE_SIZE - pacman.radius - collisionMargin : (lGX + 1) * TILE_SIZE + pacman.radius + collisionMargin; pacman.dx = 0; }
+            }
+            if (pacman.dy !== 0) {
+                let lY = pacman.dy > 0 ? pacman.y + pacman.radius + pacman.dy : pacman.y - pacman.radius + pacman.dy;
+                const lGY = Math.floor(lY / TILE_SIZE);
+                const lXG = Math.floor((pacman.x - pacman.radius * 0.9) / TILE_SIZE), mXG = Math.floor(pacman.x / TILE_SIZE), rXG = Math.floor((pacman.x + pacman.radius * 0.9) / TILE_SIZE);
+                if (isWall(lXG, lGY) || isWall(mXG, lGY) || isWall(rXG, lGY)) { potentialNextY = pacman.dy > 0 ? lGY * TILE_SIZE - pacman.radius - collisionMargin : (lGY + 1) * TILE_SIZE + pacman.radius + collisionMargin; pacman.dy = 0; }
+            }
+            pacman.x = potentialNextX; pacman.y = potentialNextY;
+            handleTunnel(pacman);
+            const fPGX = Math.floor(pacman.x / TILE_SIZE), fPGY = Math.floor(pacman.y / TILE_SIZE);
+            if (fPGY >= 0 && fPGY < ROWS && fPGX >= 0 && fPGX < COLS) {
+                if (map[fPGY][fPGX] === 2) { map[fPGY][fPGX] = 0; score += 10; pelletsCount--; updateUI(); } 
+                else if (map[fPGY][fPGX] === 3) { map[fPGY][fPGX] = 0; score += 50; pelletsCount--; activateFrightenedMode(); updateUI(); }
+            }
+            if (pacman.dx !== 0 || pacman.dy !== 0) pacman.mouthOpen = !pacman.mouthOpen;
+        }
+        function activateFrightenedMode() { /* ... unverändert ... */  frightenedMode = true; frightenedTimer = FRIGHTENED_DURATION; ghosts.forEach(g => { g.isFrightened = true; g.dx *= -1; g.dy *= -1; }); }
+        
+        function updateGhosts() { /* ... unverändert, wie in der vorherigen korrekten Version ... */ 
+            if (!ghostsActive) return; 
+            if (frightenedMode) { 
+                frightenedTimer -= 1000 / 60; 
+                if (frightenedTimer <= 0) { 
+                    frightenedMode = false; 
+                    ghosts.forEach(g => { g.isFrightened = false; g.isReturning = false; }); 
+                } 
+            }
+            ghosts.forEach(ghost => {
+                if (ghost.isReturning) {
+                    let spawnPoint;
+                    for (let r = 0; r < ROWS; r++) { for (let c = 0; c < COLS; c++) if (initialMapLayout[r][c] === 5) { spawnPoint = { x: c * TILE_SIZE + TILE_SIZE / 2, y: r * TILE_SIZE + TILE_SIZE / 2 }; break; } if (spawnPoint) break; }
+                    if (spawnPoint) {
+                        const targetX = spawnPoint.x; const targetY = spawnPoint.y;
+                        const angle = Math.atan2(targetY - ghost.y, targetX - ghost.x);
+                        ghost.dx = Math.cos(angle) * ghost.speed * 1.5; 
+                        ghost.dy = Math.sin(angle) * ghost.speed * 1.5;
+                        if (Math.hypot(ghost.x - targetX, ghost.y - targetY) < TILE_SIZE / 2) { ghost.isReturning = false; ghost.isFrightened = false; ghost.x = targetX; ghost.y = targetY; ghost.dx = 0; ghost.dy = 0; ghost.lastMoveDir = null; }
+                    }
+                } else { 
+                    const ghostGridX = Math.floor(ghost.x / TILE_SIZE); const ghostGridY = Math.floor(ghost.y / TILE_SIZE);
+                    const currentSpeed = ghost.isFrightened ? ghost.speed * 0.75 : ghost.speed;
+                    const onGridCenter = Math.abs(ghost.x - (ghostGridX * TILE_SIZE + TILE_SIZE / 2)) < currentSpeed * 0.5 && Math.abs(ghost.y - (ghostGridY * TILE_SIZE + TILE_SIZE / 2)) < currentSpeed * 0.5;
+                    let possibleMoves = [];
+                    if (onGridCenter || (ghost.dx === 0 && ghost.dy === 0) ) { 
+                        if (!isWall(ghostGridX, ghostGridY - 1) && ghost.lastMoveDir !== 'down') possibleMoves.push({ dx: 0, dy: -currentSpeed, dir: 'up' });
+                        if (!isWall(ghostGridX, ghostGridY + 1) && ghost.lastMoveDir !== 'up') possibleMoves.push({ dx: 0, dy: currentSpeed, dir: 'down' });
+                        if (!isWall(ghostGridX - 1, ghostGridY) && ghost.lastMoveDir !== 'right') possibleMoves.push({ dx: -currentSpeed, dy: 0, dir: 'left' });
+                        if (!isWall(ghostGridX + 1, ghostGridY) && ghost.lastMoveDir !== 'left') possibleMoves.push({ dx: currentSpeed, dy: 0, dir: 'right' });
+                        if (possibleMoves.length > 0) {
+                            let chosenMove;
+                            if (ghost.isFrightened) { 
+                                let maxDist = -Infinity;
+                                possibleMoves.forEach(move => { const nextGhostX = ghost.x + move.dx * 5; const nextGhostY = ghost.y + move.dy * 5; const dist = Math.hypot(nextGhostX - pacman.x, nextGhostY - pacman.y); if (dist > maxDist) { maxDist = dist; chosenMove = move; } });
+                            } else { chosenMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)]; }
+                            if (chosenMove) { ghost.dx = chosenMove.dx; ghost.dy = chosenMove.dy; ghost.lastMoveDir = chosenMove.dir; ghost.x = ghostGridX * TILE_SIZE + TILE_SIZE / 2; ghost.y = ghostGridY * TILE_SIZE + TILE_SIZE / 2; }
+                        } else if (ghost.lastMoveDir) { 
+                            if (ghost.lastMoveDir === 'up' && !isWall(ghostGridX, ghostGridY + 1)) { ghost.dx = 0; ghost.dy = currentSpeed; ghost.lastMoveDir = 'down'; }
+                            else if (ghost.lastMoveDir === 'down' && !isWall(ghostGridX, ghostGridY - 1)) { ghost.dx = 0; ghost.dy = -currentSpeed; ghost.lastMoveDir = 'up'; }
+                            else if (ghost.lastMoveDir === 'left' && !isWall(ghostGridX + 1, ghostGridY)) { ghost.dx = currentSpeed; ghost.dy = 0; ghost.lastMoveDir = 'right'; }
+                            else if (ghost.lastMoveDir === 'right' && !isWall(ghostGridX - 1, ghostGridY)) { ghost.dx = -currentSpeed; ghost.dy = 0; ghost.lastMoveDir = 'left'; }
+                        }
+                    }
+                }
+                let potentialGhostNextX = ghost.x + ghost.dx; let potentialGhostNextY = ghost.y + ghost.dy;
+                const collisionMargin = 0.1; 
+                if (ghost.dx !== 0) { 
+                    const nextGridX = Math.floor((potentialGhostNextX + Math.sign(ghost.dx) * ghost.radius) / TILE_SIZE);
+                    if (isWall(nextGridX, Math.floor(ghost.y / TILE_SIZE))) { potentialGhostNextX = ghost.dx > 0 ? nextGridX * TILE_SIZE - ghost.radius - collisionMargin : (nextGridX + 1) * TILE_SIZE + ghost.radius + collisionMargin; ghost.dx = 0; ghost.dy = 0; }
+                }
+                if (ghost.dy !== 0) { 
+                    const nextGridY = Math.floor((potentialGhostNextY + Math.sign(ghost.dy) * ghost.radius) / TILE_SIZE);
+                     if (isWall(Math.floor(ghost.x / TILE_SIZE), nextGridY)) { potentialGhostNextY = ghost.dy > 0 ? nextGridY * TILE_SIZE - ghost.radius - collisionMargin : (nextGridY + 1) * TILE_SIZE + ghost.radius + collisionMargin; ghost.dx = 0; ghost.dy = 0; }
+                }
+                ghost.x = potentialGhostNextX; ghost.y = potentialGhostNextY;
+                handleTunnel(ghost);
+                const dist = Math.hypot(pacman.x - ghost.x, pacman.y - ghost.y);
+                if (dist < pacman.radius + ghost.radius) {
+                    if (ghost.isFrightened && !ghost.isReturning) { score += 200; ghost.isReturning = true; ghost.isFrightened = false; updateUI(); } 
+                    else if (!ghost.isReturning && !frightenedMode) { handlePacmanDeath(); }
+                }
+            });
+        }
+        
+        function handlePacmanDeath() { /* ... unverändert ... */ 
+            if (pacman.isRespawning || !gameRunning || gameOver) return;
+            pacman.isRespawning = true; 
+            lives--; updateUI(); frightenedMode = false; 
+            ghosts.forEach(g => { g.isFrightened = false; g.isReturning = false; });
+            if (currentRequestAnimationFrame) { cancelAnimationFrame(currentRequestAnimationFrame); currentRequestAnimationFrame = null; }
+            if (lives <= 0) {
+                gameOver = true; gameRunning = false; 
+                const gameOverPrompt = `Schreibe eine kreative und Arcade-mäßige 'Game Over'-Nachricht für einen Pacman-Spieler, der einen Score von ${score} erreicht hat. Starte mit 'GAME OVER!'`;
+                showMessage("✨ Generiere Game Over Nachricht...", false); loadingIndicatorEl.classList.remove('hidden');
+                fetchLLMResponse(gameOverPrompt).then(customMessage => {
+                    loadingIndicatorEl.classList.add('hidden');
+                    showMessage(customMessage, true, () => { pacman.isRespawning = false; startGame(); });
+                });
+                startButton.textContent = "New Game"; pauseButton.disabled = true;
+            } else {
+                gamePaused = true; 
+                const lostLifePrompt = `Schreibe eine kurze, aufmunternde Nachricht im Arcade-Stil für einen Pacman-Spieler, der gerade ein Leben verloren hat und noch ${lives} Leben übrig hat.`;
+                showMessage("✨ Moment...", false); loadingIndicatorEl.classList.remove('hidden');
+                fetchLLMResponse(lostLifePrompt).then(customMessage => {
+                    loadingIndicatorEl.classList.add('hidden');
+                    showMessage(customMessage + ` (${lives} Leben übrig)`, true, () => {
+                        resetPacmanAndGhosts(); pacman.isRespawning = false; gamePaused = false; hideMessage();
+                        if (!gameOver) { gameRunning = true; if (!currentRequestAnimationFrame) gameLoop(); }
+                    });
+                });
+            }
+        }
+        function checkWinCondition() { /* ... unverändert ... */ 
+            if (pelletsCount === 0 && gameRunning) { 
+                gameRunning = false; gameOver = true; 
+                if (currentRequestAnimationFrame) { cancelAnimationFrame(currentRequestAnimationFrame); currentRequestAnimationFrame = null; }
+                const winPrompt = `Schreibe eine triumphierende und Arcade-mäßige 'You Win'-Nachricht für einen Pacman-Spieler, der das Level mit einem Score von ${score} abgeschlossen hat. Starte mit 'YOU WIN!'`;
+                showMessage("✨ Generiere Gewinnnachricht...", false); loadingIndicatorEl.classList.remove('hidden');
+                fetchLLMResponse(winPrompt).then(customMessage => {
+                    loadingIndicatorEl.classList.add('hidden');
+                    showMessage(customMessage, true, () => { pacman.isRespawning = false; startGame(); });
+                });
+                startButton.textContent = "New Game"; pauseButton.disabled = true;
+            }
+        }
+        function gameLoop() { /* ... unverändert ... */ 
+            if (pacman.isRespawning) { if (currentRequestAnimationFrame) requestAnimationFrame(gameLoop); return; }
+            if (gamePaused || !gameRunning || gameOver) {
+                if (gameOver || (gamePaused && messageBox.style.display === 'block')) { draw(); }
+                if (gameOver && currentRequestAnimationFrame) { cancelAnimationFrame(currentRequestAnimationFrame); currentRequestAnimationFrame = null; }
+                return;
+            }
+            if (!ghostsActive && gameRunning && !gamePaused) {
+                ghostReleaseTimer -= 1000 / 60; updateGhostTimerDisplay();
+                if (ghostReleaseTimer <= 0) { ghostsActive = true; ghostTimerDisplayEl.classList.add('hidden'); }
+            }
+            updatePacman(); updateGhosts(); draw(); checkWinCondition(); 
+            if (gameRunning && !gameOver) { currentRequestAnimationFrame = requestAnimationFrame(gameLoop); } 
+            else if (currentRequestAnimationFrame) { cancelAnimationFrame(currentRequestAnimationFrame); currentRequestAnimationFrame = null; }
+        }
+        function showMessage(text, showButton = true, buttonAction = hideMessage) { /* ... unverändert ... */ 
+            messageText.textContent = text;
+            if (showButton) { messageButton.style.display = 'inline-block'; messageButton.onclick = buttonAction; } 
+            else { messageButton.style.display = 'none'; }
+            messageBox.classList.remove('hidden'); messageBox.style.display = 'block'; 
+        }
+        function hideMessage() { /* ... unverändert ... */ 
+            messageBox.classList.add('hidden'); messageBox.style.display = 'none';
+        }
+        window.addEventListener('keydown', (e) => { /* ... unverändert ... */ 
+            if (!(gameRunning || gamePaused) && !(e.key === 'Escape' || e.key === 'p' || e.key === 'P')) { if (!gameOver && startButton.textContent === "Start Game") {} else { return; }}
+            if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Space"].includes(e.key)) e.preventDefault();
+            if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') { if ((gameRunning || gamePaused) && !gameOver) togglePause(); return; }
+            if (gamePaused || !gameRunning || gameOver || pacman.isRespawning) return; 
+            switch (e.key) {
+                case 'ArrowUp': case 'w': case 'W': pacman.nextDx = 0; pacman.nextDy = -pacman.speed; break;
+                case 'ArrowDown': case 's': case 'S': pacman.nextDx = 0; pacman.nextDy = pacman.speed; break;
+                case 'ArrowLeft': case 'a': case 'A': pacman.nextDx = -pacman.speed; pacman.nextDy = 0; break;
+                case 'ArrowRight': case 'd': case 'D': pacman.nextDx = pacman.speed; pacman.nextDy = 0; break;
+            }
+        });
+        function handleTouch(direction) { /* ... unverändert ... */ 
+            if (gamePaused || !gameRunning || gameOver || pacman.isRespawning) return;
+            switch (direction) {
+                case 'up': pacman.nextDx = 0; pacman.nextDy = -pacman.speed; break;
+                case 'down': pacman.nextDx = 0; pacman.nextDy = pacman.speed; break;
+                case 'left': pacman.nextDx = -pacman.speed; pacman.nextDy = 0; break;
+                case 'right': pacman.nextDx = pacman.speed; pacman.nextDy = 0; break;
+            }
+        }
+
+        touchUpButton.addEventListener('click', () => handleTouch('up'));
+        touchDownButton.addEventListener('click', () => handleTouch('down'));
+        touchLeftButton.addEventListener('click', () => handleTouch('left'));
+        touchRightButton.addEventListener('click', () => handleTouch('right'));
+
+        startButton.addEventListener('click', startGame);
+        pauseButton.addEventListener('click', togglePause);
+        pauseButton.disabled = true; 
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas(); initGame(); draw(); 
+        showMessage("Press Start Game!", true, startGame);
+
+        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+            document.getElementById('touch-controls').style.display = 'grid';
+        }
+    </script>
+</body>
+</html>

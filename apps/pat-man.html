@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patman - Feature Overload</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #0c082f !important;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 8px; /* Added padding to body to prevent elements from touching edges */
+            overflow: hidden; 
+        }
+        #gameContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%; /* Ensure container takes width */
+        }
+        #gameCanvas {
+            border: 5px solid #0000FF; 
+            background-color: #111; 
+            border-radius: 10px;
+            box-shadow: 0 0 20px #FFFF00, 0 0 30px #0000FF; 
+            max-width: 100%; /* Ensure canvas is responsive */
+            height: auto;   /* Maintain aspect ratio */
+        }
+        .ui-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 8px; /* Increased margin */
+            width: 100%;
+            max-width: 500px; /* Max width for UI elements */
+        }
+        .info-bar {
+            display: flex;
+            justify-content: space-between; /* Better distribution */
+            width: 100%;
+            margin-bottom: 4px; /* Consistent margin */
+        }
+        .info-bar span, #levelDisplay, #ghostTimerDisplay, #gameModeDisplay {
+            margin: 0 3px; 
+            font-size: 0.8em; 
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+        #levelDisplay { color: #00FF00; }
+        #gameModeDisplay { color: #00FFFF; }
+        #ghostTimerDisplay { font-size: 0.7em; color: #FFB8FF; }
+
+        .settings-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px; /* Increased margin */
+            flex-wrap: wrap;
+        }
+        .settings-bar > div { margin: 3px 8px; }
+
+
+        .controls {
+            margin-top: 8px; 
+            text-align: center;
+        }
+        .button {
+            background-color: #FFFF00; 
+            color: #000000; 
+            border: 2px solid #fff;
+            padding: 7px 14px; 
+            margin: 3px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.75em; /* Slightly larger button text */
+            transition: background-color 0.3s, transform 0.1s;
+        }
+        .button:hover { background-color: #FFD700; }
+        .button:active { transform: scale(0.95); }
+        .button:disabled { background-color: #555500; cursor: not-allowed; }
+
+        #difficultySelection, #gameModeSelection {
+            font-size: 0.75em; /* Consistent with buttons */
+            display: inline-block;
+        }
+        #difficultySelection label, #gameModeSelection label { margin: 0 3px; cursor: pointer; }
+        #difficultySelection input[type="radio"], #gameModeSelection input[type="radio"] { margin-right: 2px; }
+
+        #touch-controls {
+            display: none; 
+            margin-top: 10px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            width: 160px; 
+        }
+        #touch-controls .button { width: 100%; height: 42px; font-size: 1.2em; display: flex; align-items: center; justify-content: center;}
+        .arrow-up::before { content: "↑"; } .arrow-down::before { content: "↓"; }
+        .arrow-left::before { content: "←"; } .arrow-right::before { content: "→"; }
+
+        #message-box {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background-color: rgba(0,0,0,0.9); color: #FFFF00; padding: 20px;
+            border-radius: 15px; border: 3px solid #FFFF00; text-align: left; 
+            z-index: 100; font-size: 0.9em; display: none; 
+            min-width: 280px; max-width: 90vw; max-height: 80vh; overflow-y: auto; 
+            box-shadow: 0 0 15px #FFFF00;
+        }
+        #message-box button { margin-top: 15px; }
+        #message-box ul { list-style: disc; padding-left: 20px; }
+        #message-box li { margin-bottom: 5px; }
+
+
+        @media (max-width: 600px) {
+            .info-bar span, #levelDisplay, #ghostTimerDisplay, #gameModeDisplay { font-size: 0.7em; margin: 0 2px;}
+            .button { padding: 5px 10px; font-size: 0.65em;}
+            #message-box { font-size: 0.8em; padding: 10px; min-width: 80vw;}
+             #difficultySelection, #gameModeSelection { font-size: 0.65em; }
+             #touch-controls { width: 140px; gap: 4px;}
+             #touch-controls .button { height: 38px; font-size: 1.1em;}
+        }
+    </style>
+</head>
+<body class="bg-black flex flex-col items-center justify-center min-h-screen p-1">
+    <div id="gameContainer">
+        <div class="ui-container">
+            <div class="info-bar">
+                <span id="levelDisplay">Level: 1</span>
+                <span id="gameModeDisplay">Mode: Levels</span>
+            </div>
+            <div class="info-bar">
+                <span id="score">Score: 0</span>
+                <span id="lives">Lives: 3</span>
+            </div>
+            <div id="ghostTimerDisplay">Ghosts start in: 40s</div>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <div class="settings-bar mt-2">
+            <div id="difficultySelection">
+                Difficulty:
+                <label><input type="radio" name="difficulty" value="easy"> Easy</label>
+                <label><input type="radio" name="difficulty" value="normal" checked> Normal</label>
+                <label><input type="radio" name="difficulty" value="hard"> Hard</label>
+            </div>
+            <div id="gameModeSelection">
+                Mode:
+                <label><input type="radio" name="gameMode" value="levels" checked> Levels</label>
+                <label><input type="radio" name="gameMode" value="survival"> Survival</label>
+            </div>
+        </div>
+
+
+        <div id="touch-controls" class="grid grid-cols-3 gap-2 mt-2">
+            <div></div> <button id="touch-up" class="button arrow-up"></button>
+            <div></div> <button id="touch-left" class="button arrow-left"></button>
+            <div></div> <button id="touch-right" class="button arrow-right"></button>
+            <div></div> <button id="touch-down" class="button arrow-down"></button>
+            <div></div> 
+        </div>
+
+        <div class="controls mt-2 text-center">
+            <button id="startButton" class="button">Start Game</button>
+            <button id="pauseButton" class="button">Pause</button>
+            </div>
+    </div>
+    <div id="message-box" class="hidden">
+        <p id="message-text"></p>
+        <button id="message-button" class="button">OK</button>
+    </div>
+
+    <script>
+        let canvas, ctx, scoreEl, livesEl, levelDisplayEl, gameModeDisplayEl, startButton, pauseButton, highScoreButton, helpButton, toggleThemeButton, ghostTimerDisplayEl, messageBox, messageText, messageButton, touchUpButton, touchDownButton, touchLeftButton, touchRightButton;
+        let difficultyRadios, gameModeRadios;
+        
+        const TILE_SIZE = 20; 
+        let COLS, ROWS; 
+        
+        let currentTheme = 0;
+        const themes = [ 
+            { 
+                WALL_COLOR: '#0000FF', PELLET_COLOR: '#FFFF00', POWER_PELLET_COLOR: '#FFA500',
+                SPEED_BOOST_COLOR: '#33FF33', FREEZE_PELLET_COLOR: '#33CCFF', BONUS_ITEM_COLOR: '#FF69B4', 
+                PACMAN_COLOR: '#FFFF00', CANVAS_BG: '#111', BODY_BG: '#000', TEXT_COLOR: '#fff',
+                GHOST_COLORS: ['#FF0000', '#FFB8FF', '#00FFFF', '#FFB852'] 
+            },
+            { 
+                WALL_COLOR: '#3333AA', PELLET_COLOR: '#CCCCCC', POWER_PELLET_COLOR: '#FF8C00', 
+                SPEED_BOOST_COLOR: '#00FA9A', FREEZE_PELLET_COLOR: '#ADD8E6', BONUS_ITEM_COLOR: '#DA70D6', 
+                PACMAN_COLOR: '#FFFF00', CANVAS_BG: '#0A0A0A', BODY_BG: '#101010', TEXT_COLOR: '#E0E0E0',
+                GHOST_COLORS: ['#DC143C', '#FF69B4', '#00CED1', '#FFA500'] 
+            }
+        ];
+        let activeTheme = themes[0];
+        
+        let map = []; 
+        let currentMapBaseConfig = []; 
+        let allLevelBaseConfigs = []; 
+
+        let pacman = {
+            x: 0, y: 0, dx: 0, dy: 0,
+            radius: 0, 
+            angle1: 0.25 * Math.PI, angle2: 1.75 * Math.PI,
+            mouthOpen: true, 
+            baseSpeed: 0, 
+            currentSpeed: 0,
+            nextDx: 0, nextDy: 0, isRespawning: false,
+            speedBoostActive: false,
+            speedBoostTimer: 0,
+            speedBoostDuration: 5000 
+        };
+        let ghosts = [];
+        let baseGhostSpeed; 
+        let frightenedMode = false;
+        let frightenedTimer = 0;
+        let baseFrightenedDuration = 14000; 
+        let ghostsFrozen = false;
+        let ghostFreezeTimer = 0;
+        const GHOST_FREEZE_DURATION = 3000; 
+        let score = 0;
+        let lives = 3;
+        let pelletsCount = 0;
+        let gameRunning = false;
+        let gamePaused = false;
+        let gameOver = false;
+        let currentRequestAnimationFrame;
+        let currentLevelIndex = 0; 
+        let selectedDifficulty = "normal"; 
+        let selectedGameMode = "levels"; 
+        let baseGhostReleaseDelay = 40000; 
+        let ghostReleaseTimer = baseGhostReleaseDelay;
+        let ghostsActive = false;
+        const GHOST_MODE_CHASE = 0;
+        const GHOST_MODE_SCATTER = 1;
+        let globalGhostMode = GHOST_MODE_CHASE;
+        let ghostModeTimer = 0;
+        const scatterChaseDurations = [ 
+             {scatter: 7000, chase: 20000}, {scatter: 7000, chase: 20000},
+             {scatter: 5000, chase: 20000}, {scatter: 5000, chase: Infinity} 
+        ];
+        let scatterChaseIndex = 0;
+        let bonusItem = { type: 'cherry', x: 0, y: 0, points: 100, active: false, timer: 0, duration: 10000 };
+        const BONUS_ITEM_SPAWN_INTERVAL = 30000; 
+        let bonusItemSpawnTimer = BONUS_ITEM_SPAWN_INTERVAL;
+        let achievements = {}; 
+        const ACHIEVEMENT_LEVEL_1_CLEARED = "level1Cleared";
+        const ACHIEVEMENT_SCORE_10000 = "score10000";
+        const ACHIEVEMENT_EAT_ALL_GHOSTS_ONE_POWER = "eatAllGhosts";
+        let ateAllGhostsThisPowerMode = 0;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+            scoreEl = document.getElementById('score');
+            livesEl = document.getElementById('lives');
+            levelDisplayEl = document.getElementById('levelDisplay');
+            gameModeDisplayEl = document.getElementById('gameModeDisplay');
+            startButton = document.getElementById('startButton');
+            pauseButton = document.getElementById('pauseButton');
+            // highScoreButton, helpButton, toggleThemeButton are declared but not assigned if HTML elements are removed
+            ghostTimerDisplayEl = document.getElementById('ghostTimerDisplay');
+            messageBox = document.getElementById('message-box');
+            messageText = document.getElementById('message-text');
+            messageButton = document.getElementById('message-button');
+            touchUpButton = document.getElementById('touch-up');
+            touchDownButton = document.getElementById('touch-down');
+            touchLeftButton = document.getElementById('touch-left');
+            touchRightButton = document.getElementById('touch-right');
+            difficultyRadios = document.querySelectorAll('input[name="difficulty"]');
+            gameModeRadios = document.querySelectorAll('input[name="gameMode"]');
+
+            const TILE_SIZE_CONST = 20; 
+            
+            const level1MapLayout = [ 
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,2,1],[1,3,1,1,2,1,1,1,1,2,1,2,1,1,1,1,2,1,1,3,1],[1,2,1,1,6,1,1,1,1,2,1,2,1,1,1,1,2,1,1,2,1],[1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],[1,2,1,1,2,1,2,1,1,1,1,1,1,1,2,1,2,1,1,2,1],[1,2,2,2,2,1,2,2,2,1,1,2,2,2,1,2,2,2,2,2,1],[1,1,1,1,2,1,1,1,0,1,7,1,0,1,1,1,2,1,1,1,1],[0,0,0,1,2,1,0,5,5,5,5,0,0,0,0,1,2,1,0,0,0],[1,1,1,1,2,1,0,1,1,1,1,1,0,1,0,1,2,1,1,1,1],[1,2,2,2,2,2,0,1,0,0,0,0,0,1,0,2,2,2,2,2,1],[1,1,1,1,2,1,0,1,1,1,1,1,1,1,0,1,2,1,1,1,1],[0,0,0,1,2,1,0,0,0,0,4,0,0,0,0,1,2,1,0,0,0],[1,1,1,1,2,1,0,1,1,1,1,1,1,1,0,1,2,1,1,1,1],[1,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,2,1],[1,3,1,1,2,1,1,1,1,2,1,2,1,1,1,1,2,1,1,3,1],[1,2,2,1,2,2,2,2,2,2,0,2,2,2,2,2,2,1,2,2,1],[1,1,2,1,2,1,2,1,1,1,1,1,1,1,2,1,2,1,2,1,1],[1,2,2,2,2,1,2,2,2,1,1,2,2,2,1,2,2,2,2,2,1],[1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+            ];
+            const level2MapLayout = [
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,3,2,2,1,2,2,2,2,2,1,2,2,2,2,2,1,2,2,3,1],
+                [1,2,1,2,1,2,1,1,1,2,1,2,1,1,1,2,1,2,1,2,1],
+                [1,2,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,1],
+                [1,2,1,1,1,1,2,1,1,0,5,0,1,1,2,1,1,1,1,2,1],
+                [1,2,2,2,2,1,2,1,0,5,5,0,1,2,1,2,2,2,2,2,1],
+                [1,1,1,1,2,1,2,1,0,5,5,0,1,2,1,2,1,1,1,1,1],
+                [0,0,0,1,2,2,2,1,1,1,1,1,1,6,2,2,1,0,0,0], 
+                [1,1,1,1,1,1,2,0,0,0,4,0,0,0,2,1,1,1,1,1,1],
+                [1,2,2,2,2,2,2,2,1,2,2,2,1,2,2,2,2,2,2,2,1],
+                [1,2,1,1,1,1,1,2,1,2,1,2,1,2,1,1,1,1,1,2,1],
+                [1,2,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,2,2,1],
+                [1,1,1,3,1,1,2,1,1,1,1,1,1,1,7,1,1,3,1,1,1], 
+                [1,2,2,2,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+            ];
+            const level3MapLayout = [ 
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,3,2,2,2,1,2,2,2,1,5,5,1,2,2,2,1,2,2,2,2,3,1],
+                [1,2,1,1,2,1,2,1,2,1,5,5,1,2,1,2,1,2,1,1,1,2,1],
+                [1,2,2,2,2,2,2,1,2,2,2,2,2,2,1,2,2,2,2,2,2,2,1],
+                [1,2,1,1,1,1,6,1,1,1,1,1,1,1,1,7,1,1,1,1,2,1], 
+                [1,2,2,2,1,2,2,2,2,2,1,2,2,2,2,2,1,2,2,2,2,1],
+                [1,1,1,2,1,2,1,1,1,2,1,2,1,1,1,2,1,2,1,1,1,1],
+                [0,0,1,2,2,2,2,2,2,2,0,4,0,2,2,2,2,2,2,1,0,0,0], 
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+            ];
+            const allLevelLayouts = [level1MapLayout, level2MapLayout, level3MapLayout];
+
+            const gameOverMessages = [
+                "GAME OVER! The ghosts got you. Try again?", "GAME OVER! You were brave, but they were faster this time.",
+                "GAME OVER! Don't give up, Pac-Hero! Your high score awaits.", "GAME OVER! The pellets are gone and the ghosts are celebrating.", 
+                "GAME OVER! Ouch! That looked painful. One more go!", "GAME OVER! You gave it your all! Time for a rematch."
+            ];
+            const winMessages = [
+                "YOU WIN! All pellets munched! You are a true Pac-Champion!", "YOU WIN! Fantastic! The ghosts look pale with envy.",
+                "YOU WIN! Incredible performance! New high score?", "YOU WIN! You've mastered the maze! Ready for the next round?",
+                "YOU WIN! Superb! You are the king of the pellets!", "YOU WIN! Perfect run! The ghosts didn't stand a chance."
+            ];
+            const lostLifeMessages = [
+                "Ouch! That was close. Try again!", "One life down! But you've got more!", "Ghost fodder! Show 'em next time!",
+                "Whoops! Don't lose heart, Pac-Fighter!", "Not over yet! Go get those dots!", "Careful! The ghosts are hungry!",
+                "Just a scratch! Shake it off and keep going!", "Almost gotcha! Stay nimble!", "The maze is tricky! New attempt!",
+                "Oops! Focus up!", "You can do it! Show those ghosts who's boss!", "One life gone, but the high score is calling!",
+                "Don't despair, keep chasing!", "The ghosts are lurking! Be smart!", "One more chance! Make it count!",
+                "Pac-Power needed! Get it back!"
+            ];
+            const difficultySettings = {
+                easy:   { lives: 5, ghostSpeedFactor: 0.7, pacmanSpeedFactor: 1.0, frightenedDurationFactor: 1.5, ghostReleaseFactor: 1.5, survivalSpeedScale: 0.0003 },
+                normal: { lives: 3, ghostSpeedFactor: 1.0, pacmanSpeedFactor: 1.0, frightenedDurationFactor: 1.0, ghostReleaseFactor: 1.0, survivalSpeedScale: 0.0005 },
+                hard:   { lives: 2, ghostSpeedFactor: 1.3, pacmanSpeedFactor: 0.9, frightenedDurationFactor: 0.7, ghostReleaseFactor: 0.7, survivalSpeedScale: 0.0007 }
+            };
+
+            // --- All Function Definitions ---
+            function playSound(soundName) { console.log(`Playing sound: ${soundName}`); }
+            function resizeCanvas() { 
+                const currentLayoutForResize = allLevelLayouts[currentLevelIndex] || allLevelLayouts[0];
+                ROWS = currentLayoutForResize.length; 
+                COLS = currentLayoutForResize[0].length; 
+                const aspectRatio = COLS / ROWS;
+                let canvasWidth = window.innerWidth * 0.8; 
+                if (window.innerWidth < 600) { canvasWidth = window.innerWidth * 0.95; }
+                let canvasHeight = canvasWidth / aspectRatio;
+                const maxHeight = window.innerHeight * 0.60; 
+                if (canvasHeight > maxHeight) { canvasHeight = maxHeight; canvasWidth = canvasHeight * aspectRatio; }
+                
+                canvas.width = COLS * TILE_SIZE_CONST; 
+                canvas.height = ROWS * TILE_SIZE_CONST; 
+                canvas.width = Math.floor(canvas.width / TILE_SIZE_CONST) * TILE_SIZE_CONST;
+                canvas.height = Math.floor(canvas.height / TILE_SIZE_CONST) * TILE_SIZE_CONST;
+
+                if (gameRunning && !gamePaused) draw();
+            }
+
+            function generateRandomMapBaseConfig(levelLayoutBlueprint) {
+                let newBaseConfig = levelLayoutBlueprint.map(row => row.map(cell => {
+                    if (cell === 2 || cell === 3 || cell === 6 || cell === 7) return 0; 
+                    return cell; 
+                }));
+                
+                const currentBlueprintRows = levelLayoutBlueprint.length;
+                const currentBlueprintCols = levelLayoutBlueprint[0].length;
+
+                let protectedZonesSpecific = [];
+                const currentLevelLayoutForProtection = allLevelLayouts[currentLevelIndex] || allLevelLayouts[0];
+
+
+                if (currentLevelIndex === 0) { 
+                     protectedZonesSpecific = [ 
+                        { yStart: 8, yEnd: 10, xStart: 7, xEnd: 13 }, 
+                        { yStart: 7, yEnd: 7, xStart: 10, xEnd: 10 }, 
+                        { yStart: 12, yEnd: 12, xStart: 10, xEnd: 10} 
+                    ];
+                } else if (currentLevelIndex === 1) { 
+                     protectedZonesSpecific = [
+                        { yStart: 4, yEnd: 6, xStart: 9, xEnd: 11 }, 
+                        { yStart: 8, yEnd: 8, xStart: 10, xEnd: 10}  
+                    ];
+                } else if (currentLevelIndex === 2) { 
+                    protectedZonesSpecific = [
+                        { yStart: 1, yEnd: 2, xStart: 10, xEnd: 12 }, 
+                        { yStart: 7, yEnd: 7, xStart: 11, xEnd: 11}   
+                    ];
+                }
+
+                function isProtected(y, x) {
+                    for (const zone of protectedZonesSpecific) {
+                        if (y >= zone.yStart && y <= zone.yEnd && x >= zone.xStart && x <= zone.xEnd) return true;
+                    }
+                    if (y < currentBlueprintRows && x < currentBlueprintCols && (currentLevelLayoutForProtection[y][x] === 4 || currentLevelLayoutForProtection[y][x] === 5)) return true;
+                    if (y === 0 || y === currentBlueprintRows - 1 || x === 0 || x === currentBlueprintCols - 1) return true;
+                    return false;
+                }
+                
+                for (let y = 1; y < currentBlueprintRows - 1; y++) {
+                    for (let x = 1; x < currentBlueprintCols - 1; x++) {
+                        if (isProtected(y, x)) continue;
+                        if (newBaseConfig[y][x] === 1) { 
+                            if (Math.random() < 0.15) newBaseConfig[y][x] = 0;
+                        } else if (newBaseConfig[y][x] === 0) { 
+                            let wallNeighbors = 0;
+                            if (y > 0 && newBaseConfig[y-1][x] === 1) wallNeighbors++;
+                            if (y < currentBlueprintRows - 1 && newBaseConfig[y+1][x] === 1) wallNeighbors++;
+                            if (x > 0 && newBaseConfig[y][x-1] === 1) wallNeighbors++;
+                            if (x < currentBlueprintCols - 1 && newBaseConfig[y][x+1][x] === 1) wallNeighbors++; 
+                            if (wallNeighbors < 3 && Math.random() < 0.05) newBaseConfig[y][x] = 1;
+                        }
+                    }
+                }
+                for (let y = 0; y < currentBlueprintRows; y++) {
+                    for (let x = 0; x < currentBlueprintCols; x++) {
+                        if (currentLevelLayoutForProtection[y][x] === 4) newBaseConfig[y][x] = 4;
+                        if (currentLevelLayoutForProtection[y][x] === 5) newBaseConfig[y][x] = 5;
+                        if (currentLevelLayoutForProtection[y][x] === 6 && newBaseConfig[y][x] !== 1) newBaseConfig[y][x] = 6; 
+                        if (currentLevelLayoutForProtection[y][x] === 7 && newBaseConfig[y][x] !== 1) newBaseConfig[y][x] = 7;
+                    }
+                }
+                return newBaseConfig;
+            }
+
+            function initializeLevel(levelIdx) {
+                currentLevelIndex = levelIdx;
+                levelDisplayEl.textContent = `Level: ${currentLevelIndex + 1}`;
+                gameModeDisplayEl.textContent = `Mode: ${selectedGameMode === 'survival' ? 'Survival' : 'Levels'}`;
+                
+                const currentLevelBlueprint = allLevelLayouts[currentLevelIndex % allLevelLayouts.length]; 
+
+                if (!allLevelBaseConfigs[currentLevelIndex] || selectedGameMode === 'survival') { 
+                     allLevelBaseConfigs[currentLevelIndex] = generateRandomMapBaseConfig(currentLevelBlueprint);
+                }
+                currentMapBaseConfig = allLevelBaseConfigs[currentLevelIndex];
+
+                map = JSON.parse(JSON.stringify(currentMapBaseConfig)); 
+                pelletsCount = 0;
+                ghosts = []; 
+                let ghostSpawnPointsFound = [];
+                let pacmanStartX, pacmanStartY;
+                
+                ROWS = currentMapBaseConfig.length;
+                COLS = currentMapBaseConfig[0].length;
+                resizeCanvas(); 
+
+                for (let y = 0; y < ROWS; y++) {
+                    for (let x = 0; x < COLS; x++) {
+                        if (map[y][x] === 0) { map[y][x] = 2; pelletsCount++; } 
+                        else if (map[y][x] === 2) { pelletsCount++;} 
+                        else if (map[y][x] === 3) { pelletsCount++;} 
+                        else if (map[y][x] === 6 || map[y][x] === 7) { /* Power-ups, no pellet */ } 
+                        else if (map[y][x] === 4) { 
+                            pacmanStartX = x; pacmanStartY = y;
+                            pacman.x = x * TILE_SIZE_CONST + TILE_SIZE_CONST / 2; 
+                            pacman.y = y * TILE_SIZE_CONST + TILE_SIZE_CONST / 2; 
+                            map[y][x] = 0; 
+                        } 
+                        else if (map[y][x] === 5) { 
+                            ghostSpawnPointsFound.push({x: x * TILE_SIZE_CONST + TILE_SIZE_CONST / 2, y: y * TILE_SIZE_CONST + TILE_SIZE_CONST / 2}); 
+                            map[y][x] = 0; 
+                        }
+                    }
+                }
+                 for (let y = 0; y < ROWS; y++) { 
+                    for (let x = 0; x < COLS; x++) {
+                        if (map[y][x] === 0) { 
+                            if (!(y === pacmanStartY && x === pacmanStartX)) { 
+                                map[y][x] = 2; 
+                                pelletsCount++; 
+                            }
+                        }
+                    }
+                }
+                if (pacmanStartY !== undefined && pacmanStartX !== undefined && map[pacmanStartY][pacmanStartX] === 2) {
+                    map[pacmanStartY][pacmanStartX] = 0; 
+                    pelletsCount--; 
+                }
+
+                for (let y = 0; y < ROWS; y++) {
+                    for (let x = 0; x < COLS; x++) {
+                        if (currentLevelBlueprint[y][x] === 3 && map[y][x] !== 1) { 
+                            if(map[y][x] === 2) pelletsCount--; 
+                            map[y][x] = 3;
+                            pelletsCount++; 
+                        }
+                        if (currentLevelBlueprint[y][x] === 6 && map[y][x] !== 1) { 
+                           if(map[y][x] === 2) pelletsCount--; 
+                           map[y][x] = 6;
+                        }
+                        if (currentLevelBlueprint[y][x] === 7 && map[y][x] !== 1) {
+                           if(map[y][x] === 2) pelletsCount--;
+                           map[y][x] = 7;
+                        }
+                    }
+                }
+                
+                const numberOfGhostsToCreate = Math.min(ghostSpawnPointsFound.length, activeTheme.GHOST_COLORS.length, 4);
+                let tempBaseGhostSpeed = TILE_SIZE_CONST / (64 - (currentLevelIndex * 8)); 
+                if (tempBaseGhostSpeed <= TILE_SIZE_CONST/100) tempBaseGhostSpeed = TILE_SIZE_CONST/100; 
+                if (selectedGameMode === 'survival') tempBaseGhostSpeed = TILE_SIZE_CONST / (64 - Math.floor(score/2000)*2); 
+
+                ghosts = []; 
+                for(let i = 0; i < numberOfGhostsToCreate; i++) {
+                     if(ghostSpawnPointsFound[i]) { 
+                        let personality = 'random';
+                        if (i === 0) personality = 'chaser'; 
+                        else if (i === 1) personality = 'ambusher'; 
+                        else if (i === 2) personality = (Math.random() < 0.5 ? 'patroller_h' : 'patroller_v'); 
+                        else if (i === 3) personality = 'random'; 
+                        
+                        ghosts.push({
+                            x: ghostSpawnPointsFound[i].x, y: ghostSpawnPointsFound[i].y, dx: 0, dy: 0,
+                            radius: TILE_SIZE_CONST / 2 - 2, color: activeTheme.GHOST_COLORS[i], 
+                            baseSpeed: tempBaseGhostSpeed, 
+                            speed: tempBaseGhostSpeed * difficultySettings[selectedDifficulty].ghostSpeedFactor, 
+                            isFrightened: false, isReturning: false, lastMoveDir: null, personality: personality,
+                            targetTile: null 
+                        });
+                    }
+                }
+                pacman.dx = 0; pacman.dy = 0; pacman.nextDx = 0; pacman.nextDy = 0; pacman.isRespawning = false;
+                pacman.baseSpeed = TILE_SIZE_CONST / 24; 
+                pacman.currentSpeed = pacman.baseSpeed * difficultySettings[selectedDifficulty].pacmanSpeedFactor;
+                pacman.speedBoostActive = false; pacman.speedBoostTimer = 0;
+                pacman.radius = TILE_SIZE_CONST / 2 - 2; 
+
+
+                frightenedMode = false; 
+                frightenedTimer = 0; 
+                ghostReleaseTimer = (baseGhostReleaseDelay - (currentLevelIndex * 3000)) * difficultySettings[selectedDifficulty].ghostReleaseFactor; 
+                if (ghostReleaseTimer < 5000) ghostReleaseTimer = 5000; 
+                ghostsActive = false;
+                scatterChaseIndex = 0;
+                setGhostMode(GHOST_MODE_SCATTER); 
+
+                bonusItem.active = false;
+                bonusItemSpawnTimer = BONUS_ITEM_SPAWN_INTERVAL;
+
+                updateGhostTimerDisplay(); 
+                updateUI(); 
+            }
+
+            function resetPacmanAndGhostsForLifeLost() { 
+                const baseConfigForCurrentLevel = allLevelBaseConfigs[currentLevelIndex];
+                for (let y = 0; y < baseConfigForCurrentLevel.length; y++) {
+                    for (let x = 0; x < baseConfigForCurrentLevel[0].length; x++) {
+                        if (baseConfigForCurrentLevel[y][x] === 4) { 
+                            pacman.x = x * TILE_SIZE_CONST + TILE_SIZE_CONST / 2; 
+                            pacman.y = y * TILE_SIZE_CONST + TILE_SIZE_CONST / 2; 
+                            break; 
+                        }
+                    }
+                }
+                pacman.dx = 0; pacman.dy = 0; pacman.nextDx = 0; pacman.nextDy = 0;
+                pacman.currentSpeed = pacman.baseSpeed * difficultySettings[selectedDifficulty].pacmanSpeedFactor;
+                pacman.speedBoostActive = false; pacman.speedBoostTimer = 0;
+
+                let ghostSpawnPoints = [];
+                 for (let y = 0; y < baseConfigForCurrentLevel.length; y++) {
+                    for (let x = 0; x < baseConfigForCurrentLevel[0].length; x++) {
+                         if (baseConfigForCurrentLevel[y][x] === 5) ghostSpawnPoints.push({x: x * TILE_SIZE_CONST + TILE_SIZE_CONST / 2, y: y * TILE_SIZE_CONST + TILE_SIZE_CONST / 2});
+                    }
+                }
+                ghosts.forEach((ghost, index) => {
+                    const spawnPoint = ghostSpawnPoints[index % ghostSpawnPoints.length]; 
+                    if (spawnPoint) { ghost.x = spawnPoint.x; ghost.y = spawnPoint.y; } 
+                    else { ghost.x = (COLS / 2) * TILE_SIZE_CONST + TILE_SIZE_CONST / 2; ghost.y = (ROWS / 2) * TILE_SIZE_CONST + TILE_SIZE_CONST / 2; }
+                    ghost.dx = 0; ghost.dy = 0; ghost.isFrightened = false; ghost.isReturning = false; ghost.lastMoveDir = null;
+                    ghost.speed = ghost.baseSpeed * difficultySettings[selectedDifficulty].ghostSpeedFactor;
+                });
+                frightenedMode = false; frightenedTimer = 0;
+                ghostsFrozen = false; ghostFreezeTimer = 0;
+                updateGhostTimerDisplay(); 
+            }
+            
+            function applyDifficultyAndLevelSettings() {
+                const settings = difficultySettings[selectedDifficulty];
+                lives = settings.lives;
+                pacman.currentSpeed = pacman.baseSpeed * settings.pacmanSpeedFactor;
+
+                let levelSpeedFactor = 1 + (currentLevelIndex * 0.1); 
+                let levelFrightFactor = 1 - (currentLevelIndex * 0.1); 
+                if (levelFrightFactor < 0.5) levelFrightFactor = 0.5;
+                let levelReleaseFactor = 1 - (currentLevelIndex * 0.15);
+                if (levelReleaseFactor < 0.4) levelReleaseFactor = 0.4;
+
+                ghosts.forEach(ghost => {
+                    ghost.baseSpeed = TILE_SIZE_CONST / (64 - (currentLevelIndex * 6)); 
+                    if (ghost.baseSpeed <= TILE_SIZE_CONST/100) ghost.baseSpeed = TILE_SIZE_CONST/100; 
+                    ghost.speed = ghost.baseSpeed * settings.ghostSpeedFactor * (selectedGameMode === 'survival' ? 1 : levelSpeedFactor) ;
+                });
+                
+                baseFrightenedDuration = 14000 * settings.frightenedDurationFactor * (selectedGameMode === 'survival' ? 1 : levelFrightFactor);
+                baseGhostReleaseDelay = 40000 * settings.ghostReleaseFactor * (selectedGameMode === 'survival' ? 1 : levelReleaseFactor);
+            }
+
+
+            function startGame() { 
+                difficultyRadios.forEach(radio => { if (radio.checked) selectedDifficulty = radio.value; });
+                gameModeRadios.forEach(radio => { if (radio.checked) selectedGameMode = radio.value; });
+
+                score = 0; // Always reset score for any start/restart
+
+                if (startButton.textContent === "Start Game" || gameOver) { 
+                    currentLevelIndex = 0; 
+                    allLevelBaseConfigs = []; 
+                } 
+                
+                allLevelBaseConfigs[currentLevelIndex] = generateRandomMapBaseConfig(allLevelLayouts[currentLevelIndex % allLevelLayouts.length]);
+                            
+                initializeLevel(currentLevelIndex); 
+                applyDifficultyAndLevelSettings(); 
+                updateUI(); 
+                pacman.isRespawning = false; gameRunning = true; gamePaused = false; gameOver = false; 
+                startButton.textContent = "Restart Game"; pauseButton.textContent = "Pause"; pauseButton.disabled = false; 
+                
+                difficultyRadios.forEach(radio => radio.disabled = true);
+                gameModeRadios.forEach(radio => radio.disabled = true);
+
+                hideMessage(); 
+                if (currentRequestAnimationFrame) { cancelAnimationFrame(currentRequestAnimationFrame); currentRequestAnimationFrame = null; }
+                playSound("game_start");
+                gameLoop(); 
+            }
+            function togglePause() { 
+                if (!gameRunning || gameOver) return; 
+                gamePaused = !gamePaused;
+                if (gamePaused) {
+                    pauseButton.textContent = "Resume"; showMessage("Paused", false); 
+                    if (currentRequestAnimationFrame) { cancelAnimationFrame(currentRequestAnimationFrame); currentRequestAnimationFrame = null; }
+                } else {
+                    pauseButton.textContent = "Pause"; hideMessage();
+                    if (!currentRequestAnimationFrame) gameLoop(); 
+                }
+            }
+            function updateUI() { scoreEl.textContent = `Score: ${score}`; livesEl.textContent = `Lives: ${lives}`; }
+            function updateGhostTimerDisplay() { 
+                if (!ghostsActive && gameRunning && !gamePaused) {
+                    const timeLeft = Math.ceil(ghostReleaseTimer / 1000);
+                    ghostTimerDisplayEl.textContent = `Ghosts start in: ${timeLeft > 0 ? timeLeft : 0}s`;
+                    ghostTimerDisplayEl.classList.remove('hidden');
+                } else if (ghostsActive || !gameRunning) {
+                    ghostTimerDisplayEl.classList.add('hidden');
+                }
+            }
+            function drawWall(x, y) { ctx.fillStyle = activeTheme.WALL_COLOR; ctx.fillRect(x * TILE_SIZE_CONST, y * TILE_SIZE_CONST, TILE_SIZE_CONST, TILE_SIZE_CONST); }
+            function drawPellet(x, y) { ctx.beginPath(); ctx.arc(x * TILE_SIZE_CONST + TILE_SIZE_CONST / 2, y * TILE_SIZE_CONST + TILE_SIZE_CONST / 2, TILE_SIZE_CONST / 5, 0, Math.PI * 2); ctx.fillStyle = activeTheme.PELLET_COLOR; ctx.fill(); ctx.closePath(); }
+            function drawPowerPellet(x, y) { ctx.beginPath(); ctx.arc(x * TILE_SIZE_CONST + TILE_SIZE_CONST / 2, y * TILE_SIZE_CONST + TILE_SIZE_CONST / 2, TILE_SIZE_CONST / 3, 0, Math.PI * 2); ctx.fillStyle = activeTheme.POWER_PELLET_COLOR; ctx.fill(); ctx.closePath(); }
+            function drawSpeedBoost(x,y) { 
+                ctx.fillStyle = activeTheme.SPEED_BOOST_COLOR;
+                ctx.beginPath();
+                ctx.moveTo(x * TILE_SIZE_CONST + TILE_SIZE_CONST / 2, y * TILE_SIZE_CONST + TILE_SIZE_CONST / 4);
+                ctx.lineTo(x * TILE_SIZE_CONST + TILE_SIZE_CONST / 4, y * TILE_SIZE_CONST + TILE_SIZE_CONST * 3 / 4);
+                ctx.lineTo(x * TILE_SIZE_CONST + TILE_SIZE_CONST * 3 / 4, y * TILE_SIZE_CONST + TILE_SIZE_CONST * 3 / 4);
+                ctx.closePath();
+                ctx.fill();
+            }
+             function drawFreezePellet(x, y) {
+                ctx.fillStyle = activeTheme.FREEZE_PELLET_COLOR;
+                ctx.beginPath();
+                const centerX = x * TILE_SIZE_CONST + TILE_SIZE_CONST / 2;
+                const centerY = y * TILE_SIZE_CONST + TILE_SIZE_CONST / 2;
+                const armLength = TILE_SIZE_CONST / 3;
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI / 3) * i;
+                    ctx.moveTo(centerX, centerY);
+                    ctx.lineTo(centerX + Math.cos(angle) * armLength, centerY + Math.sin(angle) * armLength);
+                }
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = activeTheme.FREEZE_PELLET_COLOR; 
+                ctx.stroke();
+                ctx.closePath();
+            }
+            function drawBonusItem() {
+                if (bonusItem.active) {
+                    ctx.fillStyle = activeTheme.BONUS_ITEM_COLOR;
+                    ctx.font = `${TILE_SIZE_CONST * 0.8}px 'Press Start 2P'`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText("🍒", bonusItem.x * TILE_SIZE_CONST + TILE_SIZE_CONST / 2, bonusItem.y * TILE_SIZE_CONST + TILE_SIZE_CONST / 2);
+                }
+            }
+            
+            function drawPacman() {
+                const oA1 = 0.25 * Math.PI; const oA2 = 1.75 * Math.PI;
+                let tA1 = oA1; let tA2 = oA2;
+                if (pacman.mouthOpen) { tA1 = 0.25 * Math.PI; tA2 = 1.75 * Math.PI; } 
+                else { tA1 = 0.05 * Math.PI; tA2 = 1.95 * Math.PI; }
+                let dDx = pacman.dx; let dDy = pacman.dy;
+                if (pacman.dx === 0 && pacman.dy === 0 && (pacman.nextDx !== 0 || pacman.nextDy !== 0)) { dDx = pacman.nextDx; dDy = pacman.nextDy; }
+                if (dDx > 0) {} else if (dDx < 0) { tA1 += Math.PI; tA2 += Math.PI; } 
+                else if (dDy > 0) { tA1 += 0.5 * Math.PI; tA2 += 0.5 * Math.PI; } 
+                else if (dDy < 0) { tA1 -= 0.5 * Math.PI; tA2 -= 0.5 * Math.PI; }
+                ctx.beginPath(); ctx.arc(pacman.x, pacman.y, pacman.radius, tA1, tA2);
+                ctx.lineTo(pacman.x, pacman.y); ctx.fillStyle = activeTheme.PACMAN_COLOR; ctx.fill(); ctx.closePath();
+                ctx.fillStyle = 'black'; let eX = pacman.x; let eY = pacman.y;
+                const eO = pacman.radius * 0.4; const eR = pacman.radius * 0.15;
+                if (dDx > 0) { eX += eO / 2; eY -= eO; } 
+                else if (dDx < 0) { eX -= eO / 2; eY -= eO; } 
+                else if (dDy > 0) { eX += eO; eY -= eO / 2; } 
+                else if (dDy < 0) { eX -= eO; eY += eO / 2; } 
+                else { eX += eO / 2; eY -= eO; }
+                ctx.beginPath(); ctx.arc(eX, eY, eR, 0, Math.PI * 2); ctx.fill(); ctx.closePath();
+            }
+
+            function drawGhost(ghost) {
+                ctx.beginPath(); ctx.arc(ghost.x, ghost.y, ghost.radius, Math.PI, 0);
+                ctx.lineTo(ghost.x + ghost.radius, ghost.y + ghost.radius * 0.8);
+                const nS = 5; 
+                for (let i = 0; i < nS; i++) { ctx.lineTo(ghost.x + ghost.radius - (i * (2 * ghost.radius / nS)), ghost.y + ghost.radius * (i % 2 === 0 ? 0.8 : 1.2)); }
+                ctx.lineTo(ghost.x - ghost.radius, ghost.y + ghost.radius * 0.8); ctx.closePath();
+                if (ghost.isFrightened) { ctx.fillStyle = '#0000FF'; ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 2; ctx.stroke(); } 
+                else if (ghost.isReturning) { ctx.fillStyle = '#888888'; } 
+                else if (ghostsFrozen) { ctx.fillStyle = '#AAAAFF'; } 
+                else { ctx.fillStyle = ghost.color; } 
+                ctx.fill();
+                ctx.fillStyle = 'white'; const eR = ghost.radius * 0.3; const eOX = ghost.radius * 0.4; const eOY = ghost.radius * 0.3;
+                ctx.beginPath(); ctx.arc(ghost.x - eOX, ghost.y - eOY, eR, 0, Math.PI * 2); ctx.arc(ghost.x + eOX, ghost.y - eOY, eR, 0, Math.PI * 2); ctx.fill(); ctx.closePath();
+                ctx.fillStyle = 'black'; const pR = eR * 0.5; let pSX = 0; let pSY = 0; 
+                let targetAngleX = ghost.dx; let targetAngleY = ghost.dy;
+                if ((ghost.dx === 0 && ghost.dy === 0 || ghostsFrozen) && !ghost.isReturning && !ghost.isFrightened) { 
+                    targetAngleX = pacman.x - ghost.x;
+                    targetAngleY = pacman.y - ghost.y;
+                }
+                if (targetAngleX !== 0 || targetAngleY !== 0) { 
+                    const ang = Math.atan2(targetAngleY, targetAngleX); 
+                    pSX = Math.cos(ang) * pR * 0.8; pSY = Math.sin(ang) * pR * 0.8; 
+                }
+                ctx.beginPath(); ctx.arc(ghost.x - eOX + pSX, ghost.y - eOY + pSY, pR, 0, Math.PI * 2); ctx.arc(ghost.x + eOX + pSX, ghost.y - eOY + pSY, pR, 0, Math.PI * 2); ctx.fill(); ctx.closePath();
+            }
+
+            function draw() {
+                ctx.fillStyle = activeTheme.CANVAS_BG; 
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) { 
+                    if (map[y][x] === 1) drawWall(x, y); 
+                    else if (map[y][x] === 2) drawPellet(x, y); 
+                    else if (map[y][x] === 3) drawPowerPellet(x, y);
+                    else if (map[y][x] === 6) drawSpeedBoost(x,y);
+                    else if (map[y][x] === 7) drawFreezePellet(x,y);
+                }
+                drawBonusItem();
+                drawPacman(); ghosts.forEach(drawGhost);
+            }
+
+            function isWall(gX, gY) { if (gX < 0 || gX >= COLS || gY < 0 || gY >= ROWS) return true; return map[gY] && map[gY][gX] === 1; }
+            function handleTunnel(e) { if (e.x < -e.radius && e.dx < 0) e.x = canvas.width + e.radius; else if (e.x > canvas.width + e.radius && e.dx > 0) e.x = -e.radius; if (e.y < -e.radius && e.dy < 0) e.y = canvas.height + e.radius; else if (e.y > canvas.height + e.radius && e.dy > 0) e.y = -e.radius; }
+            
+            function updatePacman() {
+                if (pacman.speedBoostActive) {
+                    pacman.speedBoostTimer -= 1000 / 60;
+                    if (pacman.speedBoostTimer <= 0) {
+                        pacman.speedBoostActive = false;
+                        pacman.currentSpeed = pacman.baseSpeed * difficultySettings[selectedDifficulty].pacmanSpeedFactor;
+                        playSound("boost_end");
+                    }
+                }
+
+                const pGX = Math.floor(pacman.x / TILE_SIZE_CONST); const pGY = Math.floor(pacman.y / TILE_SIZE_CONST);
+                const currentPacmanSpeed = pacman.currentSpeed; 
+                const aT = currentPacmanSpeed * 0.9; 
+
+                if (pacman.nextDx !== 0 || pacman.nextDy !== 0) {
+                    let sD = false; const iCS = (pacman.dx === 0 && pacman.dy === 0);
+                    if (pacman.nextDx !== 0) {
+                        const cTH = iCS || (Math.abs(pacman.y - (pGY * TILE_SIZE_CONST + TILE_SIZE_CONST / 2)) < aT);
+                        if (cTH) { 
+                            let targetTileX = pGX + Math.sign(pacman.nextDx / currentPacmanSpeed); 
+                            if (!isWall(targetTileX, pGY)) { 
+                                pacman.y = pGY * TILE_SIZE_CONST + TILE_SIZE_CONST / 2; 
+                                pacman.dx = pacman.nextDx; pacman.dy = 0; 
+                                pacman.nextDx = 0; pacman.nextDy = 0; sD = true; 
+                            } else if (iCS) pacman.nextDx = 0; 
+                        }
+                    }
+                    if (!sD && pacman.nextDy !== 0) {
+                        const cTV = iCS || (Math.abs(pacman.x - (pGX * TILE_SIZE_CONST + TILE_SIZE_CONST / 2)) < aT);
+                        if (cTV) { 
+                            let targetTileY = pGY + Math.sign(pacman.nextDy / currentPacmanSpeed); 
+                            if (!isWall(pGX,targetTileY )) { 
+                                pacman.x = pGX * TILE_SIZE_CONST + TILE_SIZE_CONST / 2; 
+                                pacman.dy = pacman.nextDy; pacman.dx = 0; 
+                                pacman.nextDx = 0; pacman.nextDy = 0; 
+                            } else if (iCS) pacman.nextDy = 0; 
+                        }
+                    }
+                }
+                let pNX = pacman.x + pacman.dx; let pNY = pacman.y + pacman.dy;
+                const cM = 0.01; 
+                if (pacman.dx !== 0) {
+                    let lX = pacman.dx > 0 ? pacman.x + pacman.radius + pacman.dx : pacman.x - pacman.radius + pacman.dx;
+                    const lGX = Math.floor(lX / TILE_SIZE_CONST);
+                    const tY = Math.floor((pacman.y - pacman.radius * 0.9) / TILE_SIZE_CONST); const mY = Math.floor(pacman.y / TILE_SIZE_CONST); const bY = Math.floor((pacman.y + pacman.radius * 0.9) / TILE_SIZE_CONST);
+                    if (isWall(lGX, tY) || isWall(lGX, mY) || isWall(lGX, bY)) { pNX = pacman.dx > 0 ? lGX * TILE_SIZE_CONST - pacman.radius - cM : (lGX + 1) * TILE_SIZE_CONST + pacman.radius + cM; pacman.dx = 0; }
+                }
+                if (pacman.dy !== 0) {
+                    let lY = pacman.dy > 0 ? pacman.y + pacman.radius + pacman.dy : pacman.y - pacman.radius + pacman.dy;
+                    const lGY = Math.floor(lY / TILE_SIZE_CONST);
+                    const lXG = Math.floor((pacman.x - pacman.radius * 0.9) / TILE_SIZE_CONST); const mXG = Math.floor(pacman.x / TILE_SIZE_CONST); const rXG = Math.floor((pacman.x + pacman.radius * 0.9) / TILE_SIZE_CONST);
+                    if (isWall(lXG, lGY) || isWall(mXG, lGY) || isWall(rXG, lGY)) { pNY = pacman.dy > 0 ? lGY * TILE_SIZE_CONST - pacman.radius - cM : (lGY + 1) * TILE_SIZE_CONST + pacman.radius + cM; pacman.dy = 0; }
+                }
+                pacman.x = pNX; pacman.y = pNY; handleTunnel(pacman);
+                const fPGX = Math.floor(pacman.x / TILE_SIZE_CONST); const fPGY = Math.floor(pacman.y / TILE_SIZE_CONST);
+                if (fPGY >= 0 && fPGY < ROWS && fPGX >= 0 && fPGX < COLS) {
+                    if (map[fPGY][fPGX] === 2) { map[fPGY][fPGX] = 0; score += 10; pelletsCount--; updateUI(); playSound("munch"); } 
+                    else if (map[fPGY][fPGX] === 3) { map[fPGY][fPGX] = 0; score += 50; pelletsCount--; activateFrightenedMode(); updateUI(); playSound("power_pellet"); }
+                    else if (map[fPGY][fPGX] === 6) { 
+                        map[fPGY][fPGX] = 0; 
+                        pacman.speedBoostActive = true;
+                        pacman.speedBoostTimer = pacman.speedBoostDuration; 
+                        pacman.currentSpeed = pacman.baseSpeed * 1.5 * difficultySettings[selectedDifficulty].pacmanSpeedFactor; 
+                        playSound("speed_boost");
+                    }
+                    else if (map[fPGY][fPGX] === 7) { 
+                        map[fPGY][fPGX] = 0;
+                        ghostsFrozen = true;
+                        ghostFreezeTimer = GHOST_FREEZE_DURATION;
+                        playSound("freeze_ghosts");
+                    }
+                    if (bonusItem.active && fPGX === bonusItem.x && fPGY === bonusItem.y) {
+                        score += bonusItem.points;
+                        updateUI();
+                        playSound("eat_fruit");
+                        bonusItem.active = false;
+                    }
+                }
+                if (pacman.dx !== 0 || pacman.dy !== 0) pacman.mouthOpen = !pacman.mouthOpen;
+            }
+
+            function activateFrightenedMode() { 
+                frightenedMode = true; 
+                frightenedTimer = baseFrightenedDuration * difficultySettings[selectedDifficulty].frightenedDurationFactor * (selectedGameMode === 'survival' ? 1 : (1 - (currentLevelIndex % allLevelLayouts.length) * 0.1));
+                if(frightenedTimer < 3000) frightenedTimer = 3000; 
+                ghosts.forEach(g => { g.isFrightened = true; g.dx *= -1; g.dy *= -1; g.lastMoveDir = null; }); 
+                ateAllGhostsThisPowerMode = 0; 
+            }
+            
+             function setGhostMode(mode) {
+                globalGhostMode = mode;
+                let durationConfig = scatterChaseDurations[scatterChaseIndex % scatterChaseDurations.length];
+                if (mode === GHOST_MODE_SCATTER) {
+                    ghostModeTimer = durationConfig.scatter;
+                } else { 
+                    ghostModeTimer = durationConfig.chase;
+                }
+                ghosts.forEach(ghost => {
+                    if (mode === GHOST_MODE_SCATTER) {
+                        const ghostIndex = ghosts.indexOf(ghost);
+                        if (ghostIndex === 0) ghost.targetTile = { x: 1, y: 1 }; 
+                        else if (ghostIndex === 1) ghost.targetTile = { x: COLS - 2, y: 1 }; 
+                        else if (ghostIndex === 2) ghost.targetTile = { x: 1, y: ROWS - 2 }; 
+                        else if (ghostIndex === 3) ghost.targetTile = { x: COLS - 2, y: ROWS - 2 }; 
+                    } else {
+                        ghost.targetTile = null; 
+                    }
+                    ghost.dx = 0; ghost.dy = 0; ghost.lastMoveDir = null; 
+                });
+            }
+
+
+            function updateGhosts() {
+                if (!ghostsActive) return;
+
+                if (ghostsFrozen) {
+                    ghostFreezeTimer -= 1000/60;
+                    if (ghostFreezeTimer <= 0) {
+                        ghostsFrozen = false;
+                    } else {
+                        ghosts.forEach(ghost => { ghost.dx = 0; ghost.dy = 0; }); 
+                        return; 
+                    }
+                }
+
+                if (selectedGameMode === "levels" && !frightenedMode && !ghosts.some(g => g.isReturning)) {
+                     ghostModeTimer -= 1000 / 60;
+                     if (ghostModeTimer <= 0) {
+                         if (globalGhostMode === GHOST_MODE_SCATTER) {
+                             setGhostMode(GHOST_MODE_CHASE);
+                         } else {
+                             scatterChaseIndex++;
+                              if (scatterChaseIndex >= scatterChaseDurations.length) scatterChaseIndex = scatterChaseDurations.length -1; 
+                             setGhostMode(GHOST_MODE_SCATTER);
+                         }
+                     }
+                }
+
+                if (frightenedMode) {
+                    frightenedTimer -= 1000 / 60;
+                    if (frightenedTimer <= 0) {
+                        frightenedMode = false;
+                        ghosts.forEach(g => { g.isFrightened = false; g.isReturning = false; });
+                    }
+                }
+                ghosts.forEach(ghost => {
+                    const ghostSpeedSetting = ghost.baseSpeed * difficultySettings[selectedDifficulty].ghostSpeedFactor * (selectedGameMode === 'survival' && !ghost.isFrightened ? (1 + Math.floor(score/1500)*0.05) : 1) ; 
+
+                    if (ghost.isReturning) {
+                        let spawnPoint;
+                        const currentLevelBlueprint = allLevelLayouts[currentLevelIndex % allLevelLayouts.length];
+                        for (let r = 0; r < currentLevelBlueprint.length; r++) { for (let c = 0; c < currentLevelBlueprint[0].length; c++) if (currentLevelBlueprint[r][c] === 5) { spawnPoint = { x: c * TILE_SIZE_CONST + TILE_SIZE_CONST / 2, y: r * TILE_SIZE_CONST + TILE_SIZE_CONST / 2 }; break; } if (spawnPoint) break; }
+                        if (spawnPoint) {
+                            const targetX = spawnPoint.x; const targetY = spawnPoint.y;
+                            const angle = Math.atan2(targetY - ghost.y, targetX - ghost.x);
+                            ghost.dx = Math.cos(angle) * ghostSpeedSetting * 1.5; 
+                            ghost.dy = Math.sin(angle) * ghostSpeedSetting * 1.5;
+                            if (Math.hypot(ghost.x - targetX, ghost.y - targetY) < TILE_SIZE_CONST / 2) { ghost.isReturning = false; ghost.isFrightened = false; ghost.x = targetX; ghost.y = targetY; ghost.dx = 0; ghost.dy = 0; ghost.lastMoveDir = null; }
+                        }
+                    } else {
+                        const ghostGridX = Math.floor(ghost.x / TILE_SIZE_CONST); const ghostGridY = Math.floor(ghost.y / TILE_SIZE_CONST);
+                        const currentActualSpeed = ghost.isFrightened ? ghostSpeedSetting * 0.6 : ghostSpeedSetting; 
+                        const onGridCenter = Math.abs(ghost.x - (ghostGridX * TILE_SIZE_CONST + TILE_SIZE_CONST / 2)) < currentActualSpeed * 0.6 && Math.abs(ghost.y - (ghostGridY * TILE_SIZE_CONST + TILE_SIZE_CONST / 2)) < currentActualSpeed * 0.6; 
+                        
+                        if (onGridCenter || (ghost.dx === 0 && ghost.dy === 0)) {
+                            let possibleMoves = [];
+                            const directions = [
+                                {dx:0, dy:-currentActualSpeed, dir:'up', opposite: 'down'}, {dx:0, dy:currentActualSpeed, dir:'down', opposite: 'up'},
+                                {dx:-currentActualSpeed, dy:0, dir:'left', opposite: 'right'}, {dx:currentActualSpeed, dy:0, dir:'right', opposite: 'left'}
+                            ];
+                            directions.forEach(move => {
+                                if (!isWall(ghostGridX + (move.dx !== 0 ? Math.sign(move.dx / currentActualSpeed) : 0), ghostGridY + (move.dy !== 0 ? Math.sign(move.dy / currentActualSpeed) : 0)) &&
+                                    (possibleMoves.length > 1 ? ghost.lastMoveDir !== move.opposite : true) ) { 
+                                    possibleMoves.push(move);
+                                }
+                            });
+
+                            if (possibleMoves.length === 0 && ghost.lastMoveDir) { 
+                                const reverseMove = directions.find(d => d.dir === ghost.lastMoveDir.opposite);
+                                if (reverseMove && !isWall(ghostGridX + (reverseMove.dx !== 0 ? Math.sign(reverseMove.dx / currentActualSpeed) : 0), ghostGridY + (reverseMove.dy !== 0 ? Math.sign(reverseMove.dy / currentActualSpeed) : 0))) {
+                                    possibleMoves.push(reverseMove);
+                                }
+                            }
+                            
+                            if (possibleMoves.length > 0) {
+                                let chosenMove;
+                                if (ghost.isFrightened) { 
+                                    let maxDist = -Infinity;
+                                    possibleMoves.forEach(move => { const d = Math.hypot((ghost.x + move.dx) - pacman.x, (ghost.y + move.dy) - pacman.y); if (d > maxDist) { maxDist = d; chosenMove = move; } });
+                                } else if (globalGhostMode === GHOST_MODE_SCATTER && ghost.targetTile) { 
+                                    let minDistToTarget = Infinity;
+                                    possibleMoves.forEach(move => { const d = Math.hypot((ghost.x + move.dx) - (ghost.targetTile.x * TILE_SIZE_CONST + TILE_SIZE_CONST/2), (ghost.y + move.dy) - (ghost.targetTile.y * TILE_SIZE_CONST + TILE_SIZE_CONST/2)); if (d < minDistToTarget) { minDistToTarget = d; chosenMove = move; } });
+                                } else { 
+                                    switch(ghost.personality) {
+                                        case 'chaser':
+                                            let minDist = Infinity;
+                                            possibleMoves.forEach(move => { const d = Math.hypot((ghost.x + move.dx) - pacman.x, (ghost.y + move.dy) - pacman.y); if (d < minDist) { minDist = d; chosenMove = move; } });
+                                            break;
+                                        case 'ambusher': 
+                                            let targetX = pacman.x + (pacman.dx / pacman.currentSpeed * 4 * TILE_SIZE_CONST);
+                                            let targetY = pacman.y + (pacman.dy / pacman.currentSpeed * 4 * TILE_SIZE_CONST);
+                                            if (pacman.dx === 0 && pacman.dy === 0) {targetX = pacman.x; targetY = pacman.y;} 
+                                            let ambusherMinDist = Infinity;
+                                            possibleMoves.forEach(move => { const d = Math.hypot((ghost.x + move.dx) - targetX, (ghost.y + move.dy) - targetY); if (d < ambusherMinDist) { ambusherMinDist = d; chosenMove = move; } });
+                                            break;
+                                        case 'patroller_h':
+                                            chosenMove = possibleMoves.find(m => m.dir === ghost.lastMoveDir && (m.dir === 'left' || m.dir === 'right')) || 
+                                                         possibleMoves.find(m => m.dir === 'left' || m.dir === 'right') || 
+                                                         possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                                            break;
+                                        case 'patroller_v':
+                                             chosenMove = possibleMoves.find(m => m.dir === ghost.lastMoveDir && (m.dir === 'up' || m.dir === 'down')) || 
+                                                          possibleMoves.find(m => m.dir === 'up' || m.dir === 'down') || 
+                                                          possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                                            break;
+                                        default: 
+                                            chosenMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                                    }
+                                }
+                                if (chosenMove) { ghost.dx = chosenMove.dx; ghost.dy = chosenMove.dy; ghost.lastMoveDir = chosenMove.dir; ghost.x = ghostGridX * TILE_SIZE_CONST + TILE_SIZE_CONST / 2; ghost.y = ghostGridY * TILE_SIZE_CONST + TILE_SIZE_CONST / 2; }
+                            }
+                        }
+                    }
+                    let potentialGhostNextX = ghost.x + ghost.dx; let potentialGhostNextY = ghost.y + ghost.dy;
+                    const collisionMargin = 0.1; 
+                    if (ghost.dx !== 0) {
+                        const nextGridX = Math.floor((potentialGhostNextX + Math.sign(ghost.dx) * ghost.radius) / TILE_SIZE_CONST);
+                        if (isWall(nextGridX, Math.floor(ghost.y / TILE_SIZE_CONST))) { potentialGhostNextX = ghost.dx > 0 ? nextGridX * TILE_SIZE_CONST - ghost.radius - collisionMargin : (nextGridX + 1) * TILE_SIZE_CONST + ghost.radius + collisionMargin; ghost.dx = 0; ghost.dy = 0; ghost.lastMoveDir = null;}
+                    }
+                    if (ghost.dy !== 0) {
+                        const nextGridY = Math.floor((potentialGhostNextY + Math.sign(ghost.dy) * ghost.radius) / TILE_SIZE_CONST);
+                        if (isWall(Math.floor(ghost.x / TILE_SIZE_CONST), nextGridY)) { potentialGhostNextY = ghost.dy > 0 ? nextGridY * TILE_SIZE_CONST - ghost.radius - collisionMargin : (nextGridY + 1) * TILE_SIZE_CONST + ghost.radius + collisionMargin; ghost.dx = 0; ghost.dy = 0; ghost.lastMoveDir = null;}
+                    }
+                    ghost.x = potentialGhostNextX; ghost.y = potentialGhostNextY;
+                    handleTunnel(ghost);
+                    const dist = Math.hypot(pacman.x - ghost.x, pacman.y - ghost.y);
+                    if (dist < pacman.radius + ghost.radius) {
+                        if (ghost.isFrightened && !ghost.isReturning) { 
+                            score += (200 * Math.pow(2, ateAllGhostsThisPowerMode)); 
+                            ateAllGhostsThisPowerMode++; 
+                            if(ateAllGhostsThisPowerMode >= 4) checkAndGrantAchievement(ACHIEVEMENT_EAT_ALL_GHOSTS_ONE_POWER);
+                            ghost.isReturning = true; ghost.isFrightened = false; updateUI(); playSound("eat_ghost");
+                        } 
+                        else if (!ghost.isReturning && !frightenedMode && !ghostsFrozen) { handlePacmanDeath(); }
+                    }
+                });
+            }
+            
+            function handlePacmanDeath() {
+                if (pacman.isRespawning || !gameRunning || gameOver) return;
+                pacman.isRespawning = true;
+                lives--; updateUI(); playSound("death");
+                frightenedMode = false; ghostsFrozen = false; ghostFreezeTimer = 0;
+                ghosts.forEach(g => { g.isFrightened = false; g.isReturning = false; });
+                if (currentRequestAnimationFrame) { cancelAnimationFrame(currentRequestAnimationFrame); currentRequestAnimationFrame = null; }
+                if (lives <= 0) {
+                    gameOver = true; gameRunning = false;
+                    const rM = gameOverMessages[Math.floor(Math.random() * gameOverMessages.length)];
+                    saveHighScore(score); 
+                    showMessage(`${rM} Score: ${score}. High Scores are available.`, true, () => { pacman.isRespawning = false; startGame(); });
+                    startButton.textContent = "New Game"; pauseButton.disabled = true;
+                    difficultyRadios.forEach(radio => radio.disabled = false); gameModeRadios.forEach(radio => radio.disabled = false);
+                } else {
+                    gamePaused = true;
+                    const rM = lostLifeMessages[Math.floor(Math.random() * lostLifeMessages.length)];
+                    showMessage(`${rM} (${lives} lives left)`, true, () => {
+                        resetPacmanAndGhostsForLifeLost(); 
+                        pacman.isRespawning = false; gamePaused = false; hideMessage();
+                        if (!gameOver) { 
+                            gameRunning = true; 
+                            if (!currentRequestAnimationFrame) gameLoop(); 
+                        }
+                    });
+                }
+            }
+
+            function checkWinCondition() {
+                if (pelletsCount === 0 && gameRunning) {
+                    gameRunning = false; 
+                    if (currentRequestAnimationFrame) { cancelAnimationFrame(currentRequestAnimationFrame); currentRequestAnimationFrame = null; }
+                    playSound("level_win");
+                    
+                    if (selectedGameMode === "survival") {
+                        currentLevelIndex++; 
+                        showMessage(`Wave ${currentLevelIndex + 1} Cleared! Get Ready!`, true, () => {
+                            allLevelBaseConfigs[0] = generateRandomMapBaseConfig(allLevelLayouts[0]); 
+                            initializeLevel(0); 
+                            applyDifficultyAndLevelSettings(); 
+                            pacman.isRespawning = false; gameRunning = true; gamePaused = false; gameOver = false; 
+                            if (currentRequestAnimationFrame) { cancelAnimationFrame(currentRequestAnimationFrame); currentRequestAnimationFrame = null; }
+                            gameLoop();
+                        });
+                        return;
+                    }
+
+                    currentLevelIndex++;
+                    if (currentLevelIndex < allLevelLayouts.length) { 
+                        showMessage(`Level ${currentLevelIndex} Cleared! Next level...`, true, () => {
+                            if (!allLevelBaseConfigs[currentLevelIndex]) {
+                                allLevelBaseConfigs[currentLevelIndex] = generateRandomMapBaseConfig(allLevelLayouts[currentLevelIndex]);
+                            }
+                            initializeLevel(currentLevelIndex); 
+                            applyDifficultyAndLevelSettings();
+                            pacman.isRespawning = false; gameRunning = true; gamePaused = false; gameOver = false; 
+                            if (currentRequestAnimationFrame) { cancelAnimationFrame(currentRequestAnimationFrame); currentRequestAnimationFrame = null; }
+                            gameLoop();
+                        });
+                        if(currentLevelIndex -1 === 0) checkAndGrantAchievement(ACHIEVEMENT_LEVEL_1_CLEARED); 
+                    } else { 
+                        gameOver = true;
+                        const randomWinMsg = winMessages[Math.floor(Math.random() * winMessages.length)];
+                        saveHighScore(score); 
+                        showMessage(`${randomWinMsg} Final Score: ${score}. You beat all levels! High Scores available.`, true, () => {
+                            pacman.isRespawning = false;
+                            startGame(); 
+                        });
+                        startButton.textContent = "New Game";
+                        pauseButton.disabled = true;
+                        difficultyRadios.forEach(radio => radio.disabled = false); gameModeRadios.forEach(radio => radio.disabled = false);
+                    }
+                }
+            }
+
+            function gameLoop() {
+                if (pacman.isRespawning) { if (currentRequestAnimationFrame) requestAnimationFrame(gameLoop); return; }
+                if (gamePaused || !gameRunning || gameOver) {
+                    if (gameOver || (gamePaused && messageBox.style.display === 'block')) { draw(); }
+                    if (gameOver && currentRequestAnimationFrame) { cancelAnimationFrame(currentRequestAnimationFrame); currentRequestAnimationFrame = null; }
+                    return;
+                }
+                if (!ghostsActive && gameRunning && !gamePaused) {
+                    let currentGhostReleaseDelay = baseGhostReleaseDelay * difficultySettings[selectedDifficulty].ghostReleaseFactor * (selectedGameMode === 'levels' ? (1 - (currentLevelIndex % allLevelLayouts.length) * 0.1) : 1) ;
+                     if (currentGhostReleaseDelay < 5000) currentGhostReleaseDelay = 5000;
+
+                    ghostReleaseTimer -= 1000 / 60; updateGhostTimerDisplay();
+                    if (ghostReleaseTimer <= 0) { ghostsActive = true; ghostTimerDisplayEl.classList.add('hidden'); }
+                }
+
+                if(selectedGameMode === "levels" && !frightenedMode && !ghosts.some(g => g.isReturning) && !ghostsFrozen) {
+                     ghostModeTimer -= 1000 / 60;
+                     if (ghostModeTimer <= 0) {
+                         if (globalGhostMode === GHOST_MODE_SCATTER) {
+                             setGhostMode(GHOST_MODE_CHASE);
+                         } else {
+                             scatterChaseIndex++;
+                             if (scatterChaseIndex >= scatterChaseDurations.length) scatterChaseIndex = scatterChaseDurations.length -1; 
+                             setGhostMode(GHOST_MODE_SCATTER);
+                         }
+                     }
+                }
+                
+                if (gameRunning && !gamePaused && !bonusItem.active) {
+                    bonusItemSpawnTimer -= 1000 / 60;
+                    if (bonusItemSpawnTimer <= 0) {
+                        spawnBonusItem();
+                        bonusItemSpawnTimer = BONUS_ITEM_SPAWN_INTERVAL;
+                    }
+                }
+                if (bonusItem.active) {
+                    bonusItem.timer -= 1000 / 60;
+                    if (bonusItem.timer <= 0) {
+                        bonusItem.active = false;
+                    }
+                }
+
+                updatePacman(); updateGhosts(); draw(); checkWinCondition();
+                if (score >= 10000) checkAndGrantAchievement(ACHIEVEMENT_SCORE_10000);
+
+                if (gameRunning && !gameOver) { currentRequestAnimationFrame = requestAnimationFrame(gameLoop); } 
+                else if (currentRequestAnimationFrame) { cancelAnimationFrame(currentRequestAnimationFrame); currentRequestAnimationFrame = null; }
+            }
+
+            function showMessage(text, showBtn = true, btnAction = hideMessage) {
+                messageText.innerHTML = text;
+                if (showBtn) { messageButton.style.display = 'inline-block'; messageButton.onclick = btnAction; } 
+                else { messageButton.style.display = 'none'; }
+                messageBox.classList.remove('hidden'); messageBox.style.display = 'block';
+            }
+
+            function hideMessage() {
+                messageBox.classList.add('hidden'); messageBox.style.display = 'none';
+            }
+            
+            function getHighScores() {
+                const scores = localStorage.getItem('patmanHighScores_v3'); 
+                return scores ? JSON.parse(scores) : [];
+            }
+            function saveHighScore(currentScore) {
+                const name = prompt("New High Score! Enter your name (3 letters):", "PAT");
+                if (name && name.trim() !== "") {
+                    const scores = getHighScores();
+                    scores.push({ name: name.substring(0, 3).toUpperCase(), score: currentScore, level: (selectedGameMode === 'survival' ? `Wave ${currentLevelIndex + 1}` : `Lvl ${currentLevelIndex + 1}`), mode: selectedGameMode, difficulty: selectedDifficulty });
+                    scores.sort((a, b) => b.score - a.score); 
+                    localStorage.setItem('patmanHighScores_v3', JSON.stringify(scores.slice(0, 10))); 
+                    checkAndGrantAchievement(ACHIEVEMENT_SCORE_10000); 
+                }
+            }
+            function displayHighScores() {
+                const scores = getHighScores();
+                let scoreText = "HIGH SCORES:<br><br><ul>";
+                if (scores.length === 0) {
+                    scoreText += "<li>No scores yet. Be the first!</li>";
+                } else {
+                    scores.forEach((s, index) => {
+                        scoreText += `<li>${index + 1}. ${s.name} - ${s.score} (${s.level}, ${s.mode}, ${s.difficulty})</li>`;
+                    });
+                }
+                scoreText += "</ul>";
+                scoreText += "<br>Achievements:<br><ul>";
+                if(achievements[ACHIEVEMENT_LEVEL_1_CLEARED]) scoreText += "<li>🏆 Level 1 Cleared!</li>";
+                if(achievements[ACHIEVEMENT_SCORE_10000]) scoreText += "<li>💰 10,000 Points!</li>";
+                if(achievements[ACHIEVEMENT_EAT_ALL_GHOSTS_ONE_POWER]) scoreText += "<li>👻 Ghostbuster! (4 in one go)</li>";
+                if (Object.keys(achievements).length === 0) scoreText += "<li>No achievements yet.</li>";
+                scoreText += "</ul>";
+
+                showMessage(scoreText, true, hideMessage);
+            }
+
+            function loadAchievements() {
+                const savedAchievements = localStorage.getItem('patmanAchievements_v2');
+                if (savedAchievements) achievements = JSON.parse(savedAchievements);
+            }
+            function saveAchievements() {
+                localStorage.setItem('patmanAchievements_v2', JSON.stringify(achievements));
+            }
+            function checkAndGrantAchievement(achievementId) {
+                if (!achievements[achievementId]) {
+                    achievements[achievementId] = true;
+                    saveAchievements();
+                    showMessage(`Achievement Unlocked: ${getAchievementName(achievementId)}!`, true);
+                    playSound("achievement");
+                }
+            }
+            function getAchievementName(achievementId){
+                if(achievementId === ACHIEVEMENT_LEVEL_1_CLEARED) return "Level 1 Cleared";
+                if(achievementId === ACHIEVEMENT_SCORE_10000) return "Score 10,000";
+                if(achievementId === ACHIEVEMENT_EAT_ALL_GHOSTS_ONE_POWER) return "Ghostbuster";
+                return "Unknown Achievement";
+            }
+
+            function showHelp() {
+                const helpText = `
+                    <strong>How to Play Patman:</strong><br><br>
+                    Objective: Eat all yellow pellets to advance or win!<br>
+                    Controls: Arrow Keys or W,A,S,D. Touch on mobile.<br><br>
+                    Items:<br>
+                    - <span style="color:${activeTheme.PELLET_COLOR};">●</span> Pellet: 10 pts.<br>
+                    - <span style="color:${activeTheme.POWER_PELLET_COLOR};">◉</span> Power Pellet: Ghosts vulnerable! (${(baseFrightenedDuration * difficultySettings[selectedDifficulty].frightenedDurationFactor)/1000}s).<br>
+                    - <span style="color:${activeTheme.SPEED_BOOST_COLOR};">▲</span> Speed Boost: Patman faster for ${pacman.speedBoostDuration/1000}s.<br>
+                    - <span style="color:${activeTheme.FREEZE_PELLET_COLOR};">❄</span> Freeze Pellet: Freezes ghosts for ${GHOST_FREEZE_DURATION/1000}s.<br>
+                    - <span style="color:${activeTheme.BONUS_ITEM_COLOR};">🍒</span> Bonus Fruit: 100 pts, appears briefly.<br><br>
+                    Modes: Levels (3 stages) or Survival (endless wave).<br>
+                    Difficulty: Easy, Normal, Hard affects lives, speeds.<br>
+                    Avoid ghosts unless they are blue! Good luck!
+                `;
+                showMessage(helpText, true, hideMessage);
+            }
+
+            function toggleTheme() {
+                currentTheme = (currentTheme + 1) % themes.length;
+                activeTheme = themes[currentTheme];
+                document.body.style.backgroundColor = activeTheme.BODY_BG;
+                document.body.style.color = activeTheme.TEXT_COLOR;
+                ghosts.forEach((ghost, index) => { 
+                    ghost.color = activeTheme.GHOST_COLORS[index % activeTheme.GHOST_COLORS.length];
+                });
+                if (gameRunning || !gameOver) draw(); 
+                playSound("theme_toggle");
+            }
+
+            function spawnBonusItem() {
+                if (bonusItem.active) return;
+                let attempts = 0;
+                const validSpots = [];
+                for(let r=0; r < ROWS; r++){
+                    for(let c=0; c < COLS; c++){
+                        if(map[r][c] === 2) validSpots.push({x:c, y:r}); 
+                    }
+                }
+                if(validSpots.length > 0){
+                    const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                    bonusItem.x = spot.x;
+                    bonusItem.y = spot.y;
+                    bonusItem.active = true;
+                    bonusItem.timer = bonusItem.duration;
+                    playSound("bonus_spawn");
+                }
+            }
+
+            window.addEventListener('resize', resizeCanvas); 
+            loadAchievements(); 
+            allLevelBaseConfigs[currentLevelIndex] = generateRandomMapBaseConfig(allLevelLayouts[currentLevelIndex]);
+            initializeLevel(currentLevelIndex); 
+            resizeCanvas(); 
+            draw(); 
+            showMessage("Press Start Game!", true, startGame);
+
+            startButton.addEventListener('click', startGame); 
+            pauseButton.addEventListener('click', togglePause);
+            // Event listeners for removed buttons are also removed
+            // highScoreButton.addEventListener('click', displayHighScores); 
+            // helpButton.addEventListener('click', showHelp);
+            // toggleThemeButton.addEventListener('click', toggleTheme);
+            pauseButton.disabled = true; 
+
+            if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                document.getElementById('touch-controls').style.display = 'grid';
+            }
+
+            touchUpButton.addEventListener('click', () => handleTouch('up'));
+            touchDownButton.addEventListener('click', () => handleTouch('down'));
+            touchLeftButton.addEventListener('click', () => handleTouch('left'));
+            touchRightButton.addEventListener('click', () => handleTouch('right'));
+
+            window.addEventListener('keydown', (e) => { 
+                if (!(gameRunning || gamePaused) && !(e.key === 'Escape' || e.key === 'p' || e.key === 'P')) { if (!gameOver && startButton.textContent === "Start Game") {} else { return; }}
+                if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Space"].includes(e.key)) e.preventDefault();
+                if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') { if ((gameRunning || gamePaused) && !gameOver) togglePause(); return; }
+                if (gamePaused || !gameRunning || gameOver || pacman.isRespawning) return; 
+                switch (e.key) {
+                    case 'ArrowUp': case 'w': case 'W': pacman.nextDx = 0; pacman.nextDy = -pacman.currentSpeed; break;
+                    case 'ArrowDown': case 's': case 'S': pacman.nextDx = 0; pacman.nextDy = pacman.currentSpeed; break;
+                    case 'ArrowLeft': case 'a': case 'A': pacman.nextDx = -pacman.currentSpeed; pacman.nextDy = 0; break;
+                    case 'ArrowRight': case 'd': case 'D': pacman.nextDx = pacman.currentSpeed; pacman.nextDy = 0; break;
+                }
+            });
+        }); 
+
+        function handleTouch(direction) { 
+            if (gamePaused || !gameRunning || gameOver || pacman.isRespawning) return;
+            switch (direction) {
+                case 'up': pacman.nextDx = 0; pacman.nextDy = -pacman.currentSpeed; break;
+                case 'down': pacman.nextDx = 0; pacman.nextDy = pacman.currentSpeed; break;
+                case 'left': pacman.nextDx = -pacman.currentSpeed; pacman.nextDy = 0; break;
+                case 'right': pacman.nextDx = pacman.currentSpeed; pacman.nextDy = 0; break;
+            }
+        }
+    </script>
+</body>
+</html>

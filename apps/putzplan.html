@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktiver Putzplan (React)</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React Libraries -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    
+    <!-- Babel to translate JSX in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS Dark Mode Konfiguration -->
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+      }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-active {
+            border-bottom-color: #059669; /* emerald-600 */
+            color: #059669; /* emerald-600 */
+            font-weight: 600;
+        }
+        .dark .tab-active {
+            border-bottom-color: #34d399; /* emerald-400 */
+            color: #34d399; /* emerald-400 */
+        }
+        .loading-spinner {
+            border: 2px solid #e2e8f0; border-top: 2px solid #059669;
+            border-radius: 50%; width: 16px; height: 16px;
+            animation: spin 1s linear infinite; display: inline-block;
+            margin-right: 8px;
+        }
+        .dark .loading-spinner { border: 2px solid #334155; border-top: 2px solid #34d399; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 transition-colors duration-300">
+    
+    <!-- The React app will be mounted here -->
+    <div id="root"></div>
+
+    <!-- The entire React application code goes here, with type="text/babel" -->
+    <script type="text/babel">
+    
+        // Destructuring React hooks for easier use
+        const { useState, useEffect, useMemo, useCallback, useRef } = React;
+
+        // ===================================================================================
+        //   Data Store
+        // ===================================================================================
+        const cleaningAgentsData = [
+            { id: "allzweck-essigreiniger", name: "Allzweck-Essigreiniger", type: "acidic", mixture: "Eine Sprühflasche zu gleichen Teilen mit Haushaltsessig (5% Säure) und Wasser füllen (Verhältnis 1:1).", mixture_steps: ["Füllen Sie eine Sprühflasche zur Hälfte mit Haushaltsessig (5% Säure).","Füllen Sie die andere Hälfte der Sprühflasche mit Wasser auf.","Verschließen Sie die Flasche und schütteln Sie sie leicht, um die Flüssigkeiten zu vermischen."], ideal_for: "Oberflächenreinigung, leichte Kalkablagerungen, Fenster, Spiegel." },
+            { id: "starker-entkalker-essigessenz", name: "Starker Entkalker (Essigessenz)", type: "acidic", mixture: "1 Teil Essigessenz (25% Säure) mit 4-5 Teilen Wasser verdünnen. *Vorsicht: Stark ätzend, gut lüften, Handschuhe tragen!*", mixture_steps: ["Geben Sie 1 Teil Essigessenz (25% Säure) in ein geeignetes Gefäß.","Fügen Sie 4 bis 5 Teile Wasser hinzu.","Verrühren Sie die Mischung vorsichtig.","**Wichtiger Hinweis:** Bei der Handhabung von Essigessenz immer gut lüften und Handschuhe tragen, da sie stark ätzend ist!"], ideal_for: "Hartnäckigen Kalk (Wasserkocher, Duschkopf, Toiletten-Urinalstein)." },
+            { id: "natron-paste", name: "Natron-Paste", type: "alkaline-abrasive", mixture: "3 Teile Natron mit 1 Teil Wasser zu einer dicken Paste verrühren.", mixture_steps: ["Geben Sie 3 Teile Natron in eine kleine Schüssel.","Fügen Sie langsam 1 Teil Wasser hinzu.","Verrühren Sie beides gründlich, bis eine dicke, streichfähige Paste entsteht. Bei Bedarf noch etwas Wasser oder Natron hinzufügen, um die Konsistenz anzupassen."], ideal_for: "Eingebranntes, Fugenreinigung, sanftes Scheuern auf unempfindlichen Oberflächen." },
+            { id: "natron-loesung", name: "Natron-Lösung", type: "alkaline", mixture: "Ca. 2 Esslöffel Natron in 1 Liter warmem Wasser auflösen.", mixture_steps: ["Erwärmen Sie ca. 1 Liter Wasser (es sollte warm, aber nicht kochend sein).","Geben Sie ca. 2 Esslöffel Natron in das warme Wasser.","Rühren Sie um, bis sich das Natron vollständig aufgelöst hat."], ideal_for: "Fettige Oberflächen, Kühlschrankreinigung, Geruchsbeseitigung." },
+            { id: "power-duo-natron-essig", name: "Power-Duo (Natron & Essig)", type: "reaction", mixture: "Erst Natron (Pulver) auf die zu reinigende Stelle geben, dann Essig oder verdünnte Essigessenz darüber träufeln/sprühen. Die schäumende Reaktion hilft, Schmutz zu lösen.", mixture_steps: ["Streuen Sie Natronpulver direkt auf die zu reinigende Stelle.","Träufeln oder sprühen Sie Essig (oder verdünnte Essigessenz) darüber.","Beobachten Sie die schäumende Reaktion. Lassen Sie sie kurz einwirken, um den Schmutz zu lösen.","Anschließend die Stelle wie gewohnt reinigen oder abspülen."], ideal_for: "Abflüsse, Toilettenreinigung, hartnäckige Flecken." },
+            { id: "zitronensaeure-loesung", name: "Zitronensäure-Lösung (Entkalker)", type: "acidic", mixture: "Ca. 2-3 Esslöffel Zitronensäurepulver in 1 Liter Wasser auflösen. Bei Bedarf Konzentration erhöhen.", mixture_steps: ["Geben Sie ca. 2-3 Esslöffel Zitronensäurepulver in 1 Liter Wasser.","Rühren Sie um, bis sich das Pulver vollständig aufgelöst hat.","Bei Bedarf kann die Konzentration für hartnäckigere Fälle erhöht werden.","**Achtung:** Nicht auf Naturstein oder Emaille verwenden!"], ideal_for: "Kalkablagerungen (Wasserkocher, Kaffeemaschine, Armaturen, Duschwände), Toilettenreinigung. *Nicht auf Naturstein oder Emaille verwenden!*" },
+            { id: "kernseife-allzweckreiniger", name: "Kernseife-Allzweckreiniger", type: "neutral-alkaline", mixture: "Ca. 10-15g Kernseife fein reiben oder hobeln und in ca. 500ml heißem Wasser auflösen. Gut umrühren oder schütteln, bis sich die Seife gelöst hat. Optional: Einige Tropfen ätherisches Öl (z.B. Zitrone, Lavendel) für Duft hinzufügen.", mixture_steps: ["Reiben oder hobeln Sie ca. 10-15g Kernseife fein.","Erhitzen Sie ca. 500ml Wasser, bis es heiß ist (nicht kochend).","Geben Sie die geriebene Kernseife in das heiße Wasser.","Rühren oder schütteln Sie die Mischung gut um, bis sich die Seife vollständig aufgelöst hat.","Optional: Fügen Sie einige Tropfen ätherisches Öl (z.B. Zitrone, Lavendel) für einen angenehmen Duft hinzu, sobald die Lösung etwas abgekühlt ist."], ideal_for: "Allgemeine Oberflächenreinigung, Böden (außer unversiegeltem Holz), leicht verschmutztes Geschirr (als Handspülmittel-Basis)." },
+            { id: "scheuermilch", name: "Scheuermilch (kommerziell)", type: "abrasive", mixture: "Pur verwenden.", mixture_steps: [], ideal_for: "Hartnäckige Verschmutzungen auf robusten, kratzfesten Oberflächen (z.B. alte Keramikspülen, Ceranfeld – aber Vorsicht, nicht alle Ceranfelder vertragen Scheuermilch gut, ggf. Natron-Paste als sanftere Alternative testen)." }
+        ];
+        const safetyNotesData = [ "**Essig & Essigessenz & Zitronensäure:** **Nicht** auf Naturstein (Marmor, Granit, Terrazzo), kalkhaltigen Fliesen, Emaille, Aluminium oder Silikonfugen anwenden, da die Säure diese Materialien angreift. Immer gut lüften. Bei Essigessenz und konzentrierter Zitronensäure Handschuhe und ggf. Schutzbrille tragen.", "**Natron:** In der Regel sehr materialschonend. Bei lackierten oder sehr empfindlichen Oberflächen vorher an unauffälliger Stelle testen. Als Paste auch abrasiv!", "**Kernseife:** Kann auf unversiegeltem Holz Wasserflecken hinterlassen. Bei der Verwendung als Spülmittelbasis gut nachspülen.", "**Scheuermilch:** Kann empfindliche Oberflächen zerkratzen. Immer erst an unauffälliger Stelle testen.", "**Mischen:** Niemals Essigreiniger oder Zitronensäure mit chlorhaltigen Reinigern mischen (giftige Gase!). Generell Hausmittel nicht wild miteinander mischen, außer es ist explizit so angegeben (z.B. Natron & Essig für den Abfluss)." ];
+        const tasksData = [ { room: "Küche", frequency: "wöchentlich", task: "Arbeitsflächen & Spüle: Täglich/nach Bedarf mit feuchtem Tuch abwischen. Wöchentlich mit Allzweck-Essigreiniger (Kalk) oder Natron-Lösung (Fett) reinigen. Armaturen entkalken/polieren (Essigreiniger oder Zitronensäure-Lösung). Hartnäckige Flecken (Edelstahlspüle): Natron-Paste." }, { room: "Küche", frequency: "wöchentlich", task: "Herd/Kochfeld: Nach jedem Kochen Spritzer entfernen. Wöchentlich Eingebranntes mit Natron-Paste einweichen/abwischen. Robuste Ceranfelder: vorsichtig Scheuermilch (Herstellerangaben!)." }, { room: "Küche", frequency: "wöchentlich", task: "Küchenfronten: Mit feuchtem Tuch und ggf. etwas Natron-Lösung (bei Fett) oder verdünntem Kernseife-Reiniger abwischen." }, { room: "Küche", frequency: "wöchentlich", task: "Boden: Staubsaugen, anschließend mit Wasser und Schuss Allzweck-Essigreiniger oder Kernseife-Reiniger wischen." }, { room: "Badezimmer", frequency: "wöchentlich", task: "Toilette Innen: 1-2 EL Natron in Schüssel, mit Klobürste verteilen. Allzweck-Essigreiniger oder Zitronensäure-Lösung daraufsprühen (Power-Duo-Effekt). Einwirken, bürsten, spülen." }, { room: "Badezimmer", frequency: "wöchentlich", task: "Toilette Außen & Sitz: Mit Allzweck-Essigreiniger oder verdünntem Kernseife-Reiniger desinfizieren und abwischen." }, { room: "Badezimmer", frequency: "wöchentlich", task: "Dusche/Badewanne & Fliesen (Wand): Mit Allzweck-Essigreiniger oder Zitronensäure-Lösung einsprühen (Kalk, Seifenreste). Einwirken, abbrausen." }, { room: "Badezimmer", frequency: "wöchentlich", task: "Fugen (Bad): Bei Bedarf mit Natron-Paste und alter Zahnbürste reinigen." }, { room: "Badezimmer", frequency: "wöchentlich", task: "Waschbecken & Armatur: Mit Allzweck-Essigreiniger oder Zitronensäure-Lösung reinigen und entkalken." }, { room: "Badezimmer", frequency: "wöchentlich", task: "Spiegel: Mit Allzweck-Essigreiniger (sparsam!) einsprühen, mit trockenem Mikrofasertuch/Zeitungspapier streifenfrei polieren." }, { room: "Badezimmer", frequency: "wöchentlich", task: "Boden: Staubsaugen, mit Wasser und Schuss Allzweck-Essigreiniger oder Kernseife-Reiniger wischen." }, { room: "Wohn- & Schlafzimmer", frequency: "wöchentlich", task: "Staubwischen: Alle Oberflächen (Regale, Tische, Fensterbänke) nebelfeucht abwischen. Glasoberflächen: Allzweck-Essigreiniger. Holzmöbel (versiegelt): leicht feucht oder mit verdünntem Kernseife-Reiniger." }, { room: "Wohn- & Schlafzimmer", frequency: "wöchentlich", task: "Böden: Staubsaugen. Hartböden bei Bedarf wie in der Küche wischen (passenden Reiniger für Bodenbelag wählen)." }, { room: "Küche", frequency: "2-4 wochen", task: "Mülleimer: Mit heißem Wasser und etwas Allzweck-Essigreiniger oder Kernseife-Reiniger auswaschen. Trockenes Natron auf Boden (Geruchsbinder)." }, { room: "Küche", frequency: "2-4 wochen", task: "Mikrowelle: Schale Wasser + Schuss Essig oder Zitronensaft für Min. auf höchster Stufe erhitzen. Dampf löst Schmutz, dann auswischen." }, { room: "Badezimmer", frequency: "2-4 wochen", task: "Duschvorhang/Duschwand: Mit Allzweck-Essigreiniger oder Zitronensäure-Lösung reinigen (Seifenreste, Kalk)." }, { room: "Alle Räume (übergreifend)", frequency: "2-4 wochen", task: "Fußleisten: Abstauben oder feucht abwischen (ggf. mit verdünntem Kernseife-Reiniger)." }, { room: "Alle Räume (übergreifend)", frequency: "monatlich", task: "Abflüsse (Küche & Bad): Vorbeugend ca. 3-4 EL Natron in Abfluss, 1/2 Tasse Haushaltsessig langsam nachgießen. Nach 15-30 Min. mit 1-2L heißem Wasser nachspülen." }, { room: "Küche", frequency: "monatlich", task: "Kühlschrank auswischen: Mit Natron-Lösung oder verdünntem Kernseife-Reiniger reinigen (Schmutz, Gerüche). Offene Schale trockenes Natron reinstellen (Geruchsabsorption, alle 1-2 Monate wechseln)." }, { room: "Küche", frequency: "monatlich", task: "Backofen reinigen: Starke Verkrustungen dick mit Natron-Paste bestreichen. Wasser in feuerfester Schale in Ofen, 50-100°C für 30-60 Min. (Paste feucht halten) ODER Paste über Nacht einwirken. Reste entfernen/auswischen. Sehr hartnäckig: Natron-Paste mit Essig besprühen (Power-Duo)." }, { room: "Alle Räume (übergreifend)", frequency: "monatlich", task: "Wasserkocher entkalken: Mit verdünnter Essigessenz-Lösung oder Zitronensäure-Lösung füllen (nicht voll). Kurz aufkochen (Dämpfe meiden!) ODER kalt 1-2 Std. stehen lassen. Gründlich 2-3x ausspülen." }, { room: "Badezimmer", frequency: "monatlich", task: "Duschkopf entkalken: Abschrauben, in verdünnte Essigessenz-Lösung oder Zitronensäure-Lösung legen (Std./Nacht). Gut abspülen, ggf. Düsen mit Nadel reinigen." }, { room: "Alle Räume (übergreifend)", frequency: "monatlich", task: "Fenster putzen (Rahmen & Glas): Rahmen: Natron-Lösung/milde Seifenlauge (Kernseife-Reiniger). Glas: Eimer lauwarmes Wasser + Schuss Haushaltsessig. Reinigen, mit Abzieher/Mikrofasertuch trocknen." }, { room: "Alle Räume (übergreifend)", frequency: "monatlich", task: "Türen & Türrahmen: Mit feuchtem Tuch und ggf. etwas Natron-Lösung oder verdünntem Kernseife-Reiniger abwischen." } ];
+        const materialsForCheck = [ { id: "naturstein", name: "Naturstein (Marmor, Granit, etc.)" }, { id: "kalkhaltige_fliesen", name: "Kalkhaltige Fliesen" }, { id: "emaille", name: "Emaille" }, { id: "acryl_plexiglas", name: "Acryl / Plexiglas" }, { id: "kupfer_messing", name: "Kupfer / Messing" }, { id: "chrom", name: "Verchromte Oberflächen" }, { id: "aluminium", name: "Aluminium" }, { id: "silikonfugen", name: "Silikonfugen" }, { id: "unversiegeltes_holz", name: "Unversiegeltes Holz" }, { id: "lackierte_oberflaechen", name: "Lackierte Oberflächen" }, { id: "empfindliche_kunststoffe", name: "Empfindliche Kunststoffe" }, { id: "glas", name: "Glas" }, { id: "keramik_glasiert", name: "Keramik (glasiert)" }, { id: "edelstahl", name: "Edelstahl" }, { id: "ceranfeld", name: "Ceranfeld" }, { id: "laminat", name: "Laminatboden" }, { id: "vinyl_pvc", name: "Vinyl- / PVC-Boden" }, { id: "linoleum", name: "Linoleum" }, { id: "kork_versiegelt", name: "Korkboden (versiegelt)" }, { id: "textilien_bunt", name: "Textilien (bunt)" }, { id: "textilien_weiss", name: "Textilien (weiß)" }, ];
+        const materialCompatibilityRules = { "acidic": { "naturstein": { status: "unsafe", note: "Säure (Essig, Zitrone) greift kalkhaltige Steine wie Marmor, Terrazzo oder manche Granite an, verursacht matte Flecken oder Verätzungen. Unbedingt vermeiden!" }, "kalkhaltige_fliesen": { status: "unsafe", note: "Säure löst Kalk und kann die Oberfläche von kalkhaltigen Fliesen (z.B. manche Zementfliesen) beschädigen. Nicht verwenden." }, "emaille": { status: "unsafe", note: "Säure kann die Emaille-Schicht (z.B. in alten Badewannen, Spülen) angreifen, sie stumpf machen oder sogar ablösen. Besser vermeiden oder nur stark verdünnt und kurz anwenden." }, "acryl_plexiglas": { status: "unsafe", note: "Säure, besonders Essigessenz, kann zu Spannungsrissen im Material führen. Unbedingt vermeiden." }, "kupfer_messing": { status: "unsafe", note: "Säure greift diese Metalle an und führt schnell zu unschönem Anlaufen (grüne oder dunkle Flecken). Nicht verwenden." }, "chrom": { status: "caution", note: "Moderne, hochwertige Chromschichten sind recht beständig, aber Säure sollte nur kurz zur Kalkentfernung einwirken und sofort gründlich abgespült werden, um Schäden zu vermeiden." }, "aluminium": { status: "unsafe", note: "Säure reagiert mit Aluminium, es kann sich verfärben oder korrodieren. Nicht verwenden." }, "silikonfugen": { status: "caution", note: "Längerer oder häufiger Kontakt mit Säure kann Silikonfugen porös machen oder ihre Elastizität beeinträchtigen. Nur kurz einwirken lassen und gründlich mit klarem Wasser nachspülen." }, "unversiegeltes_holz": { status: "caution", note: "Säure kann in unversiegeltes Holz eindringen, die Fasern aufquellen lassen und Flecken verursachen. Sehr sparsam, stark verdünnt anwenden und sofort trockenwischen." }, "lackierte_oberflaechen": { status: "caution", note: "Starke oder unverdünnte Säuren können Lacke angreifen oder stumpf machen. Immer stark verdünnt und an einer unauffälligen Stelle testen." }, "empfindliche_kunststoffe": { status: "caution", note: "Manche Kunststoffe können durch Säure stumpf oder spröde werden. An unauffälliger Stelle testen." }, "glas": { status: "safe", note: "Sehr gut geeignet zur Entfernung von Kalkflecken und Schlieren auf Glas und Spiegeln." }, "keramik_glasiert": { status: "safe", note: "Generell sicher und effektiv zur Kalkentfernung auf glasierten Keramikoberflächen wie Fliesen, Waschbecken, Toiletten." }, "edelstahl": { status: "caution", note: "Gut zur Kalkentfernung, aber nicht zu lange einwirken lassen und immer gut mit klarem Wasser nachspülen, um Flecken oder Korrosion (Flugrost) zu vermeiden. Nicht auf heißem Edelstahl anwenden." }, "ceranfeld": { status: "caution", note: "Nur zum Entfernen starker Kalkflecken verwenden, nicht großflächig anwenden oder lange einwirken lassen. Gründlich nachwischen." }, "laminat": { status: "caution", note: "Nur nebelfeucht und stark verdünnt anwenden. Zu viel Feuchtigkeit und Säure können in die Fugen eindringen und das Material aufquellen lassen." }, "vinyl_pvc": { status: "safe", note: "In der Regel unempfindlich gegenüber verdünnten Säuren zur Kalkentfernung. Trotzdem nicht 'schwimmend' nass wischen." }, "linoleum": { status: "unsafe", note: "Linoleum ist ein Naturprodukt und sehr säureempfindlich. Die Oberfläche wird stumpf und das Material kann brüchig werden. Unbedingt vermeiden!" }, "kork_versiegelt": { status: "caution", note: "Ähnlich wie bei Laminat: Nur nebelfeucht und stark verdünnt verwenden, damit die Versiegelung nicht angegriffen wird und keine Feuchtigkeit in die Fugen gelangt." }, "textilien_bunt": { status: "caution", note: "Kann Farben ausbleichen, besonders bei Naturfasern. Nur stark verdünnt und an einer verdeckten Stelle testen. Als Weichspülerersatz (Essig) meist unproblematisch." }, "textilien_weiss": { status: "safe", note: "Kann helfen, Grauschleier zu entfernen oder als milder Bleichersatz dienen (Zitronensäure). Essig als Weichspülerersatz geeignet." } }, "alkaline": { "naturstein": { status: "caution", note: "Auf den meisten Granit- und Quarzit-Arten sicher. Bei dunklem oder poliertem Marmor/Granit an unauffälliger Stelle testen, da es in seltenen Fällen zu Verfärbungen kommen kann." }, "kalkhaltige_fliesen": { status: "safe", note: "Sicher zur Reinigung von kalkhaltigen Fliesen." }, "emaille": { status: "safe", note: "Gut geeignet zur sanften Reinigung von Emaille." }, "acryl_plexiglas": { status: "safe", note: "Unbedenklich für die Reinigung von Acrylglas." }, "kupfer_messing": { status: "caution", note: "Kann zur Reinigung genutzt werden (oft in Pasten), aber längerer Kontakt kann zu Verfärbungen führen. Gut nachspülen und trocknen." }, "chrom": { status: "safe", note: "Sicher zur Reinigung von Chromoberflächen." }, "aluminium": { status: "caution", note: "Starke oder heiße Natronlösungen können Aluminium über längere Zeit angreifen und dunkel verfärben. Kurz einwirken lassen und gut abspülen." }, "silikonfugen": { status: "safe", note: "Sicher zur Reinigung von Silikonfugen." }, "unversiegeltes_holz": { status: "caution", note: "Kann das Holz leicht aufhellen oder bei längerer Einwirkung auslaugen. Nur kurz anwenden und gut mit klarem Wasser nachwischen." }, "lackierte_oberflaechen": { status: "safe", note: "Als milde Lösung in der Regel sicher zum Entfernen von Fett und Schmutz. Bei sehr empfindlichen Hochglanzlacken an unauffälliger Stelle testen." }, "empfindliche_kunststoffe": { status: "safe", note: "In der Regel sicher. An einer unauffälligen Stelle testen, um sicherzugehen." }, "glas": { status: "safe", note: "Gut geeignet, um Fettfilme von Glas zu lösen, z.B. in der Küche." }, "keramik_glasiert": { status: "safe", note: "Sicher und effektiv zur Reinigung." }, "edelstahl": { status: "safe", note: "Gut zum Lösen von Fett und leichten Verschmutzungen." }, "ceranfeld": { status: "safe", note: "Als Lösung gut geeignet, um Fett zu lösen, ohne zu kratzen." }, "laminat": { status: "safe", note: "Sicher, solange nur nebelfeucht gewischt wird, um das Aufquellen des Trägermaterials zu vermeiden." }, "vinyl_pvc": { status: "safe", note: "Sehr gut geeignet zur Reinigung von Vinyl- und PVC-Böden." }, "linoleum": { status: "unsafe", note: "Stark alkalische Reiniger (hoher pH-Wert) lassen Linoleum auslaugen, es wird spröde und verfärbt sich gelblich. Vermeiden!" }, "kork_versiegelt": { status: "safe", note: "Als Lösung und nur nebelfeucht angewendet unbedenklich." }, "textilien_bunt": { status: "safe", note: "Als Fleckenentferner (z.B. Deoflecken) oder zur Geruchsbeseitigung oft geeignet. Farbtest an unauffälliger Stelle empfohlen." }, "textilien_weiss": { status: "safe", note: "Gut zur Fleckenentfernung und zum leichten Aufhellen (z.B. bei Gardinen)." } }, "alkaline-abrasive": { "naturstein": { status: "unsafe", note: "Die Scheuerpartikel zerkratzen polierte Oberflächen wie Marmor oder Granit. Nicht verwenden." }, "kalkhaltige_fliesen": { status: "caution", note: "Kann weichere, unglasierte Fliesen zerkratzen. Nur mit sehr wenig Druck arbeiten." }, "emaille": { status: "caution", note: "Kann bei starkem Reiben die Oberfläche stumpf machen oder zerkratzen. Nur sehr sanft anwenden und vorher testen." }, "acryl_plexiglas": { status: "unsafe", note: "Verursacht Kratzer. Unbedingt vermeiden." }, "kupfer_messing": { status: "unsafe", note: "Die Scheuerwirkung zerkratzt die weichen Metalle. Es gibt spezielle Polierpasten für diesen Zweck." }, "chrom": { status: "unsafe", note: "Die Scheuerpartikel zerkratzen die Chromschicht und machen sie anfällig für Rost. Nicht verwenden." }, "aluminium": { status: "unsafe", "note": "Die abrasive Wirkung kann Aluminium zerkratzen. Die alkalische Wirkung kann es zusätzlich angreifen." }, "silikonfugen": { status: "safe", note: "Gut geeignet, um Schimmel oder Verfärbungen mechanisch aus Fugen zu entfernen." }, "unversiegeltes_holz": { status: "unsafe", note: "Die Paste dringt in die Poren ein und ist schwer zu entfernen. Die Scheuerwirkung schädigt die Holzfasern." }, "lackierte_oberflaechen": { status: "unsafe", note: "Kann Lack zerkratzen. Nicht als Scheuermittel verwenden." }, "empfindliche_kunststoffe": { status: "unsafe", note: "Verursacht Kratzer auf weichen oder glänzenden Kunststoffen." }, "glas": { status: "caution", note: "Kann Glas zerkratzen, wenn zu stark gerieben wird. Nur sehr vorsichtig bei hartnäckigen Verkrustungen anwenden und nicht auf empfindlichem Glas (z.B. Brillengläser)." }, "keramik_glasiert": { status: "safe", note: "Gut zum Reinigen von Fugen oder hartnäckigen Flecken auf robusten Keramikfliesen." }, "edelstahl": { status: "caution", note: "Kann feine Kratzer verursachen, besonders bei gebürstetem Edelstahl oder Hochglanzoberflächen. Immer in Schliffrichtung arbeiten und sanft vorgehen. Gut zum Lösen von Eingebranntem." }, "ceranfeld": { status: "caution", note: "Kann als sanftes Scheuermittel für Eingebranntes dienen, aber Vorsicht vor Kratzern! Nicht trocken reiben, immer mit etwas Wasser. Bei empfindlichen Feldern spezielle Ceranfeldreiniger bevorzugen." }, "laminat": { status: "unsafe", note: "Zerkratzt die Oberfläche und die Feuchtigkeit ist schädlich." }, "vinyl_pvc": { status: "unsafe", note: "Zerkratzt und stumpft die Oberfläche ab." }, "linoleum": { status: "unsafe", note: "Zerkratzt die Oberfläche und die Alkalität ist schädlich." }, "kork_versiegelt": { status: "unsafe", note: "Zerkratzt die Versiegelung." }, "textilien_bunt": { status: "caution", note: "Die Scheuerwirkung kann lokale Farbaufhellungen verursachen oder den Stoff aufrauen. Eher die Lösung verwenden." }, "textilien_weiss": { status: "caution", note: "Die Scheuerwirkung kann den Stoff aufrauen. Gezieltes Auftupfen ist besser als Reiben." } }, "neutral-alkaline": { "naturstein": { status: "caution", note: "Kann einen leichten Film hinterlassen, der die Optik von poliertem Stein beeinträchtigt. Gut mit klarem Wasser nachspülen. Spezielle Steinseifen sind besser geeignet." }, "kalkhaltige_fliesen": { status: "safe", note: "Sicher zur Reinigung." }, "emaille": { status: "safe", note: "Sicher und schonend für Emaille." }, "acryl_plexiglas": { status: "safe", note: "Eine gute, schonende Wahl für die Reinigung von Acryl." }, "kupfer_messing": { status: "safe", note: "Sicher für die grundlegende Reinigung. Gut abspülen." }, "chrom": { status: "safe", note: "Sicher und schonend. Gut abspülen, um Seifenreste zu vermeiden." }, "aluminium": { status: "safe", note: "Sicher zur Reinigung von Aluminium." }, "silikonfugen": { status: "safe", note: "Sicher zur Reinigung von Silikonfugen." }, "unversiegeltes_holz": { status: "caution", note: "Kann Wasserflecken hinterlassen oder das Holz auslaugen. Nur sehr sparsam, nebelfeucht wischen und gut trocknen lassen. Rückfettende Holzseifen sind besser geeignet." }, "lackierte_oberflaechen": { status: "safe", note: "Als milde Seifenlauge meist unbedenklich." }, "empfindliche_kunststoffe": { status: "safe", note: "Sicher und schonend." }, "glas": { status: "caution", note: "Kann Schlieren hinterlassen, wenn nicht gründlich mit klarem Wasser nachgespült und getrocknet wird." }, "keramik_glasiert": { status: "safe", note: "Gut für die allgemeine Reinigung." }, "edelstahl": { status: "safe", note: "Sicher, aber gut nachspülen, um einen Seifenfilm zu vermeiden." }, "ceranfeld": { status: "safe", note: "Geeignet für die leichte, tägliche Reinigung." }, "laminat": { status: "safe", note: "Eine gute Option, wenn nur nebelfeucht gewischt wird." }, "vinyl_pvc": { status: "safe", note: "Sicher und effektiv." }, "linoleum": { status: "safe", note: "Ideal, da pH-neutral und nicht-alkalisch. Reinigt schonend." }, "kork_versiegelt": { status: "safe", note: "Eine gute, milde Option, wenn nur nebelfeucht gewischt wird." }, "textilien_bunt": { status: "safe", note: "Milde Reinigung, meist farbschonend. Gut zur Vorbehandlung von Fettflecken." }, "textilien_weiss": { status: "safe", note: "Sicher und effektiv zur Fleckenvorbehandlung (Gallseife, eine Form der Kernseife, ist hier ein Klassiker)." } }, "abrasive": { "naturstein": { status: "unsafe", note: "Zerkratzt polierten Naturstein wie Marmor oder Granit. Unbedingt vermeiden." }, "kalkhaltige_fliesen": { status: "unsafe", note: "Kann die Oberfläche von weicheren, unglasierten Fliesen zerkratzen." }, "emaille": { status: "unsafe", note: "Kann Emaille zerkratzen und stumpf machen. Nicht verwenden." }, "acryl_plexiglas": { status: "unsafe", note: "Zerkratzt Acryl sofort. Nicht verwenden." }, "kupfer_messing": { status: "unsafe", note: "Zerkratzt die weichen Metalle. Nicht verwenden." }, "chrom": { status: "unsafe", note: "Zerkratzt die Chromschicht nachhaltig. Nicht verwenden." }, "aluminium": { status: "unsafe", note: "Verursacht Kratzer auf Aluminiumoberflächen." }, "silikonfugen": { status: "caution", note: "Kann die Oberfläche der Fuge aufrauen, was sie anfälliger für neuen Schmutz macht. Nur vorsichtig anwenden." }, "unversiegeltes_holz": { status: "unsafe", note: "Schädigt die Holzstruktur und ist nicht geeignet." }, "lackierte_oberflaechen": { status: "unsafe", note: "Zerkratzt Lack definitiv. Nicht verwenden." }, "empfindliche_kunststoffe": { status: "unsafe", note: "Verursacht Kratzer. Nicht verwenden." }, "glas": { status: "unsafe", note: "Zerkratzt Glas. Nicht verwenden." }, "keramik_glasiert": { status: "caution", note: "Auf sehr robusten, alten Keramikspülen eventuell möglich, aber auch hier Gefahr von Kratzern oder Abstumpfung der Glasur. Vorsichtig testen." }, "edelstahl": { status: "unsafe", note: "Verursacht deutliche Kratzer, besonders auf glatten oder gebürsteten Oberflächen. Nicht verwenden." }, "ceranfeld": { status: "unsafe", note: "Zerkratzt Ceranfelder. Unbedingt spezielle Ceranfeldreiniger verwenden." }, "laminat": { status: "unsafe", note: "Zerkratzt die Oberfläche." }, "vinyl_pvc": { status: "unsafe", note: "Zerkratzt die Oberfläche." }, "linoleum": { status: "unsafe", note: "Zerkratzt die Oberfläche." }, "kork_versiegelt": { status: "unsafe", note: "Zerkratzt die Versiegelung." }, "textilien_bunt": { status: "unsafe", note: "Nicht für Textilien geeignet." }, "textilien_weiss": { status: "unsafe", note: "Nicht für Textilien geeignet." } }, "reaction": { "naturstein": { status: "unsafe", note: "Die Säurekomponente (Essig) ist schädlich für kalkhaltige Steine. Die Reaktion sollte nicht auf solchen Oberflächen stattfinden." }, "kalkhaltige_fliesen": { status: "unsafe", note: "Die Säurekomponente (Essig) ist schädlich. Die Reaktion sollte hier nicht stattfinden." }, "emaille": { status: "unsafe", note: "Die Säurekomponente (Essig) ist schädlich für Emaille. Die Reaktion sollte nicht auf solchen Oberflächen stattfinden." }, "acryl_plexiglas": { status: "unsafe", note: "Säure und die teils entstehende Wärme können das Material beschädigen." }, "kupfer_messing": { status: "unsafe", note: "Säure greift die Metalle an." }, "chrom": { status: "unsafe", note: "Die Säure kann die Chromschicht beschädigen." }, "aluminium": { status: "unsafe", note: "Die Säurekomponente (Essig) ist schädlich für Aluminium." }, "silikonfugen": { status: "caution", note: "Die Säurekomponente kann die Fuge angreifen. Nur kurzzeitig und nicht regelmäßig anwenden." }, "unversiegeltes_holz": { status: "unsafe", note: "Sowohl die Nässe als auch die Säure können das Holz beschädigen." }, "lackierte_oberflaechen": { status: "unsafe", note: "Die Säure kann den Lack angreifen. Besser nicht verwenden." }, "empfindliche_kunststoffe": { status: "unsafe", note: "Unvorhersehbare Reaktion, die Säure kann den Kunststoff angreifen. Nicht empfohlen." }, "glas": { status: "safe", note: "Die Reaktion selbst ist für Glas unbedenklich, die Reinigungswirkung ist aber hauptsächlich im Moment der Reaktion gegeben (z.B. im Abfluss)." }, "keramik_glasiert": { status: "safe", note: "Unbedenklich für glasierte Keramik, z.B. in der Toilette oder im Waschbecken." }, "edelstahl": { status: "caution", note: "Die Säure kann Edelstahl angreifen. Nicht empfohlen für die Oberflächenreinigung." }, "ceranfeld": { status: "unsafe", note: "Die schäumende Reaktion ist unkontrolliert und kann in Ritzen laufen. Die Säure kann Dekore beschädigen. Nicht geeignet." }, "laminat": { status: "unsafe", note: "Nässe und Säure sind schädlich." }, "vinyl_pvc": { status: "caution", note: "Obwohl der Boden robust ist, ist die Reaktion für die Oberflächenreinigung ungeeignet." }, "linoleum": { status: "unsafe", note: "Sowohl die Säure als auch die starke Reaktion sind schädlich." }, "kork_versiegelt": { status: "unsafe", note: "Nässe und Säure sind schädlich." }, "textilien_bunt": { status: "unsafe", note: "Nicht für die Fleckenbehandlung auf Textilien geeignet." }, "textilien_weiss": { status: "unsafe", note: "Nicht für die Fleckenbehandlung auf Textilien geeignet." } } };
+        const TABS = [
+            { id: 'putzplan', label: 'Putzplan' },
+            { id: 'flecken', label: 'Flecken-Ratgeber' },
+            { id: 'reinigungsmittel', label: 'Reinigungsmittel' },
+            { id: 'materialcheck', label: 'Materialverträglichkeit' },
+            { id: 'sicherheit', label: 'Sicherheitshinweise' },
+        ];
+
+        // ===================================================================================
+        //  Utilities
+        // ===================================================================================
+        const formatSimpleMarkdown = (text) => {
+            if (typeof text !== 'string') return { __html: '' };
+            let html = text.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/(\r\n|\n|\r)/gm, "<br>");
+            return { __html: html };
+        };
+        
+        function streamText(fullText, onUpdate, onFinish) {
+            let index = 0;
+            const interval = 15;
+            const timerId = setInterval(() => {
+                if (index < fullText.length) {
+                    onUpdate(fullText[index]);
+                    index++;
+                } else {
+                    clearInterval(timerId);
+                    if(onFinish) onFinish();
+                }
+            }, interval);
+            return timerId;
+        }
+
+        async function fetchGeminiResponse(prompt) {
+            const isCanvasEnvironment = typeof __app_id !== 'undefined';
+
+            if (!isCanvasEnvironment) {
+                const phpScriptUrl = 'call_gemini.php';
+                try {
+                    const response = await fetch(phpScriptUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt: prompt })
+                    });
+                     if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const result = await response.json();
+                    if (result.text) {
+                        return { success: true, data: result.text };
+                    } else {
+                        return { success: false, error: result.error || "Unbekannter Fehler vom Server-Skript." };
+                    }
+                } catch (error) {
+                    console.error("Kommunikationsfehler mit dem PHP-Server:", error);
+                    // Fallback to mock response if PHP script fails
+                    console.warn("PHP-Aufruf fehlgeschlagen. Es wird eine Scheinantwort (Mock-Response) zurückgegeben.");
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    return { success: true, data: "Dies ist eine simulierte Erfolgsantwort, da das PHP-Skript nicht erreichbar war. Der Streaming-Effekt funktioniert wie erwartet." };
+                }
+            }
+            
+            // Canvas Environment Logic
+            let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+            const payload = { contents: chatHistory };
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP-Status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+
+                if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                    return { success: true, data: result.candidates[0].content.parts[0].text };
+                } else {
+                    const errorMsg = result?.error?.message || (result.promptFeedback?.blockReason ? `Anfrage blockiert: ${result.promptFeedback.blockReason}` : "Unbekannter API-Fehler (gültige Antwort, aber kein Inhalt).");
+                    return { success: false, error: errorMsg };
+                }
+            } catch (error) {
+                console.error("Fehler bei der API-Anfrage:", error);
+                if (error.message.includes("401")) {
+                    console.warn("API-Authentifizierungsfehler (401) festgestellt. Es wird eine Scheinantwort (Mock-Response) zurückgegeben, um die Funktionalität der App zu demonstrieren.");
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    return { success: true, data: "Dies ist eine simulierte Erfolgsantwort, da der API-Schlüssel ungültig ist (Fehler 401). Der Streaming-Effekt funktioniert wie erwartet." };
+                }
+                return { success: false, error: `Netzwerk- oder API-Fehler: ${error.message}` };
+            }
+        }
+
+        // ===================================================================================
+        //  Custom Hooks
+        // ===================================================================================
+        function useLocalStorage(key, initialValue) {
+            const [storedValue, setStoredValue] = useState(() => {
+                if (typeof window === "undefined") return initialValue;
+                try {
+                    const item = window.localStorage.getItem(key);
+                    return item ? JSON.parse(item) : initialValue;
+                } catch (error) {
+                    console.error(error);
+                    return initialValue;
+                }
+            });
+
+            const setValue = (value) => {
+                try {
+                    const valueToStore = value instanceof Function ? value(storedValue) : value;
+                    setStoredValue(valueToStore);
+                    if (typeof window !== "undefined") {
+                        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+                    }
+                } catch (error) { console.error(error); }
+            };
+            return [storedValue, setValue];
+        }
+
+        // ===================================================================================
+        //  UI Components
+        // ===================================================================================
+        const LoadingSpinner = () => <div className="loading-spinner"></div>;
+
+        const GeminiResponseArea = ({ state }) => {
+            if (!state.loading && !state.error && !state.data) return null;
+            return (
+                <div className="gemini-response-area bg-slate-100 dark:bg-slate-700/50 dark:border-slate-700 mt-3 p-3 rounded-md min-h-[4rem]" style={{ display: 'block' }}>
+                    {state.loading && <LoadingSpinner />}
+                    {state.error && <span className="text-red-500" dangerouslySetInnerHTML={formatSimpleMarkdown(state.error)} />}
+                    {state.data && <span dangerouslySetInnerHTML={formatSimpleMarkdown(state.data)} />}
+                </div>
+            );
+        };
+
+        const ThemeToggle = ({ theme, toggleTheme }) => (
+            <button onClick={toggleTheme} className="absolute top-0 right-0 p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 dark:focus:ring-offset-slate-900">
+                {theme === 'dark' ? (
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                ) : (
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                )}
+            </button>
+        );
+
+        const TabBar = ({ tabs, activeTab, setActiveTab }) => (
+            <nav className="mb-8 border-b border-slate-300 dark:border-slate-700">
+                <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-slate-500 dark:text-slate-400">
+                    {tabs.map(tab => (
+                        <li key={tab.id} className="mr-2">
+                            <button className={`tab-button inline-block p-4 border-b-2 rounded-t-lg hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-500 dark:hover:border-emerald-500 ${activeTab === tab.id ? 'tab-active' : 'border-transparent'}`} onClick={() => setActiveTab(tab.id)}>
+                                {tab.label}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </nav>
+        );
+
+        const PreparationModal = ({ agent, onClose }) => {
+            const [stepIndex, setStepIndex] = useState(0);
+            useEffect(() => { setStepIndex(0); }, [agent]);
+
+            if (!agent) return null;
+
+            const steps = agent.mixture_steps || [];
+            const isLastStep = stepIndex === steps.length - 1;
+            const handleNext = () => { if (!isLastStep) setStepIndex(i => i + 1); else onClose(); };
+            const handlePrev = () => setStepIndex(i => Math.max(0, i - 1));
+
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 transition-opacity duration-300" onClick={onClose}>
+                    <div className="modal-content bg-white dark:bg-slate-800 p-6 rounded-lg shadow-xl w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl sm:text-2xl font-semibold text-emerald-700 dark:text-emerald-400">{`Anleitung: ${agent.name}`}</h2>
+                            <button onClick={onClose} className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white text-2xl">&times;</button>
+                        </div>
+                        <div className="modal-body mb-6 min-h-[5rem]">
+                            <p className="text-slate-700 dark:text-slate-300" dangerouslySetInnerHTML={formatSimpleMarkdown(steps[stepIndex] || "")}></p>
+                        </div>
+                        <div className="modal-footer">
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mb-3 text-center">{`Schritt ${stepIndex + 1} von ${steps.length}`}</p>
+                            <div className="flex flex-col sm:flex-row justify-between gap-2">
+                                <button onClick={handlePrev} disabled={stepIndex === 0} className="w-full sm:w-auto bg-slate-200 dark:bg-slate-600 hover:bg-slate-300 dark:hover:bg-slate-500 text-slate-700 dark:text-slate-200 font-semibold py-2 px-4 rounded-md transition-colors duration-300 disabled:opacity-50">Vorheriger Schritt</button>
+                                <button onClick={handleNext} className="w-full sm:w-auto bg-emerald-600 dark:bg-emerald-700 hover:bg-emerald-700 dark:hover:bg-emerald-800 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-300">
+                                    {isLastStep ? "Schließen" : "Nächster Schritt"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // ===================================================================================
+        //  Layout Components
+        // ===================================================================================
+        const Header = () => (
+            <header className="mb-6 text-center">
+                <h1 className="text-3xl sm:text-4xl font-bold text-emerald-700 dark:text-emerald-400">Interaktiver Putzplan</h1>
+                <p className="text-slate-600 dark:text-slate-400 mt-2">Ihr persönlicher Helfer für eine saubere Wohnung.</p>
+            </header>
+        );
+
+        const Footer = () => (
+            <footer className="mt-12 pt-8 border-t border-slate-300 dark:border-slate-700 text-center text-sm text-slate-500 dark:text-slate-400">
+                <p>&copy; {new Date().getFullYear()} Interaktiver Putzplan. Erstellt für eine saubere Wohnung.</p>
+            </footer>
+        );
+
+        // ===================================================================================
+        //  Tab Content Components
+        // ===================================================================================
+        const PutzplanTab = () => {
+            const [dailyTip, setDailyTip] = useState({ loading: false, data: null, error: null });
+            const [roomCount, setRoomCount] = useLocalStorage('roomCount', 2);
+            const [taskProgress, setTaskProgress] = useLocalStorage('putzplanProgress', {});
+            const [filters, setFilters] = useState({ frequency: 'alle', room: 'alle' });
+            
+            const isMounted = useRef(true);
+            const streamTimer = useRef(null);
+
+            useEffect(() => {
+                isMounted.current = true;
+                return () => {
+                    isMounted.current = false;
+                    if(streamTimer.current) clearInterval(streamTimer.current);
+                };
+            }, []);
+
+            const getNewTip = useCallback(async () => {
+                setDailyTip({ loading: true, data: null, error: null });
+                const tipPrompts = [
+                    "Gib einen direkten und praktischen Reinigungstipp für den Haushalt. Beginne sofort mit dem Tipp, ohne Einleitung. Die Antwort soll zwischen 20 und 100 Wörtern liegen. Formuliere in kurzen, klaren Anweisungssätzen.",
+                    "Beschreibe einen cleveren Reinigungs-Hack. Antworte direkt und ohne einleitende Floskeln. Nutze 20 bis 100 Wörter. Verwende eine klare, stichpunktartige Sprache, wenn es passt.",
+                    "Erkläre einen Profitrick für die Haushaltsreinigung. Sei direkt und fasse dich kurz (20-100 Wörter). Starte sofort mit dem Tipp und vermeide Füllwörter.",
+                    "Gib einen Tipp zur Reinigung eines bestimmten Bereichs im Haus (z.B. Fugen, Backofen). Antworte ohne Einleitung und halte dich an eine Länge von 20 bis 100 Wörtern. Nutze kurze Hauptsätze.",
+                    "Formuliere einen praktischen Reinigungstipp. Die Antwort muss direkt beginnen und zwischen 20 und 100 Wörter lang sein. Bevorzuge eine klare, anweisende Tonalität. Je nach Tipp kann die Antwort kurz oder etwas ausführlicher sein."
+                ];
+                const prompt = tipPrompts[Math.floor(Math.random() * tipPrompts.length)];
+                
+                const response = await fetchGeminiResponse(prompt);
+                
+                if (isMounted.current) {
+                    if(response.success && response.data) {
+                        setDailyTip({ loading: false, data: '', error: null });
+                        streamTimer.current = streamText(response.data, (char) => {
+                            setDailyTip(prev => ({...prev, data: prev.data + char}));
+                        });
+                    } else {
+                        setDailyTip({ loading: false, data: null, error: response.error });
+                    }
+                }
+            }, []);
+            
+            const processedTasks = useMemo(() => {
+                return tasksData.flatMap((task, index) => {
+                    if (task.room === "Wohn- & Schlafzimmer") {
+                        return Array.from({ length: roomCount }, (_, i) => ({ ...task, room: `Wohn-/Schlafraum ${i + 1}`, id: `${task.task.substring(0, 10)}-${i + 1}-${index}` }));
+                    }
+                    return { ...task, id: `${task.task.substring(0, 10)}-${index}` };
+                });
+            }, [roomCount]);
+
+            const filteredAndGroupedTasks = useMemo(() => {
+                const filtered = processedTasks.filter(task =>(filters.frequency === 'alle' || task.frequency === filters.frequency) && (filters.room === 'alle' || task.room === filters.room));
+                const grouped = filtered.reduce((acc, task) => {
+                    const groupKey = `${task.room} - ${task.frequency.charAt(0).toUpperCase() + task.frequency.slice(1)}`;
+                    (acc[groupKey] = acc[groupKey] || []).push(task);
+                    return acc;
+                }, {});
+                const roomOrder = ["Küche", "Badezimmer"];
+                const sortedGroupKeys = Object.keys(grouped).sort((a, b) => {
+                    const roomA = a.split(' - ')[0], roomB = b.split(' - ')[0];
+                    let indexA = roomOrder.indexOf(roomA), indexB = roomOrder.indexOf(roomB);
+                    if (roomA.startsWith("Wohn-/Schlafraum")) indexA = roomOrder.length; if (roomB.startsWith("Wohn-/Schlafraum")) indexB = roomOrder.length;
+                    if (roomA === "Alle Räume (übergreifend)") indexA = roomOrder.length + 1; if (roomB === "Alle Räume (übergreifend)") indexB = roomOrder.length + 1;
+                    if (indexA !== indexB) return indexA - indexB;
+                    return a.localeCompare(b);
+                });
+                sortedGroupKeys.forEach(key => {
+                    grouped[key].sort((a,b) => (taskProgress[a.id] ? 1 : 0) - (taskProgress[b.id] ? 1 : 0));
+                });
+                return sortedGroupKeys.reduce((acc, key) => ({...acc, [key]: grouped[key]}), {});
+            }, [processedTasks, filters, taskProgress]);
+
+            const roomFilterOptions = useMemo(() => Array.from(new Set(processedTasks.map(t => t.room))).sort(), [processedTasks]);
+
+            const handleFilterChange = (e) => setFilters(prev => ({ ...prev, [e.target.name]: e.target.value }));
+            const handleRoomCountChange = (e) => setRoomCount(Math.max(1, parseInt(e.target.value, 10) || 1));
+            const handleTaskToggle = (taskId) => setTaskProgress(prev => ({ ...prev, [taskId]: !prev[taskId] }));
+
+            return (
+                <section className="space-y-6">
+                    <p className="text-slate-600 dark:text-slate-400 mb-4">Hier finden Sie Ihren wöchentlichen, zweiwöchentlichen und monatlichen Putzplan. Haken Sie erledigte Aufgaben ab – Ihr Fortschritt wird automatisch gespeichert.</p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div className="md:col-span-2 bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-md">
+                            <h2 className="text-2xl font-semibold text-emerald-700 dark:text-emerald-400 mb-3">✨ Reinigungs-Tipp des Tages</h2>
+                            <button onClick={getNewTip} disabled={dailyTip.loading} className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-700 dark:hover:bg-emerald-800 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-300 disabled:opacity-50">{dailyTip.loading ? "Lade..." : "Neuen Tipp holen"}</button>
+                            <GeminiResponseArea state={dailyTip} />
+                        </div>
+                        <div className="md:col-span-1 bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-md">
+                            <h2 className="text-xl font-semibold text-emerald-700 dark:text-emerald-400 mb-3">Räume anpassen</h2>
+                            <div>
+                                <label htmlFor="room-count-input" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Anzahl Wohn-/Schlafräume:</label>
+                                <input type="number" id="room-count-input" value={roomCount} onChange={handleRoomCountChange} min="1" max="10" className="w-full p-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" />
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Küche & Bad separat.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-md">
+                        <div className="flex flex-wrap justify-between items-center mb-4 gap-4">
+                            <h2 className="text-2xl font-semibold text-emerald-700 dark:text-emerald-400">Putzplan-Filter</h2>
+                            <button onClick={() => setTaskProgress({})} title="Fortschritt zurücksetzen" className="p-2 text-slate-500 dark:text-slate-400 hover:bg-red-100 dark:hover:bg-slate-700 hover:text-red-600 dark:hover:text-red-400 rounded-full transition-colors duration-300"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <label htmlFor="filter-frequency" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Frequenz:</label>
+                                <select id="filter-frequency" name="frequency" value={filters.frequency} onChange={handleFilterChange} className="w-full p-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="alle">Alle Frequenzen</option>
+                                    <option value="wöchentlich">Wöchentlich</option>
+                                    <option value="2-4 wochen">Alle 2-4 Wochen</option>
+                                    <option value="monatlich">Monatlich / Quartalsweise</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="filter-room" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Raum:</label>
+                                <select id="filter-room" name="room" value={filters.room} onChange={handleFilterChange} className="w-full p-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="alle">Alle Räume</option>
+                                    {['Küche', 'Badezimmer', ...roomFilterOptions.filter(r => r.startsWith("Wohn-")), 'Alle Räume (übergreifend)'].map(room => room && <option key={room} value={room}>{room}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="space-y-4">
+                            {Object.keys(filteredAndGroupedTasks).length > 0 ? Object.entries(filteredAndGroupedTasks).map(([groupKey, tasks]) => (
+                                <div key={groupKey} className="mb-6 p-4 bg-emerald-50 dark:bg-slate-800/50 rounded-lg">
+                                    <h3 className="text-lg font-semibold text-emerald-700 dark:text-emerald-400 mb-3">{groupKey}</h3>
+                                    <ul className="space-y-2">
+                                        {tasks.map(task => (
+                                            <li key={task.id} className="task-item flex items-start p-2 rounded-md hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors duration-200">
+                                                <input type="checkbox" id={task.id} checked={!!taskProgress[task.id]} onChange={() => handleTaskToggle(task.id)} className="peer mr-3 mt-1 h-4 w-4 rounded border-slate-300 dark:border-slate-500 text-emerald-600 focus:ring-emerald-500" />
+                                                <label htmlFor={task.id} className="flex-1 cursor-pointer"><span className="text-slate-700 dark:text-slate-300 peer-checked:line-through peer-checked:text-slate-500 dark:peer-checked:text-slate-400" dangerouslySetInnerHTML={formatSimpleMarkdown(task.task)}></span></label>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )) : <p className="text-slate-500 dark:text-slate-400">Keine Aufgaben für die ausgewählten Filter gefunden.</p>}
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const FleckenRatgeberTab = () => {
+            const [stainDescription, setStainDescription] = useState("");
+            const [stainSolution, setStainSolution] = useState({ loading: false, data: null, error: null });
+
+            const isMounted = useRef(true);
+            const streamTimer = useRef(null);
+            useEffect(() => {
+                isMounted.current = true;
+                return () => {
+                    isMounted.current = false;
+                    if(streamTimer.current) clearInterval(streamTimer.current);
+                };
+            }, []);
+
+            const getSolution = useCallback(async () => {
+                if (!stainDescription.trim()) {
+                    setStainSolution({ loading: false, data: null, error: "Bitte beschreiben Sie den Fleck." });
+                    return;
+                }
+                setStainSolution({ loading: true, data: null, error: null });
+                const prompt = `Du bist ein Haushaltsexperte. Gib eine sehr kurze und prägnante Anleitung zur Entfernung des folgenden Flecks nur mit Hausmitteln: "${stainDescription}". Antworte mit maximal 3 kurzen Schritten als nummerierte Liste und einem abschließenden, wichtigen Warnhinweis. Beispiel: 1. Abtupfen. 2. Mittel XY auftragen. 3. Auswaschen. **Wichtig:** ...`;
+                const response = await fetchGeminiResponse(prompt);
+                if (isMounted.current) {
+                    if(response.success && response.data) {
+                        setStainSolution({ loading: false, data: '', error: null });
+                        streamTimer.current = streamText(response.data, (char) => {
+                           setStainSolution(prev => ({...prev, data: prev.data + char}));
+                        });
+                    } else {
+                        setStainSolution({ loading: false, data: null, error: response.error });
+                    }
+                }
+            }, [stainDescription]);
+
+            return (
+                <section className="space-y-6">
+                    <p className="text-slate-600 dark:text-slate-400 mb-4">Erste Hilfe bei gängigen Flecken. Beschreiben Sie Ihren Fleck so genau wie möglich (z.B. "frischer Rotweinfleck auf weißem Baumwoll-T-Shirt") und erhalten Sie eine Anleitung.</p>
+                    <div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-md">
+                        <h2 className="text-2xl font-semibold text-emerald-700 dark:text-emerald-400 mb-4">Interaktiver Flecken-Ratgeber</h2>
+                        <div>
+                            <label htmlFor="stain-description" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Beschreiben Sie den Fleck:</label>
+                            <textarea id="stain-description" rows="3" value={stainDescription} onChange={(e) => setStainDescription(e.target.value)} className="w-full p-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500" placeholder="z.B. Kaffeefleck auf hellem Teppich"></textarea>
+                        </div>
+                        <button onClick={getSolution} disabled={stainSolution.loading} className="mt-4 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-700 dark:hover:bg-emerald-800 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-300 disabled:opacity-50">{stainSolution.loading ? "Suche..." : "Lösung holen"}</button>
+                        <GeminiResponseArea state={stainSolution} />
+                    </div>
+                </section>
+            );
+        };
+
+        const ReinigungsmittelTab = ({ onShowModal }) => {
+            const [uses, setUses] = useState({});
+            const streamTimers = useRef({});
+
+            const isMounted = useRef(true);
+            useEffect(() => {
+                isMounted.current = true;
+                return () => {
+                    isMounted.current = false;
+                    Object.values(streamTimers.current).forEach(clearInterval);
+                };
+            }, []);
+
+            const getAdditionalUses = useCallback(async (agentId, agentName) => {
+                if (uses[agentId]?.data) {
+                    if (isMounted.current) setUses(prev => ({...prev, [agentId]: null}));
+                    return;
+                }
+                if (isMounted.current) setUses(prev => ({ ...prev, [agentId]: { loading: true, data: null, error: null } }));
+
+                const promptTemplates = [
+                    `Nenne 2 weitere, kreative Anwendungsideen für "${agentName}" im Haushalt. Antworte nur mit einer nummerierten Liste. Jeder Punkt sollte sehr kurz und prägnant sein (maximal 5-7 Worte).`,
+                    `Was sind 2 überraschende Life-Hacks mit "${agentName}"? Gib die Antwort als extrem kurze, nummerierte Liste.`,
+                    `Nenne 2 weitere Einsatzmöglichkeiten für "${agentName}" in kurzen Stichpunkten (nummerierte Liste).`,
+                    `Gib 2 kurze, prägnante und weniger bekannte Anwendungstipps für "${agentName}". Formatiere als nummerierte Liste.`,
+                    `Welche 2 Probleme löst "${agentName}" noch? Antworte mit zwei sehr kurzen Stichpunkten in einer nummerierten Liste.`
+                ];
+                const prompt = promptTemplates[Math.floor(Math.random() * promptTemplates.length)];
+                
+                const response = await fetchGeminiResponse(prompt);
+                
+                if (isMounted.current) {
+                    if(response.success && response.data){
+                        setUses(prev => ({...prev, [agentId]: { loading: false, data: '', error: null }}));
+                        streamTimers.current[agentId] = streamText(response.data, (char) => {
+                            setUses(prev => ({...prev, [agentId]: {...prev[agentId], data: prev[agentId].data + char}}));
+                        });
+                    } else {
+                         setUses(prev => ({...prev, [agentId]: { loading: false, data: null, error: response.error }}));
+                    }
+                }
+            }, [uses]);
+
+            return (
+                <section className="space-y-6">
+                    <p className="text-slate-600 dark:text-slate-400 mb-4">Hier finden Sie die Rezepte für Ihre selbstgemachten Reinigungsmittel. Diese einfachen Mischungen sind effektiv und umweltschonend. Entdecken Sie zusätzliche Anwendungsideen mit einem Klick!</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {cleaningAgentsData.map(agent => (
+                            <div key={agent.id} className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-md flex flex-col">
+                                <div className="flex-grow">
+                                    <h3 className="text-xl font-semibold text-emerald-700 dark:text-emerald-400 mb-2">{agent.name}</h3>
+                                    <div className="space-y-2 text-sm mb-3">
+                                        <p><strong>Mischung:</strong> <span dangerouslySetInnerHTML={formatSimpleMarkdown(agent.mixture)}></span></p>
+                                        <p><strong>Ideal für:</strong> <span dangerouslySetInnerHTML={formatSimpleMarkdown(agent.ideal_for)}></span></p>
+                                    </div>
+                                </div>
+                                <div className="mt-auto pt-3 border-t border-slate-200 dark:border-slate-700 flex flex-wrap gap-2">
+                                    {agent.mixture_steps?.length > 0 && <button onClick={() => onShowModal(agent)} className="bg-green-100 hover:bg-green-200 dark:bg-green-800/50 dark:hover:bg-green-700/50 text-green-700 dark:text-green-300 text-sm font-semibold py-1.5 px-3 rounded-md transition-colors duration-300">📜 Anleitung</button>}
+                                    <button onClick={() => getAdditionalUses(agent.id, agent.name)} disabled={uses[agent.id]?.loading} className="bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white text-sm font-semibold py-1.5 px-3 rounded-md transition-colors duration-300 disabled:opacity-50">{uses[agent.id]?.loading ? 'Laden...' : (uses[agent.id]?.data ? 'Weniger anzeigen' : '✨ Weitere Anwendungen')}</button>
+                                </div>
+                                {uses[agent.id] && <GeminiResponseArea state={uses[agent.id]} />}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            );
+        };
+
+        const MaterialcheckTab = () => {
+            const [selection, setSelection] = useState({ agentId: "", materialId: "" });
+            const [result, setResult] = useState(null);
+            const [geminiCheck, setGeminiCheck] = useState({ loading: false, data: null, error: null });
+
+            const isMounted = useRef(true);
+            const streamTimer = useRef(null);
+            useEffect(() => {
+                isMounted.current = true;
+                return () => {
+                    isMounted.current = false;
+                    if(streamTimer.current) clearInterval(streamTimer.current);
+                };
+            }, []);
+
+            const sortedAgents = useMemo(() => [...cleaningAgentsData].sort((a,b) => a.name.localeCompare(b.name)), []);
+            const sortedMaterials = useMemo(() => [...materialsForCheck].sort((a,b) => a.name.localeCompare(b.name)), []);
+            
+            useEffect(() => {
+                const { agentId, materialId } = selection;
+                if (isMounted.current) setGeminiCheck({ loading: false, data: null, error: null });
+                if (!agentId || !materialId) {
+                    if (isMounted.current) setResult(null);
+                    return;
+                }
+                const agent = cleaningAgentsData.find(a => a.id === agentId);
+                const material = materialsForCheck.find(m => m.id === materialId);
+                const agentTypes = agent.type.split('-');
+                let foundRule = null;
+                for (const type of agentTypes) {
+                    if (materialCompatibilityRules[type]?.[materialId]) {
+                        foundRule = materialCompatibilityRules[type][materialId];
+                        break;
+                    }
+                }
+                if (isMounted.current) {
+                    setResult(foundRule ? { ...foundRule, agent, material, needsGemini: false } : { status: 'gemini', note: `Keine spezifischen Daten für ${agent.name} auf ${material.name}.`, agent, material, needsGemini: true });
+                }
+            }, [selection]);
+            
+            const askGemini = useCallback(async () => {
+                if (!result?.needsGemini) return;
+                const { agent, material } = result;
+                if (isMounted.current) setGeminiCheck({ loading: true, data: null, error: null });
+                const prompt = `Ist das Reinigungsmittel "${agent.name}" ... sicher für "${material.name}"?`;
+                const response = await fetchGeminiResponse(prompt);
+                if (isMounted.current) {
+                    if(response.success && response.data){
+                        setGeminiCheck({loading: false, data: '', error: null});
+                        streamTimer.current = streamText(response.data, (char) => {
+                            setGeminiCheck(prev => ({...prev, data: prev.data + char}));
+                        });
+                    } else {
+                         setGeminiCheck({ loading: false, data: null, error: response.error });
+                    }
+                }
+            }, [result]);
+
+            const getStatusInfo = useCallback((status) => {
+                switch (status) {
+                    case "safe":    return { text: "Sicher ✅", className: "bg-green-100 text-green-800 border-l-green-600 dark:bg-green-900/50 dark:text-green-300 dark:border-l-green-500" };
+                    case "caution": return { text: "Vorsicht geboten ⚠️", className: "bg-yellow-100 text-yellow-800 border-l-yellow-500 dark:bg-yellow-900/50 dark:text-yellow-300 dark:border-l-yellow-400" };
+                    case "unsafe":  return { text: "Nicht sicher / Vermeiden ❌", className: "bg-red-100 text-red-800 border-l-red-600 dark:bg-red-900/50 dark:text-red-300 dark:border-l-red-500" };
+                    case "gemini":  return { text: "Keine spezifischen Daten ❔", className: "bg-indigo-100 text-indigo-800 border-l-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-300 dark:border-l-indigo-500" };
+                    default:        return { text: "Information", className: "bg-slate-100 text-slate-800 border-l-slate-500 dark:bg-slate-700 dark:text-slate-300 dark:border-l-slate-400" };
+                }
+            }, []);
+
+            const statusInfo = result ? getStatusInfo(result.status) : null;
+
+            return (
+                <section className="space-y-6">
+                    <p className="text-slate-600 dark:text-slate-400 mb-4">Überprüfen Sie hier die Verträglichkeit von Reinigungsmitteln mit verschiedenen Materialien, um Schäden zu vermeiden.</p>
+                    <div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-md">
+                        <h2 className="text-2xl font-semibold text-emerald-700 dark:text-emerald-400 mb-4">Materialverträglichkeits-Check</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label htmlFor="check-agent" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Reinigungsmittel:</label>
+                                <select id="check-agent" value={selection.agentId} onChange={e => setSelection(s => ({...s, agentId: e.target.value}))} className="w-full p-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="">-- Bitte wählen --</option>{sortedAgents.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="check-material" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Material:</label>
+                                <select id="check-material" value={selection.materialId} onChange={e => setSelection(s => ({...s, materialId: e.target.value}))} className="w-full p-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                    <option value="">-- Bitte wählen --</option>{sortedMaterials.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                        {result && statusInfo && (
+                            <div className={`p-4 rounded-md border-l-4 min-h-[60px] ${statusInfo.className}`}>
+                                <p className="font-semibold text-lg mb-1">{statusInfo.text}</p>
+                                <p className="text-sm" dangerouslySetInnerHTML={formatSimpleMarkdown(result.note)}></p>
+                                {result.needsGemini && (
+                                    <div className="mt-3">
+                                        {geminiCheck.loading ? (<div className="flex items-center"><LoadingSpinner/><span>Gemini wird befragt...</span></div>) 
+                                        : (!geminiCheck.data && !geminiCheck.error) && <button onClick={askGemini} className="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-3 rounded-md text-sm transition-colors duration-300">Gemini fragen 🔮</button>}
+                                    </div>
+                                )}
+                                {(geminiCheck.data || geminiCheck.error) && (
+                                    <div className="mt-3 pt-3 border-t border-slate-400/30">
+                                        <p className="font-semibold text-lg mb-1">{geminiCheck.error ? "Fehler" : "Gemini Einschätzung 🔮"}</p>
+                                        <p className={`text-sm ${geminiCheck.error ? 'text-red-500' : ''}`} dangerouslySetInnerHTML={formatSimpleMarkdown(geminiCheck.data || geminiCheck.error)}></p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </section>
+            );
+        };
+        
+        const SicherheitTab = () => (
+            <section>
+                <p className="text-slate-600 dark:text-slate-400 mb-4">Bitte beachten Sie die folgenden Sicherheitshinweise, um eine sichere Anwendung der Reinigungsmittel zu gewährleisten und Materialschäden zu vermeiden.</p>
+                <div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-md space-y-4">
+                    <h2 className="text-2xl font-semibold text-red-600 dark:text-red-400 mb-3">Wichtige Sicherheitshinweise</h2>
+                    <ul className="list-disc list-inside space-y-2 text-slate-700 dark:text-slate-300">
+                        {safetyNotesData.map((note, index) => <li key={index} dangerouslySetInnerHTML={formatSimpleMarkdown(note)}></li>)}
+                    </ul>
+                </div>
+            </section>
+        );
+
+        // ===================================================================================
+        //  Main App Component
+        // ===================================================================================
+        function App() {
+            const [theme, setTheme] = useLocalStorage('theme', 'light');
+            const [activeTab, setActiveTab] = useState('putzplan');
+            const [modalAgent, setModalAgent] = useState(null);
+
+            useEffect(() => {
+                document.documentElement.classList.toggle('dark', theme === 'dark');
+            }, [theme]);
+            
+            const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
+            const showModal = useCallback((agent) => setModalAgent(agent), []);
+            const closeModal = useCallback(() => setModalAgent(null), []);
+
+            const renderActiveTab = () => {
+                switch (activeTab) {
+                    case 'putzplan': return <PutzplanTab />;
+                    case 'flecken': return <FleckenRatgeberTab />;
+                    case 'reinigungsmittel': return <ReinigungsmittelTab onShowModal={showModal} />;
+                    case 'materialcheck': return <MaterialcheckTab />;
+                    case 'sicherheit': return <SicherheitTab />;
+                    default: return null;
+                }
+            }
+
+            return (
+                <React.Fragment>
+                    <div className="container mx-auto p-4 sm:p-6 lg:p-8 max-w-5xl">
+                        <div className="relative">
+                            <Header />
+                            <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+                        </div>
+                        <TabBar tabs={TABS} activeTab={activeTab} setActiveTab={setActiveTab} />
+                        <main>
+                            {renderActiveTab()}
+                        </main>
+                        <Footer />
+                    </div>
+                    <PreparationModal agent={modalAgent} onClose={closeModal} />
+                </React.Fragment>
+            );
+        }
+
+        // ===================================================================================
+        //  Render the App
+        // ===================================================================================
+        ReactDOM.render(<App />, document.getElementById('root'));
+
+    </script>
+</body>
+</html>
