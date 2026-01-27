@@ -16,11 +16,14 @@ export async function getAllPages() {
 
     for (const [file, raw] of Object.entries(modules)) {
         try {
-            // Slug aus Pfad generieren
-            const slug = file
+            // Slug aus Pfad generieren und normalisieren
+            let slug = file
                 .replace('/src/content/', '')
                 .replace(/\.md$/, '')
                 .replace(/\/index$/, '');
+
+            // Entferne führende Verzeichnisse wie 'pages/', 'blog/' oder 'work/'
+            slug = slug.replace(/^pages\//, '').replace(/^blog\//, '').replace(/^work\//, '');
 
             // Frontmatter extrahieren und validieren
             const { data, content } = matter(raw as string);
@@ -44,5 +47,16 @@ export async function getAllPages() {
 
 export async function getPage(slug: string) {
     const pages = await getAllPages();
-    return pages.find((p) => p.slug === slug) ?? null;
+    // Flexible matching: allow plain slug or prefixed with content folder names
+    const matchSlug = (pSlug: string, q: string) => {
+        if (!pSlug) return false;
+        if (pSlug === q) return true;
+        // direct folder prefixes
+        if (pSlug === `pages/${q}` || pSlug === `blog/${q}` || pSlug === `work/${q}`) return true;
+        // nested path ending with slug (e.g. work/cachy or projects/work/cachy)
+        if (pSlug.endsWith(`/${q}`)) return true;
+        return false;
+    };
+
+    return pages.find((p) => matchSlug(p.slug, slug)) ?? null;
 }
