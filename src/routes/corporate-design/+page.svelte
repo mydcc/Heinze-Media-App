@@ -1,23 +1,10 @@
 <script lang="ts">
     import SEOHead from "$lib/components/SEOHead.svelte";
     import { marked } from "marked";
-    import fs from "fs";
-    import path from "path";
 
-    let content = "";
-
-    // Load Corporate Design MD file
-    try {
-        const filePath = path.join(process.cwd(), "CORPORATE_DESIGN.md");
-        if (typeof window === "undefined") {
-            // Server-side only
-            content = fs.readFileSync(filePath, "utf-8");
-        }
-    } catch (err) {
-        console.error("Failed to load CORPORATE_DESIGN.md:", err);
-    }
-
-    const htmlContent = marked(content);
+    let { data } = $props();
+    let content = $derived(data.content);
+    let htmlContent = $derived(marked(content));
 
     const seoTitle = "Corporate Design | HEINZE MEDIA";
     const seoDescription =

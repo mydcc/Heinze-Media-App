@@ -365,8 +365,6 @@ node scripts/organize-images.js
 ## 📚 Key Documents
 
 - `SYSTEM_BRAND_GUIDELINES.md` - Vollständiges Design System
-- `MIGRATION_PLAN.md` - Detaillierter Migrations-Plan
-- `ROADMAP.md` - Projekt-Roadmap
 - `DEVELOPMENT.md` - Development Guide
 - `BRAND GUIDELINES.md` - Original Brand Guidelines
 

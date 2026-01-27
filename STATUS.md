@@ -66,7 +66,6 @@ Build Time: ~13 seconds
 | [README.md](./README.md) | Project overview & tech stack |
 | [COMPONENTS.md](./COMPONENTS.md) | Component library reference |
 | [SYSTEM_BRAND_GUIDELINES.md](./SYSTEM_BRAND_GUIDELINES.md) | Brand standards & guidelines |
-| [MIGRATION_PLAN.md](./MIGRATION_PLAN.md) | WordPress migration details |
 | [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) | Developer quick reference |
 | [CORPORATE_DESIGN.md](./CORPORATE_DESIGN.md) | 80+ page design system |
 

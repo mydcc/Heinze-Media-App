@@ -171,7 +171,6 @@ Each theme includes light & dark modes with CSS variables for:
 
 - **[COMPONENTS.md](./COMPONENTS.md)** - Component Library Reference
 - **[SYSTEM_BRAND_GUIDELINES.md](./SYSTEM_BRAND_GUIDELINES.md)** - Brand Standards
-- **[MIGRATION_PLAN.md](./MIGRATION_PLAN.md)** - WordPress → Svelte Migration Details
 - **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)** - Dev Quick Reference
 - **[CORPORATE_DESIGN.md](./CORPORATE_DESIGN.md)** - Design Guidelines (80+ pages)
 
@@ -330,7 +329,6 @@ Core Web Vitals: Ready for Optimization
 
 - [PROJECT_STATUS.md](./PROJECT_STATUS.md) - Current Project Status
 - [DEVELOPMENT.md](./DEVELOPMENT.md) - Development Guide & Patterns
-- [ROADMAP.md](./ROADMAP.md) - Feature Roadmap & TODO
 - [AGENT.md](./AGENT.md) - AI Assistant Instructions
 
 ## 🛠️ Development Commands
@@ -400,8 +398,6 @@ npm run build
 - [ ] PWA & Service Worker
 - [ ] Analytics Integration
 - [ ] Blog CMS Integration
-
-See [ROADMAP.md](./ROADMAP.md) for detailed timeline.
 
 ## 🤖 Svelte 5 Runes
 
