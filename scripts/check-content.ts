@@ -6,10 +6,38 @@ import { z } from 'zod';
 const CONTENT_DIR = path.resolve('src/content');
 const MARKDOWN_EXT = ['.md', '.mdx'];
 
-const frontmatterSchema = z.object({
+
+// Verschiedene Schemata je nach Content-Typ
+const projectSchema = z.object({
     title: z.string().min(1),
+    repo: z.string().min(1),
+    url: z.string().url(),
+    description: z.string().min(1),
+    tags: z.array(z.string()),
+    language: z.string().min(1),
+    featured: z.boolean(),
+    date: z.string().min(1),
     published: z.boolean(),
-    // ggf. weitere Felder ergänzen
+});
+
+const pageSchema = z.object({
+    title: z.string().min(1),
+    slug: z.string().min(1),
+    // published optional, da viele Seiten statisch sind
+    published: z.boolean().optional(),
+});
+
+const blogSchema = z.object({
+    title: z.string().min(1),
+    date: z.string().min(1),
+    tags: z.array(z.string()).optional(),
+    published: z.boolean().optional(),
+});
+
+const workSchema = z.object({
+    title: z.string().min(1),
+    date: z.string().min(1),
+    published: z.boolean().optional(),
 });
 
 async function getAllMarkdownFiles(dir: string): Promise<string[]> {
@@ -27,11 +55,22 @@ function extractSlug(filePath: string): string {
     return path.basename(filePath, path.extname(filePath));
 }
 
+
+function getSchemaForFile(file: string) {
+    if (file.includes('/projects/')) return projectSchema;
+    if (file.includes('/pages/')) return pageSchema;
+    if (file.includes('/blog/')) return blogSchema;
+    if (file.includes('/work/')) return workSchema;
+    return null;
+}
+
 async function checkFrontmatter(file: string) {
     const content = await fs.readFile(file, 'utf-8');
     const { data } = matter(content);
+    const schema = getSchemaForFile(file);
+    if (!schema) return null; // Unbekannter Typ: ignoriere
     try {
-        frontmatterSchema.parse(data);
+        schema.parse(data);
         return null;
     } catch (e: any) {
         return { file, error: e.errors };

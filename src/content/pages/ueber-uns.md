@@ -3,11 +3,14 @@
 title: "Über uns"
 date: "Fri, 18 Oct 2024 03:47:45 +0000"
 slug: "ueber-uns"
+published: true
 
 ---
 
 # Play Forward
+
 ### Ein kooperativer und strategischer Partner
+
 <p>Wenn Sie bereit sind, Technologie einzusetzen, um Ihr Unternehmen voranzubringen, brauchen Sie den richtigen Partner. Wir fördern das Geschäftswachstum unserer Kunden durch interaktive 3D-Verkaufstools, engagierte Mitarbeiter durch VR und immersive Unternehmenserlebnisse, Schulungen und entwickelte Web-, Mobil- und App-Plattformen.</p>
 <p>Wir verfügen über das bewährte Team und die Fähigkeiten, die Sie benötigen, um Technologieerlebnisse zu schaffen, die Ihr Unternehmen von der Konkurrenz abheben. Bei HS arbeiten wir mit unseren Partnern zusammen, um die richtige Mischung aus Technologie, Design, Inhalt und Geschäftsstrategie zu finden.</p>
 ## Heinze Media<p>We love technology and design</p>

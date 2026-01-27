@@ -3,12 +3,16 @@
 title: "Work"
 date: "Tue, 23 Apr 2024 11:41:52 +0000"
 slug: "work"
+published: true
 
 ---
 
 # Work
+
 ## Play Forward<p>Heinze Media creates immersive digital experiences, applications and platforms for partners across all industries. We are limited in what we can show here. If you are interested, connect with us to learn more.</p>
+
 #### Cachy – Professional Risk Management & Trading Journal
+
 <p><strong>Cachy</strong> is a high-performance trading companion designed to bridge the gap between professional trading terminals and user-friendly portfolio trackers. At its core, Cachy is built on the philosophy that successful trading doesn't start with order execution, but with consistent capital preservation.</p>
 <p><strong>The Local-First Solution for Privacy-Conscious Crypto Traders.</strong></p>
 

@@ -4,6 +4,7 @@ date: "2026-01-16T17:30:00.000Z"
 slug: "cachy-professional-risk-management-trading-journal"
 type: "work"
 image: "/images/work/pat-man.png"
+published: true
 ---
 
 # Cachy

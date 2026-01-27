@@ -4,6 +4,7 @@ date: "2025-06-09T12:43:08.000Z"
 slug: "pat-man"
 type: "work"
 image: "/images/work/pat-man.png"
+published: true
 ---
 
 # Pat-Man Arcade Game

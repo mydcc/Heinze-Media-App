@@ -1,9 +1,8 @@
 <script lang="ts">
-    let {
-        data,
-    }: { data?: { meta?: any; contentHtml?: string; slug?: string } } =
-        $props();
-    let { meta = {}, contentHtml = "", slug = "" } = data ?? {};
+    let { data } = $props();
+    let meta = $derived(() => data?.meta ?? {});
+    let contentHtml = $derived(() => data?.contentHtml ?? "");
+    let slug = $derived(() => data?.slug ?? "");
 </script>
 
 <svelte:head>
@@ -25,7 +24,7 @@
             >
         </div>
 
-        <article class="prose prose-invert max-w-none" bind:this>
+        <article class="prose prose-invert max-w-none">
             {@html contentHtml}
         </article>
 

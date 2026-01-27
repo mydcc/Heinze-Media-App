@@ -4,6 +4,7 @@ title: "Websites"
 date: "2024-10-10T04:40:53.000Z"
 slug: "websites"
 type: "page"
+published: true
 
 ---
 
@@ -75,7 +76,7 @@ We have experience and expertise with 3D object and character design, 3D animati
 
 ### APPS
 
-Mobile apps and platforms power business operations and drive growth. Don’t miss out!   
+Mobile apps and platforms power business operations and drive growth. Don’t miss out!
   
 HS delivers custom app and platform design & development for iOS & Android, web apps, AR/VR/XR, video streaming and other app & smart device platforms.
 

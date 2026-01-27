@@ -3,6 +3,7 @@ title: "Interactive web app for analyzing candlestick patterns"
 date: "2025-06-09T10:37:16.000Z"
 slug: "candlesticks"
 type: "work"
+published: true
 ---
 
 # Candlestick Pattern Analysis
@@ -17,15 +18,15 @@ Development of an interactive Single-Page Application (SPA) as an educational to
 
 #### **Technical Core Components**
 
-*   **Custom Canvas Engine:** A custom-built rendering engine dynamically draws chart patterns on an HTML5 `<canvas>` element. This allows for full control over presentation and interactivity.
-*   **Declarative Highlighting:** A unique feature is the visual highlighting of key characteristics (e.g., gaps, engulfing bodies, long wicks). These are not marked as static images but are procedurally drawn on the canvas by interpreting an instruction array within each pattern's data object.
-*   **Data-Driven Architecture:** The entire application, from the pattern list to the detail view, is dynamically generated from a central JavaScript data object. This makes the application easily scalable and extensible.
-*   **Persistent User Preferences:** A favorites system and a switchable dark/light theme use the browser's `localStorage` API to save user settings client-side.
+* **Custom Canvas Engine:** A custom-built rendering engine dynamically draws chart patterns on an HTML5 `<canvas>` element. This allows for full control over presentation and interactivity.
+* **Declarative Highlighting:** A unique feature is the visual highlighting of key characteristics (e.g., gaps, engulfing bodies, long wicks). These are not marked as static images but are procedurally drawn on the canvas by interpreting an instruction array within each pattern's data object.
+* **Data-Driven Architecture:** The entire application, from the pattern list to the detail view, is dynamically generated from a central JavaScript data object. This makes the application easily scalable and extensible.
+* **Persistent User Preferences:** A favorites system and a switchable dark/light theme use the browser's `localStorage` API to save user settings client-side.
 
 #### **Architecture & Stack**
 
-*   **Technology:** Vanilla JavaScript (ES6+), HTML5, CSS3.
-*   **Architecture:** The SPA follows a clear, component-like structure with a focus on separating data, UI logic, and rendering. Reactive view updates are controlled by specific function calls.
+* **Technology:** Vanilla JavaScript (ES6+), HTML5, CSS3.
+* **Architecture:** The SPA follows a clear, component-like structure with a focus on separating data, UI logic, and rendering. Reactive view updates are controlled by specific function calls.
 
 #### **Conclusion**
 

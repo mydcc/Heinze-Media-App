@@ -1,8 +1,9 @@
 ---
 
 title: "XR Studio"
-date: "Tue, 23 Apr 2024 19:55:07 +0000"
+date: "2024-10-10T04:29:01.000Z"
 slug: "xr-studio"
+published: true
 
 ---
 

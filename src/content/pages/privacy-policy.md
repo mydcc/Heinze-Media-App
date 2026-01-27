@@ -1,17 +1,18 @@
 ---
-title: "Cookies & Private Policy"
+title: "Datenschutzerklärung"
 date: "Tue, 23 Apr 2024 20:43:56 +0000"
 slug: "privacy-policy"
 published: true
 ---
 
 #### Privacy Policy
+
 <p>We are very delighted that you have shown interest in our enterprise. Data protection is of a particularly high priority for the management of the Heinze Media. The use of the Internet pages of the Heinze Media is possible without any indication of personal data; however, if a data subject wants to use special enterprise services via our website, processing of personal data could become necessary. If the processing of personal data is necessary and there is no statutory basis for such processing, we generally obtain consent from the data subject.</p>
 <p>The processing of personal data, such as the name, address, e-mail address, or telephone number of a data subject shall always be in line with the General Data Protection Regulation (GDPR), and in accordance with the country-specific data protection regulations applicable to the Heinze Media. By means of this data protection declaration, our enterprise would like to inform the general public of the nature, scope, and purpose of the personal data we collect, use and process. Furthermore, data subjects are informed, by means of this data protection declaration, of the rights to which they are entitled.</p>
 <p>As the controller, the Heinze Media has implemented numerous technical and organizational measures to ensure the most complete protection of personal data processed through this website. However, Internet-based data transmissions may in principle have security gaps, so absolute protection may not be guaranteed. For this reason, every data subject is free to transfer personal data to us via alternative means, e.g. by telephone. </p>
-#### 1. Definitions
-<p>The data protection declaration of the Heinze Media is based on the terms used by the European legislator for the adoption of the General Data Protection Regulation (GDPR). Our data protection declaration should be legible and understandable for the general public, as well as our customers and business partners. To ensure this, we would like to first explain the terminology used.</p>
-<p>In this data protection declaration, we use, inter alia, the following terms:</p>
+**Datenschutzerklärung**
+
+Dies ist ein Platzhalter für die Datenschutzerklärung. Bitte ergänzen Sie die Datenschutzinformationen entsprechend den gesetzlichen Vorgaben.
 <ul>
 <li>#### a)    Personal data
 <p>Personal data means any information relating to an identified or identifiable natural person (“data subject”). An identifiable natural person is one who can be identified, directly or indirectly, in particular by reference to an identifier such as a name, an identification number, location data, an online identifier or to one or more factors specific to the physical, physiological, genetic, mental, economic, cultural or social identity of that natural person.</p>
@@ -83,7 +84,7 @@ Website: heinze-media.com</p>
 #### 7. Newsletter-Tracking
 <p>The newsletter of the Heinze Media contains so-called tracking pixels. A tracking pixel is a miniature graphic embedded in such e-mails, which are sent in HTML format to enable log file recording and analysis. This allows a statistical analysis of the success or failure of online marketing campaigns. Based on the embedded tracking pixel, the Heinze Media may see if and when an e-mail was opened by a data subject, and which links in the e-mail were called up by data subjects.</p>
 <p>Such personal data collected in the tracking pixels contained in the newsletters are stored and analyzed by the controller in order to optimize the shipping of the newsletter, as well as to adapt the content of future newsletters even better to the interests of the data subject. These personal data will not be passed on to third parties. Data subjects are at any time entitled to revoke the respective separate declaration of consent issued by means of the double-opt-in procedure. After a revocation, these personal data will be deleted by the controller. The Heinze Media automatically regards a withdrawal from the receipt of the newsletter as a revocation.</p>
-#### 8. Contact possibility via the website 
+#### 8. Contact possibility via the website
 <p>The website of the Heinze Media contains information that enables a quick electronic contact to our enterprise, as well as direct communication with us, which also includes a general address of the so-called electronic mail (e-mail address). If a data subject contacts the controller by e-mail or via a contact form, the personal data transmitted by the data subject are automatically stored. Such personal data transmitted on a voluntary basis by a data subject to the data controller are stored for the purpose of processing or contacting the data subject. There is no transfer of this personal data to third parties.</p>
 #### 9. Routine erasure and blocking of personal data
 <p>The data controller shall process and store the personal data of the data subject only for the period necessary to achieve the purpose of storage, or as far as this is granted by the European legislator or other legislators in laws or regulations to which the controller is subject to.</p>
@@ -108,11 +109,11 @@ Website: heinze-media.com</p>
 <p>Furthermore, the data subject shall have a right to obtain information as to whether personal data are transferred to a third country or to an international organisation. Where this is the case, the data subject shall have the right to be informed of the appropriate safeguards relating to the transfer.</p>
 <p>If a data subject wishes to avail himself of this right of access, he or she may, at any time, contact any employee of the controller.</p>
 </li>
-<li>#### c) Right to rectification 
+<li>#### c) Right to rectification
 <p>Each data subject shall have the right granted by the European legislator to obtain from the controller without undue delay the rectification of inaccurate personal data concerning him or her. Taking into account the purposes of the processing, the data subject shall have the right to have incomplete personal data completed, including by means of providing a supplementary statement.</p>
 <p>If a data subject wishes to exercise this right to rectification, he or she may, at any time, contact any employee of the controller.</p></li>
 <li>
-#### d) Right to erasure (Right to be forgotten) 
+#### d) Right to erasure (Right to be forgotten)
 <p>Each data subject shall have the right granted by the European legislator to obtain from the controller the erasure of personal data concerning him or her without undue delay, and the controller shall have the obligation to erase personal data without undue delay where one of the following grounds applies, as long as the processing is not necessary: </p>
 <ul>
 <li>The personal data are no longer necessary in relation to the purposes for which they were collected or otherwise processed.</li>
@@ -153,7 +154,7 @@ Website: heinze-media.com</p>
 <p>If the decision (1) is necessary for entering into, or the performance of, a contract between the data subject and a data controller, or (2) it is based on the data subject's explicit consent, the Heinze Media shall implement suitable measures to safeguard the data subject's rights and freedoms and legitimate interests, at least the right to obtain human intervention on the part of the controller, to express his or her point of view and contest the decision.</p>
 <p>If the data subject wishes to exercise the rights concerning automated individual decision-making, he or she may, at any time, contact any employee of the Heinze Media.</p>
 </li>
-<li>#### i) Right to withdraw data protection consent 
+<li>#### i) Right to withdraw data protection consent
 <p>Each data subject shall have the right granted by the European legislator to withdraw his or her consent to processing of his or her personal data at any time. </p>
 <p>If the data subject wishes to exercise the right to withdraw the consent, he or she may, at any time, contact any employee of the Heinze Media.</p>
 </li>
@@ -170,7 +171,7 @@ Website: heinze-media.com</p>
 <p>In addition, the data subject has the possibility of objecting to a collection of data relating to a use of this Internet site that are generated by Matomo as well as the processing of these data by Matomo and the chance to preclude any such. For this, the data subject must set a "Do Not Track" option in the browser.</p>
 <p>With each setting of the opt-out cookie, however, there is the possibility that the websites of the controller are no longer fully usable for the data subject.</p>
 <p>Further information and the applicable data protection provisions of Matomo may be retrieved under https://matomo.org/privacy/.</p>
-#### 13. Legal basis for the processing 
+#### 13. Legal basis for the processing
 <p>Art. 6(1) lit. a GDPR serves as the legal basis for processing operations for which we obtain consent for a specific processing purpose. If the processing of personal data is necessary for the performance of a contract to which the data subject is party, as is the case, for example, when processing operations are necessary for the supply of goods or to provide any other service, the processing is based on Article 6(1) lit. b GDPR. The same applies to such processing operations which are necessary for carrying out pre-contractual measures, for example in the case of inquiries concerning our products or services. Is our company subject to a legal obligation by which processing of personal data is required, such as for the fulfillment of tax obligations, the processing is based on Art. 6(1) lit. c GDPR.
 In rare cases, the processing of personal data may be necessary to protect the vital interests of the data subject or of another natural person. This would be the case, for example, if a visitor were injured in our company and his name, age, health insurance data or other vital information would have to be passed on to a doctor, hospital or other third party. Then the processing would be based on Art. 6(1) lit. d GDPR.
 Finally, processing operations could be based on Article 6(1) lit. f GDPR. This legal basis is used for processing operations which are not covered by any of the abovementioned legal grounds, if processing is necessary for the purposes of the legitimate interests pursued by our company or by a third party, except where such interests are overridden by the interests or fundamental rights and freedoms of the data subject which require protection of personal data. Such processing operations are particularly permissible because they have been specifically mentioned by the European legislator. He considered that a legitimate interest could be assumed if the data subject is a client of the controller (Recital 47 Sentence 2 GDPR).
@@ -179,7 +180,7 @@ Finally, processing operations could be based on Article 6(1) lit. f GDPR. This 
 <p>Where the processing of personal data is based on Article 6(1) lit. f GDPR our legitimate interest is to carry out our business in favor of the well-being of all our employees and the shareholders.</p>
 #### 15. Period for which the personal data will be stored
 <p>The criteria used to determine the period of storage of personal data is the respective statutory retention period. After expiration of that period, the corresponding data is routinely deleted, as long as it is no longer necessary for the fulfillment of the contract or the initiation of a contract.</p>
-#### 16. Provision of personal data as statutory or contractual requirement; Requirement necessary to enter into a contract; Obligation of the data subject to provide the personal data; possible consequences of failure to provide such data 
+#### 16. Provision of personal data as statutory or contractual requirement; Requirement necessary to enter into a contract; Obligation of the data subject to provide the personal data; possible consequences of failure to provide such data
 <p>We clarify that the provision of personal data is partly required by law (e.g. tax regulations) or can also result from contractual provisions (e.g. information on the contractual partner).
 
 Sometimes it may be necessary to conclude a contract that the data subject provides us with personal data, which must subsequently be processed by us. The data subject is, for example, obliged to provide us with personal data when our company signs a contract with him or her. The non-provision of the personal data would have the consequence that the contract with the data subject could not be concluded.
