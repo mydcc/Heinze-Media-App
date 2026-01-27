@@ -7,4 +7,3 @@ published: true
 ---
 
 Bitte nutzen Sie das Kontaktformular oder schreiben Sie uns direkt per E-Mail an <a href="mailto:contact@heinze-media.com">contact@heinze-media.com</a>.
-
