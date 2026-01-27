@@ -6,15 +6,16 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
-		"preview": "vite preview",
+		"preview": "vite preview --outDir build",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"check:content": "ts-node scripts/check-content.ts"
+		"check:content": "npx tsx scripts/check-content.ts",
+		"check:links": "npx tsx scripts/check-links.ts",
+		"fix:content": "npx tsx scripts/fix-frontmatter.ts"
 	},
 	"devDependencies": {
 		"@inlang/paraglide-js": "^2.9.1",
-		"@inlang/paraglide-sveltekit": "^0.16.1",
+		"@inlang/paraglide-sveltekit": "^1.0.0-beta.7",
 		"@sveltejs/adapter-auto": "^7.0.0",
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "^2.49.1",

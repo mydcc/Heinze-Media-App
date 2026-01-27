@@ -131,9 +131,9 @@
 
 <!-- HERO: Personal Introduction with Portrait -->
 <header
-    class="pt-40 pb-20 md:pt-56 md:pb-32 section-white overflow-hidden relative"
+    class="pt-52 pb-20 md:pt-64 md:pb-32 section-white overflow-hidden relative"
 >
-    <div class="absolute inset-0 opacity-10 pointer-events-none">
+    <div class="absolute inset-0 opacity-15 pointer-events-none">
         <div
             class="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--color-accent)_0%,transparent_50%)]"
         ></div>
@@ -164,9 +164,12 @@
                             loading="eager"
                         />
                     </picture>
-                    <!-- Theme-Colored Overlay -->
+                    <!-- Theme-Colored Overlay (Dynamic) -->
                     <div
-                        class="absolute inset-0 bg-gradient-to-br from-accent/30 via-accent/10 to-transparent pointer-events-none opacity-100 group-hover:opacity-0 transition-opacity duration-700 rounded-[32px] z-10"
+                        class="absolute inset-0 bg-accent/20 mix-blend-color pointer-events-none opacity-60 group-hover:opacity-0 transition-opacity duration-700 rounded-[32px] z-10"
+                    ></div>
+                    <div
+                        class="absolute inset-0 bg-gradient-to-t from-bg-surface/80 via-transparent to-transparent pointer-events-none z-10"
                     ></div>
                     <!-- Floating Badge -->
                     <div

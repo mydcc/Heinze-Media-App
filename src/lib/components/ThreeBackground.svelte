@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import * as THREE from "three";
+    import { themeState } from "$lib/state/theme.svelte";
 
     let { scrollProgress = $bindable(0) }: { scrollProgress?: number } =
         $props();
@@ -23,13 +24,57 @@
     }
 
     onMount(() => {
+        // Scene Storage for reactivity
+        let scene: THREE.Scene;
+        let ambientLight: THREE.AmbientLight;
+        let light1: THREE.DirectionalLight;
+        let light2: THREE.DirectionalLight;
+        let sphereMaterial: THREE.MeshPhysicalMaterial;
+        let gridHelper: THREE.GridHelper;
+
+        const updateColors = () => {
+            if (!scene) return;
+
+            const accentColor = getThreeColor("--color-accent");
+            const bgDark = getThreeColor("--clr-dark");
+            const textMuted = getThreeColor("--text-muted");
+            const highlightPrimary = getThreeColor("--highlight-primary");
+
+            // Update Fog
+            if (scene.fog instanceof THREE.FogExp2) {
+                scene.fog.color.copy(bgDark);
+            }
+
+            // Update Lights
+            if (ambientLight) ambientLight.color.copy(textMuted);
+            if (light1) light1.color.copy(accentColor);
+            if (light2) light2.color.copy(highlightPrimary);
+
+            // Update Materials
+            if (sphereMaterial) {
+                sphereMaterial.color.copy(accentColor);
+                sphereMaterial.emissive.copy(accentColor);
+            }
+
+            // Update Grid
+            if (gridHelper) {
+                // GridHelper colors are less easy to update directly,
+                // but we can access the material
+                const gridMaterial =
+                    gridHelper.material as THREE.LineBasicMaterial;
+                gridMaterial.color.copy(accentColor);
+                gridMaterial.transparent = true;
+                gridMaterial.opacity = 0.5;
+            }
+        };
+
         // Get dynamic theme colors
         const accentColor = getCSSColor("--color-accent");
         const bgDark = getCSSColor("--clr-dark") || "#08103f";
         const bgSurface = getCSSColor("--bg-surface") || "#05081a";
 
         // Scene Setup
-        const scene = new THREE.Scene();
+        scene = new THREE.Scene();
         const fogColor = new THREE.Color(bgDark);
         scene.fog = new THREE.FogExp2(fogColor.getHex(), 0.008);
 
@@ -58,7 +103,7 @@
         const gridSize = 2000;
         const gridDivisions = 2000;
         const accentThreeColor = getThreeColor("--color-accent");
-        const gridHelper = new THREE.GridHelper(
+        gridHelper = new THREE.GridHelper(
             gridSize,
             gridDivisions,
             accentThreeColor,
@@ -70,7 +115,7 @@
         // Glass Sphere (Glänzend, Metallisch, Halbtransparent)
         const sphereGeometry = new THREE.SphereGeometry(2, 64, 64);
         const sphereAccentColor = getThreeColor("--color-accent");
-        const sphereMaterial = new THREE.MeshPhysicalMaterial({
+        sphereMaterial = new THREE.MeshPhysicalMaterial({
             color: sphereAccentColor,
             emissive: sphereAccentColor,
             emissiveIntensity: 0.4,
@@ -93,7 +138,7 @@
 
         // Licht 1 (Links) - Direktionales Licht mit Schatten
         const light1Color = getThreeColor("--color-accent");
-        const light1 = new THREE.DirectionalLight(light1Color, 1);
+        light1 = new THREE.DirectionalLight(light1Color, 1);
         light1.position.set(-5, 5, 5);
         light1.castShadow = false;
         light1.shadow.mapSize.width = 2048;
@@ -109,7 +154,7 @@
 
         // Licht 2 (Rechts) - Direktionales Licht mit Schatten
         const light2Color = getThreeColor("--highlight-primary");
-        const light2 = new THREE.DirectionalLight(light2Color, 1);
+        light2 = new THREE.DirectionalLight(light2Color, 1);
         light2.position.set(5, 3, 3);
         light2.castShadow = false;
         light2.shadow.mapSize.width = 2048;
@@ -125,7 +170,7 @@
 
         // Ambient Light für bessere Sichtbarkeit
         const ambientColor = getThreeColor("--text-muted");
-        const ambientLight = new THREE.AmbientLight(ambientColor.getHex(), 0.7);
+        ambientLight = new THREE.AmbientLight(ambientColor.getHex(), 0.7);
         scene.add(ambientLight);
 
         // Animation basierend auf Section Scroll Progress (von prop)
@@ -221,6 +266,16 @@
         }
 
         animate();
+
+        // Reactive Theme Updates via Svelte 5 Rune
+        $effect(() => {
+            // Subscribe to theme State changes
+            themeState.theme;
+            themeState.mode;
+
+            // Apply new colors to Three.js objects
+            updateColors();
+        });
 
         // Resize Handler
         function handleResize() {

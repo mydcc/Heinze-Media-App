@@ -1,7 +1,8 @@
 <script lang="ts">
     import ThemeToggle from "$lib/components/ThemeToggle.svelte";
-    // Svelte 5 Runes: direkt im <script> verwenden, nicht importieren
     import { page as pageStore } from "$app/stores";
+    import * as m from "$lib/paraglide/messages.js";
+    import { i18n } from "$lib/i18n";
 
     type Link = {
         href: string;
@@ -10,13 +11,13 @@
     };
 
     const { links: propLinks } = $props<{ links?: Link[] }>();
-    const defaultLinks: Link[] = [
-        { href: "/", label: "Home" },
-        { href: "/about", label: "About" },
-        { href: "/work", label: "Work" },
+    const defaultLinks: Link[] = $derived([
+        { href: i18n.resolveRoute("/"), label: m.header_home() },
+        { href: i18n.resolveRoute("/about"), label: m.header_about() },
+        { href: i18n.resolveRoute("/work"), label: m.header_work() },
         {
-            href: "/services",
-            label: "XR/AR/VR",
+            href: i18n.resolveRoute("/services"),
+            label: m.header_services(),
             submenu: [
                 {
                     href: "https://xrpress.org",
@@ -25,14 +26,13 @@
                 },
             ],
         },
-        { href: "/blog", label: "News" },
-        { href: "/contact", label: "Contact" },
-    ];
+        { href: i18n.resolveRoute("/blog"), label: m.header_news() },
+        { href: i18n.resolveRoute("/contact"), label: m.header_contact() },
+    ]);
     function getLinks() {
         return propLinks && propLinks.length > 0 ? propLinks : defaultLinks;
     }
     const mobileMenuOpen = $state(false);
-    // Svelte store auto-subscription: $pageStore
 </script>
 
 <header

@@ -6,6 +6,8 @@
     let HeroScene: any;
     let mounted = false;
 
+    export let data;
+
     onMount(async () => {
         // Dynamically import Three.js scene only when component is mounted
         const { default: Scene } = await import(
@@ -16,9 +18,12 @@
     });
 
     const seoConfig: SEOConfig = {
-        title: "HEINZE MEDIA - Metaverse, XR & 3D Web Solutions",
+        title:
+            data.homepage?.metadata?.title ||
+            "HEINZE MEDIA - Metaverse, XR & 3D Web Solutions",
         description:
-            "Wir erschaffen immersive 3D-Web-Erlebnisse, XR-Studios und digitale Zwillinge. Ihr Partner für die nächste Generation von Web-Erlebnissen.",
+            data.homepage?.metadata?.description ||
+            "Wir erschaffen immersive 3D-Web-Erlebnisse, XR-Studios und digitale Zwillinge.",
         keywords: [
             "Metaverse",
             "XR Studio",
@@ -35,7 +40,11 @@
     };
 </script>
 
-<SEOHead config={seoConfig} />
+<SEOHead
+    title={seoConfig.title}
+    description={seoConfig.description}
+    ogImage={seoConfig.image}
+/>
 
 <svelte:head>
     <title>{seoConfig.title}</title>
@@ -54,8 +63,10 @@
     {/if}
 
     <!-- Content Overlay -->
-    <div class="absolute inset-0 flex items-center justify-center">
-        <div class="container mx-auto px-6 text-center">
+    <div
+        class="absolute inset-0 flex items-center justify-center pointer-events-none"
+    >
+        <div class="container mx-auto px-6 text-center pointer-events-auto">
             <h1
                 class="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-white drop-shadow-lg"
             >
@@ -73,8 +84,18 @@
                 digitale Zwillinge für Ihr Unternehmen.
             </p>
             <div class="flex flex-col md:flex-row gap-4 justify-center">
-                <a href="/work" class="btn-primary"> View Our Work </a>
-                <a href="/contact" class="btn-secondary"> Contact Us </a>
+                <a
+                    href="/work"
+                    class="px-8 py-3 bg-cyan-500 text-slate-900 font-bold rounded hover:bg-white transition-colors shadow-lg hover:shadow-xl"
+                >
+                    View Our Work
+                </a>
+                <a
+                    href="/contact"
+                    class="px-8 py-3 border-2 border-cyan-400 text-white font-bold rounded hover:bg-cyan-500/20 transition-colors shadow-lg"
+                >
+                    Contact Us
+                </a>
             </div>
         </div>
     </div>
@@ -84,30 +105,39 @@
 <section class="py-20 bg-brand-dark">
     <div class="container mx-auto px-6 grid md:grid-cols-3 gap-12 text-center">
         <div
-            class="p-6 border border-white/10 hover:border-brand-cyan/60 bg-white/0 hover:bg-white/2 rounded-xl shadow-none hover:shadow-md transition-all duration-200"
+            class="p-6 border border-white/5 rounded-xl hover:border-brand-cyan/30 transition-colors"
         >
             <h3 class="text-2xl font-bold mb-4">XR Studios</h3>
-            <p class="text-white/90">
+            <p class="text-white/60">
                 Virtuelle Produktionsstudios für Broadcast und Events auf
                 höchstem Niveau.
             </p>
         </div>
         <div
-            class="p-6 border border-white/10 hover:border-brand-cyan/60 bg-white/0 hover:bg-white/2 rounded-xl shadow-none hover:shadow-md transition-all duration-200"
+            class="p-6 border border-white/5 rounded-xl hover:border-brand-cyan/30 transition-colors"
         >
             <h3 class="text-2xl font-bold mb-4">Metaverse</h3>
-            <p class="text-white/90">
+            <p class="text-white/60">
                 Dezentrale, browser-basierte 3D-Welten ohne App-Download.
             </p>
         </div>
         <div
-            class="p-6 border border-white/10 hover:border-brand-cyan/60 bg-white/0 hover:bg-white/2 rounded-xl shadow-none hover:shadow-md transition-all duration-200"
+            class="p-6 border border-white/5 rounded-xl hover:border-brand-cyan/30 transition-colors"
         >
             <h3 class="text-2xl font-bold mb-4">3D Web Apps</h3>
-            <p class="text-white/90">
+            <p class="text-white/60">
                 Interaktive Produkt-Konfiguratoren und Showrooms mit Svelte &
                 Three.js.
             </p>
         </div>
     </div>
 </section>
+
+<!-- Dynamic Content from Markdown -->
+{#if data.homepage?.html}
+    <section class="py-20 bg-brand-dark">
+        <div class="container mx-auto px-6 prose prose-invert max-w-4xl">
+            {@html data.homepage.html}
+        </div>
+    </section>
+{/if}

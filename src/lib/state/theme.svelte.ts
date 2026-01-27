@@ -8,7 +8,7 @@ export type ThemeOverride = 'auto' | 'manual';
 const THEME_KEY = 'hm-theme';
 const MODE_KEY = 'hm-mode';
 const OVERRIDE_KEY = 'hm-theme-override';
-const VALID_THEMES: Theme[] = ['meteorite', 'steel', 'ever', 'insight'];
+const VALID_THEMES: Theme[] = ['meteorite', 'steel', 'ever', 'insight', 'gold'];
 const VALID_MODES: Mode[] = ['light', 'dark'];
 
 class ThemeStore {
@@ -32,7 +32,8 @@ class ThemeStore {
             'meteorite': 'Meteorite (Tech)',
             'steel': 'Steel (Pro)',
             'ever': 'Ever (Free)',
-            'insight': 'Insight (Offer)'
+            'insight': 'Insight (Offer)',
+            'gold': 'Gold (Luxury)'
         };
         return themeLabels[this.theme] || this.theme;
     }

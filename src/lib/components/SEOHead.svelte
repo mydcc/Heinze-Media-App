@@ -16,10 +16,10 @@
     }: Props = $props();
 
     const siteUrl = "https://heinze-media.com";
-    const imageUrl = ogImage
-        ? `${siteUrl}${ogImage}`
-        : `${siteUrl}/images/og-default.png`;
-    const currentUrl = $page.url.href;
+    const imageUrl = $derived(
+        ogImage ? `${siteUrl}${ogImage}` : `${siteUrl}/images/og-default.png`,
+    );
+    const currentUrl = $derived($page.url.href);
 </script>
 
 <svelte:head>

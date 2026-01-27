@@ -6,6 +6,7 @@
         { id: "steel", label: "Steel Pro", color: "#334eff" },
         { id: "ever", label: "Ever Free", color: "#0da49a" },
         { id: "insight", label: "Insight", color: "#ee485f" },
+        { id: "gold", label: "Gold Luxury", color: "#FFD700" },
     ];
 </script>
 

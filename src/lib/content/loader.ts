@@ -47,19 +47,28 @@ function parseFrontmatter(markdown: string): [ContentMetadata, string] {
  */
 export function loadContentBySlug(
     type: 'pages' | 'blog' | 'work',
-    slug: string
+    slug: string,
+    lang: string = 'en'
 ): ContentItem | null {
-    // Primary location
-    const filePath = path.join(CONTENT_DIR, type, `${slug}.md`);
+    // Primary location with language
+    const localizedPath = path.join(CONTENT_DIR, type, `${slug}.${lang}.md`);
+    // Default location (fallback)
+    const defaultPath = path.join(CONTENT_DIR, type, `${slug}.md`);
 
-    // Fallback: for 'work' items some content lives under 'pages'
-    const fallbackPath = type === 'work' ? path.join(CONTENT_DIR, 'pages', `${slug}.md`) : null;
+    // Fallback logic for 'work' items
+    const fallbackLocalizedPath = type === 'work' ? path.join(CONTENT_DIR, 'pages', `${slug}.${lang}.md`) : null;
+    const fallbackDefaultPath = type === 'work' ? path.join(CONTENT_DIR, 'pages', `${slug}.md`) : null;
 
     let markdownPath = null;
-    if (fs.existsSync(filePath)) {
-        markdownPath = filePath;
-    } else if (fallbackPath && fs.existsSync(fallbackPath)) {
-        markdownPath = fallbackPath;
+
+    if (fs.existsSync(localizedPath)) {
+        markdownPath = localizedPath;
+    } else if (fs.existsSync(defaultPath)) {
+        markdownPath = defaultPath;
+    } else if (fallbackLocalizedPath && fs.existsSync(fallbackLocalizedPath)) {
+        markdownPath = fallbackLocalizedPath;
+    } else if (fallbackDefaultPath && fs.existsSync(fallbackDefaultPath)) {
+        markdownPath = fallbackDefaultPath;
     }
 
     if (!markdownPath) return null;

@@ -5,5 +5,13 @@
     "header_work": "Work",
     "header_services": "XR/AR/VR",
     "header_news": "News",
-    "header_contact": "Contact"
+    "header_contact": "Contact",
+    "footer_products": "Products",
+    "footer_solutions": "Solutions",
+    "footer_resources": "Resources",
+    "footer_company": "Company",
+    "footer_legal": "Legal & Docs",
+    "footer_description": "Your partner for immersive 3D-web-experiences, metaverse solutions and next-generation XR studios.",
+    "footer_tagline": "Immersive Tech & XR Solutions",
+    "footer_cta_label": "Subscribe to our newsletter"
 }

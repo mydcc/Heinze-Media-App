@@ -5,7 +5,7 @@
  * Kann erweitert werden ohne die Store-Logik zu beeinflussen.
  */
 
-export type Theme = 'meteorite' | 'steel' | 'ever' | 'insight';
+export type Theme = 'meteorite' | 'steel' | 'ever' | 'insight' | 'gold';
 
 /**
  * Kategorie-Hierarchie: Definiert, welches Theme für welche Route gilt.

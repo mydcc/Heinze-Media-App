@@ -19,7 +19,7 @@
     );
 </script>
 
-<SEOHead config={seoConfig} />
+<SEOHead title={seoConfig.title} description={seoConfig.description} />
 
 <svelte:head>
     <title>{seoConfig.title}</title>

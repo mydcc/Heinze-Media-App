@@ -1,5 +1,8 @@
 <script lang="ts">
     import ThemeSwitcher from "$lib/components/ThemeSwitcher.svelte";
+    import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
+    import * as m from "$lib/paraglide/messages.js";
+    import { i18n } from "$lib/i18n";
     // Svelte 5 Runes: direkt im <script> verwenden, nicht importieren
     import { adminState } from "$lib/state/admin.svelte";
 </script>
@@ -26,11 +29,10 @@
                 <p
                     class="text-xs text-text-muted uppercase tracking-widest mb-4 font-semibold"
                 >
-                    Immersive Tech & XR Solutions
+                    {m.footer_tagline()}
                 </p>
                 <p class="text-sm text-text-main leading-relaxed mb-8 max-w-xs">
-                    Ihr Partner für immersive 3D-Web-Erlebnisse,
-                    Metaverse-Lösungen und XR-Studios der nächsten Generation.
+                    {m.footer_description()}
                 </p>
 
                 <!-- Social Media Icons -->
@@ -74,7 +76,10 @@
                 </div>
 
                 <!-- Theme Switcher -->
-                <ThemeSwitcher />
+                <div class="flex flex-col gap-6 mt-8">
+                    <ThemeSwitcher />
+                    <LanguageSwitcher />
+                </div>
             </div>
 
             <!-- Column 2: Products & Services -->
@@ -82,7 +87,7 @@
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
-                    Produkte
+                    {m.footer_products()}
                 </h4>
                 <ul class="space-y-3 text-sm">
                     <li>
@@ -133,7 +138,7 @@
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
-                    Lösungen
+                    {m.footer_solutions()}
                 </h4>
                 <ul class="space-y-3 text-sm">
                     <li>
@@ -184,7 +189,7 @@
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
-                    Ressourcen
+                    {m.footer_resources()}
                 </h4>
                 <ul class="space-y-3 text-sm">
                     <li>
@@ -245,7 +250,7 @@
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
-                    Unternehmen
+                    {m.footer_company()}
                 </h4>
                 <ul class="space-y-3 text-sm">
                     <li>
@@ -296,7 +301,7 @@
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
-                    Legal & Docs
+                    {m.footer_legal()}
                 </h4>
                 <ul class="space-y-3 text-sm">
                     <li>
@@ -426,6 +431,27 @@
                             Roadmap
                         </a>
                     </li>
+                    <li>
+                        <a
+                            href="/guide"
+                            class="text-accent/80 hover:text-accent transition-colors flex items-center gap-2"
+                        >
+                            <svg
+                                class="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                                />
+                            </svg>
+                            CMS Guide
+                        </a>
+                    </li>
                 </ul>
             </div>
         {/if}
@@ -496,7 +522,7 @@
                         href="#newsletter"
                         class="text-accent text-sm font-semibold hover:text-accent/80 transition-colors inline-flex items-center gap-2"
                     >
-                        Newsletter abonnieren
+                        {m.footer_cta_label()}
                         <svg
                             class="w-4 h-4"
                             fill="none"

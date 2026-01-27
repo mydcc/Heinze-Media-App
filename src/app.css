@@ -317,6 +317,58 @@
     --color-border: #fecdd3;
 }
 
+/* --- THEME 5: GOLD (Luxury / Premium / Exclusive) --- */
+.theme-gold {
+    /* Core */
+    --core-primary: #FFD700;
+    --core-base: #433f65;
+
+    /* Highlighting */
+    --highlight-primary: #ffe55c;
+    --highlight-alt: #fff0a3;
+
+    /* Modes */
+    --clr-dark: #0f0b00;
+    --clr-light: #fffdf5;
+
+    /* Gradient */
+    --grad-light: #d4Af37;
+    --grad-dark: #0f0b00;
+
+    /* Semantic Mapping */
+    --bg-body: var(--clr-dark);
+    --bg-surface: #0a0800;
+    --bg-surface-2: #1a1500;
+    --bg-primary: radial-gradient(farthest-side at top, var(--grad-light), var(--grad-dark));
+    --bg-footer: var(--clr-dark);
+
+    --text-main: var(--clr-light);
+    --text-muted: var(--highlight-primary);
+    --text-tertiary: var(--core-base);
+
+    --color-accent: var(--core-primary);
+    --color-border: #d4Af37;
+
+    /* Buttons */
+    --btn-primary-bg: var(--core-primary);
+    --btn-primary-text: #000000;
+    --btn-secondary-bg: var(--core-base);
+    --btn-secondary-text: #ffffff;
+}
+
+.theme-gold[data-mode="light"] {
+    --bg-body: #fffdf5;
+    --bg-surface: #ffffff;
+    --bg-surface-2: #fff9e6;
+    --bg-primary: #fff9e6;
+    --bg-footer: var(--clr-dark);
+
+    --text-main: #2c2400;
+    --text-muted: #665c33;
+
+    --color-border: #ffe066;
+}
+
 /* =========================================
    3. TAILWIND CONFIGURATION (@theme)
    ========================================= */

@@ -1,38 +1,58 @@
 ---
 title: "About"
-date: "Tue, 30 Apr 2024 05:34:44 +0000"
-slug: "about"
+date: "2024-04-30"
+layout: "default"
 published: true
+blocks:
+  - type: "hero"
+    data:
+      title: "Building Your Digital Galaxy"
+      subtitle: "From merchant to marketer to XR specialist. I don't just build 3D spaces—I create interactive worlds that drive measurable business results."
+      theme: "dark"
+      image: "/images/about/patrick-heinze-portrait.jpg"
+  - type: "sectionheader"
+    data:
+      title: "The Next Generation Web"
+      tagline: "My Mission"
+      align: "center"
+  - type: "features"
+    data:
+      items:
+        - title: "3D"
+          description: "Interactive Worlds"
+          icon: "🌐"
+        - title: "∞"
+          description: "Decentralized"
+          icon: "🔗"
+        - title: "★"
+          description: "Brand-Compliant"
+          icon: "🎨"
+  - type: "process"
+    data:
+      items:
+        - title: "Foundation"
+          text: "Management Assistant in IT-Systems (2000-2004)"
+        - title: "First 3D Game"
+          text: "Educational game with Blender (2009)"
+        - title: "Computer Science"
+          text: "Studies & Certification (2011-2012)"
+        - title: "Marketing Expert"
+          text: "Certified Online Marketing Manager (2018)"
+  - type: "techstack"
+    data:
+      items:
+        - name: "Mr. Metaverse"
+          category: "Platform"
+          desc: "Enterprise Edition"
+        - name: "Blender"
+          category: "3D Creation"
+          desc: "GameLogic Development"
+        - name: "Google Cloud"
+          category: "AI/ML"
+          desc: "Cloud Services"
+  - type: "cta"
+    data:
+      title: "Let's Build Your Galaxy"
+      subtitle: "If you are ready to transform your digital presence, let's talk."
+      buttonText: "START YOUR PROJECT"
 ---
-
-# Play Forward
-
-### A collaborative and strategic partner
-
-When you're ready to use technology to drive your business forward, you need the right partner. We drive business growth for our clients through interactive 3D sales tools, engaged employees through VR and immersive corporate experiences, training and developed web, mobile and app platforms.
-
-We have the proven team and skills you need to create technology experiences that set your business apart. At HS, we work with our partners to find the right mix of technology, design, content and business strategy.
-
-## Heinze Media
-
-We love technology and design
-
-HM harnesses the power of technology to drive real business results. Born from a combination of video game development DNA and a virtual user experience mindset, our team provides a playful and results-oriented approach to the challenge of immersive business experiences. HM's solutions are used in employee training, product marketing, sales and BD enablement, team collaboration, and virtual and hybrid events
----
-
-title: "About"
-date: "Tue, 30 Apr 2024 05:34:44 +0000"
-slug: "about"
-published: true
-
----
-
-# Play Forward
-
-### A collaborative and strategic partner
-
-<p>When you're ready to use technology to drive your business forward, you need the right partner. We drive business growth for our clients through interactive 3D sales tools, engaged employees through VR and immersive corporate experiences, training and developed web, mobile and app platforms.</p>
-<p>We have the proven team and skills you need to create technology experiences that set your business apart. At HS, we work with our partners to find the right mix of technology, design, content and business strategy.</p>
-## Heinze Media<p>We love technology and design</p>
-<p>HM harnesses the power of technology to drive real business results. Born from a combination of video game development DNA and a virtual user experience mindset, our team provides a playful and results-oriented approach to the challenge of immersive business experiences. HM's solutions are used in employee training, product marketing, sales and BD enablement, team collaboration, and virtual and hybrid events.</p>
-<p>HM designs and develops apps and platforms that engage visitors, drive business growth through interactive 3D sales enablement tools. We produce live-streamed content for workforces in VR.</p>

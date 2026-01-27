@@ -1,0 +1,69 @@
+
+> heinze-media-app@0.0.1 dev
+> vite dev
+
+05:35:36 [vite-plugin-svelte] The following plugins use the deprecated 'plugin.api.sveltePreprocess' field: @inlang/paraglide-sveltekit/vite/register-preprocessor
+	Please contact their maintainers and ask them to use a vite plugin transform instead.
+	See https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/advanced-usage.md#transform-svelte-files-with-vite-plugins for more information.
+	
+Using existing cloned repo
+ℹ [paraglide] Compiling Messagesinto /home/pat/Dokumente/GitHub/Heinze Media App/src/lib/paraglide/
+
+  VITE v7.3.1  ready in 2741 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://10.66.108.148:5173/
+  ➜  Network: http://172.17.0.1:5173/
+  ➜  press h + enter to show help
+The glob option "as" has been deprecated in favour of "query". Please update `as: 'raw'` to `query: '?raw', import: 'default'`.
+[DEBUG-ROUTE] /contact load started
+[DEBUG] getPage called for 'contact'
+05:38:11 [vite-plugin-svelte] src/lib/components/SEOHead.svelte:19:21 This reference only captures the initial value of `ogImage`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally
+05:38:11 [vite-plugin-svelte] src/lib/components/SEOHead.svelte:20:23 This reference only captures the initial value of `ogImage`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally
+05:38:12 [vite-plugin-svelte] src/lib/components/SEOHead.svelte:19:21 This reference only captures the initial value of `ogImage`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally
+05:38:12 [vite-plugin-svelte] src/lib/components/SEOHead.svelte:20:23 This reference only captures the initial value of `ogImage`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally
+[DEBUG-ROUTE] /about load started
+[DEBUG] getPage called for 'about'
+[DEBUG-ROUTE] /contact load started
+[DEBUG] getPage called for 'contact'
+05:50:13 [vite] (client) hmr update /src/app.css
+05:50:13 [vite] (ssr) page reload src/lib/server/pages.ts
+05:50:21 [vite] (client) hmr update /src/app.css
+05:50:21 [vite] (ssr) page reload src/lib/server/pages.ts
+05:51:59 [vite] (client) hmr update /src/app.css
+05:51:59 [vite] (ssr) page reload src/routes/[slug]/+page.server.ts
+05:52:09 [vite] (client) hmr update /src/routes/[slug]/+page.svelte, /src/app.css
+05:52:09 [vite] (ssr) page reload src/routes/[slug]/+page.svelte
+05:52:21 [vite] (ssr) page reload src/content/pages/guide.md
+05:52:37 [vite] (client) hmr update /src/lib/components/Footer.svelte, /src/app.css
+05:52:37 [vite] (ssr) page reload src/lib/components/Footer.svelte
+05:52:45 [vite] (client) hmr update /src/app.css
+05:52:51 [vite] (client) hmr update /src/lib/components/cms/Hero.svelte, /src/app.css
+05:52:57 [vite] (client) hmr update /src/app.css
+05:53:09 [vite] (client) hmr update /src/app.css
+05:53:09 [vite] (ssr) page reload src/content/pages/about.md
+05:53:15 [vite] (client) hmr update /src/app.css
+05:53:15 [vite] (ssr) page reload src/content/pages/contact.md
+05:53:20 [vite] (client) hmr update /src/app.css
+05:53:20 [vite] (ssr) page reload src/routes/about/+page.server.ts
+05:53:20 [vite] (client) hmr update /src/app.css
+05:53:20 [vite] (ssr) page reload src/routes/about/+page.svelte.backup
+05:53:20 [vite] (client) hmr update /src/app.css
+05:53:20 [vite] (ssr) page reload src/routes/contact/+page.server.ts
+05:53:20 [vite] (client) hmr update /src/app.css
+05:53:20 [vite] (ssr) page reload src/routes/about/+page.svelte
+05:53:20 [vite] (client) hmr update /src/app.css
+05:53:20 [vite] (ssr) page reload src/routes/contact/+page.svelte
+05:53:20 [vite] (client) page reload .svelte-kit/generated/client/nodes/4.js
+05:53:20 [vite] (client) page reload .svelte-kit/generated/client/nodes/5.js
+05:53:20 [vite] (client) page reload .svelte-kit/generated/client/nodes/9.js
+05:53:20 [vite] (client) page reload .svelte-kit/generated/client/nodes/18.js
+05:53:20 [vite] (client) page reload .svelte-kit/generated/client/nodes/20.js
+05:53:20 [vite] (client) page reload .svelte-kit/generated/client/app.js
+The glob option "as" has been deprecated in favour of "query". Please update `as: 'raw'` to `query: '?raw', import: 'default'`.
+06:02:23 [vite] (client) hmr update /src/app.css
+06:02:23 [vite] (ssr) page reload .github/agents/Webdesigner.agent.md

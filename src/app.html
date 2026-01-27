@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="%lang%">
 
 <head>
 	<meta charset="utf-8" />
@@ -22,11 +22,23 @@
 			}
 
 			/**
-			 * Theme Resolution: IMMER Route-basiert
+			 * Theme Resolution: IMMER Route-basiert, außer wenn manueller Override vorhanden
 			 */
 			function resolveInitialTheme() {
+				// 1. Check for manual override in LocalStorage (set by ThemeSwitcher)
+				var manualTheme = localStorage.getItem('hm-theme');
+				var override = localStorage.getItem('hm-theme-override') || 'auto';
+				
+				if (manualTheme && override === 'manual') {
+					return manualTheme;
+				}
+
+				// 2. Fallback to Route-based Logic
 				var pathname = window.location.pathname || '/';
-				var segment = pathname.split('/').filter(function (s) { return s.length > 0; })[0] || '';
+				// Remove trailing slash and split
+				var cleanPath = pathname.replace(/\/$/, "");
+				var segments = cleanPath.split('/').filter(function (s) { return s.length > 0; });
+				var segment = segments[0] || '';
 
 				var themeMap = {
 					'': 'steel', 'home': 'steel',
@@ -44,13 +56,14 @@
 
 			var theme = resolveInitialTheme();
 			var mode = localStorage.getItem('hm-mode') || getCookie('hm-mode') || 'dark';
+			var override = localStorage.getItem('hm-theme-override') || 'auto';
 
 			var doc = document.documentElement;
+			doc.className = ''; // Reset classes
 			doc.classList.add('theme-' + theme);
 			doc.setAttribute('data-mode', mode);
-			doc.setAttribute('data-theme-override', 'auto');
+			doc.setAttribute('data-theme-override', override);
 			if (mode === 'dark') doc.classList.add('dark');
-			else doc.classList.remove('dark');
 		})();
 	</script>
 	%sveltekit.head%

@@ -1,7 +1,8 @@
 <script lang="ts">
     import SEOHead from "$lib/components/SEOHead.svelte";
-    import HeroModule from "$lib/components/cms/HeroModule.svelte";
+    import BlockRenderer from "$lib/components/cms/BlockRenderer.svelte";
     import HeroContact from "$lib/components/3d/HeroContact.svelte";
+    import HeroModule from "$lib/components/cms/HeroModule.svelte";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
@@ -10,88 +11,106 @@
     const html = $derived(data.html);
     const seoMeta = $derived(data.seoMeta);
     const jsonLD = $derived(data.jsonLD);
-    const isContact = $derived(metadata?.slug === "contact");
+    const blocks = $derived(data.blocks || []);
+    const layout = $derived(metadata?.layout || "default");
+
+    // Animation states
+    let mounted = $state(false);
+    import { onMount } from "svelte";
+    onMount(() => {
+        mounted = true;
+    });
 </script>
 
 <SEOHead
-    title={`
-        ${metadata.title} | Heinze Media
-    `}
+    title={`${metadata.title} | Heinze Media`}
     description={seoMeta.description}
     ogImage={seoMeta.image}
     {jsonLD}
 />
 
-<article class={isContact ? "relative" : ""}>
-    {#if isContact}
-        <!-- Full-page background 3D scene for contact (fixed to viewport) -->
-        <div class="fixed inset-0" style="z-index: 0;">
+{#if layout === "contact"}
+    <div class="relative h-screen w-full overflow-hidden">
+        <!-- Background: Canvas -->
+        <div class="fixed inset-0 z-0">
             <HeroContact heightClass="h-screen" viewMode="full" />
         </div>
-        <div
-            class="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-accent/20 blur-[120px]"
-            style="z-index: 1;"
-        ></div>
 
-        <!-- Content Wrapper: pointer-events transparent, interaktive Elemente explizit aktiviert -->
-        <div class="relative" style="z-index: 10; pointer-events: none;">
-            <!-- Hero Module für Kontaktseite Header (200px) - Jetzt ohne eigene 3D-Szene, da Hintergrund vorhanden -->
-            <div style="pointer-events: auto;">
-                <HeroModule
-                    title={metadata.title}
-                    height="compact"
-                    showScene={false}
-                    backgroundGradient="transparent"
-                    transparentOverlay={true}
-                />
-            </div>
-        </div>
-    {:else}
-        <!-- Standard Header für andere Seiten -->
-        <div class="py-16 md:py-24">
-            <div class="container mx-auto px-6">
-                <div class="max-w-3xl">
-                    <h1
-                        class="text-4xl md:text-5xl font-black text-text-main mb-4"
-                    >
-                        {metadata.title}
-                    </h1>
-                </div>
-            </div>
-        </div>
-    {/if}
-
-    {#if isContact}
-        <!-- Contact Card: Fixed Position, scrollt NICHT mit -->
+        <!-- Floating HUD Overlay -->
         <div
-            class="fixed bottom-16 left-0 right-0 pointer-events-none"
-            style="z-index: 10;"
+            class="absolute inset-0 z-10 pointer-events-none flex flex-col justify-end items-center pb-[148px] transition-all duration-1000 ease-out"
+            class:opacity-0={!mounted}
+            class:translate-y-4={!mounted}
+            class:opacity-100={mounted}
+            class:translate-y-0={mounted}
         >
-            <div class="container mx-auto px-6">
-                <div class="max-w-2xl mx-auto" style="pointer-events: auto;">
-                    <div
-                        class="rounded-2xl border border-border-color/30 bg-bg-body/85 backdrop-blur-lg p-6 text-center shadow-xl"
+            <div
+                class="pointer-events-auto backdrop-blur-2xl bg-bg-body/40 border border-white/10 rounded-2xl px-8 py-6 shadow-[0_0_50px_rgba(0,0,0,0.5)] border-t-white/20 transition-all duration-500 hover:border-accent/40 group"
+            >
+                <div class="text-center">
+                    <p
+                        class="text-[10px] uppercase tracking-[0.4em] text-accent font-black mb-2 opacity-70"
                     >
-                        <p
-                            class="text-xs uppercase tracking-widest text-text-muted mb-2"
+                        Get in Touch
+                    </p>
+                    <a
+                        href="mailto:kontakt@heinze-media.de"
+                        class="text-xl md:text-2xl font-black text-white hover:text-accent transition-all duration-300 block"
+                    >
+                        kontakt@heinze-media.de
+                    </a>
+                    <div
+                        class="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-white/5"
+                    >
+                        <span
+                            class="text-[10px] text-text-muted uppercase tracking-widest"
+                            >Berlin</span
                         >
-                            Kontakt
-                        </p>
-                        <a
-                            href="mailto:kontakt@heinze-media.de"
-                            class="text-xl md:text-2xl font-semibold text-accent hover:text-accent/80 transition-colors inline-block"
+                        <span class="w-1 h-1 rounded-full bg-accent/30"></span>
+                        <span
+                            class="text-[10px] text-text-muted uppercase tracking-widest"
+                            >Remote</span
                         >
-                            kontakt@heinze-media.de
-                        </a>
-                        <p class="text-sm text-text-muted mt-2">
-                            Berlin • Remote möglich
-                        </p>
+                        <span class="w-1 h-1 rounded-full bg-accent/30"></span>
+                        <span
+                            class="text-[10px] text-text-muted uppercase tracking-widest"
+                            >Metaverse</span
+                        >
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Spacer: 100vh Höhe für Scroll-Bereich -->
-        <div class="h-screen"></div>
-    {/if}
-</article>
+    </div>
+{:else}
+    <main class="min-h-screen pb-24">
+        {#if blocks.length > 0}
+            <BlockRenderer {blocks} />
+        {:else}
+            <div class="pt-32 pb-16 md:pt-48 md:pb-24">
+                <div class="container mx-auto px-6">
+                    <div class="max-w-4xl mx-auto">
+                        <header class="mb-16">
+                            <h1
+                                class="text-5xl md:text-7xl font-black text-text-main mb-8 tracking-tighter leading-none"
+                            >
+                                {metadata.title}
+                            </h1>
+                            {#if metadata.description}
+                                <p
+                                    class="text-xl md:text-2xl text-text-muted leading-relaxed max-w-2xl"
+                                >
+                                    {metadata.description}
+                                </p>
+                            {/if}
+                        </header>
+                        <article
+                            class="prose prose-invert max-w-none prose-headings:text-text-main prose-p:text-text-muted prose-strong:text-accent prose-a:text-accent"
+                        >
+                            {@html html}
+                        </article>
+                    </div>
+                </div>
+            </div>
+        {/if}
+    </main>
+{/if}
