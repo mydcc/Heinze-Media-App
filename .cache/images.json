@@ -1,0 +1,132 @@
+{
+  "images": [
+    {
+      "url": "https://heinze-media.com/wp-content/uploads/2024/04/features_hero-300x199.png",
+      "type": "embedded",
+      "title": "Embedded Image"
+    },
+    {
+      "url": "https://heinze-media.com/wp-content/uploads/2025/02/earth.webm",
+      "type": "embedded",
+      "title": "Embedded Image"
+    },
+    {
+      "url": "https://heinze-media.com/wp-content/uploads/2024/04/screenshot_showroom_16x9_c-1-1024x576.jpg",
+      "type": "embedded",
+      "title": "Embedded Image"
+    },
+    {
+      "url": "https://heinze-media.com/wp-content/uploads/2024/04/screenshot_gallery_16x9_c-1024x576.jpg",
+      "type": "embedded",
+      "title": "Embedded Image"
+    },
+    {
+      "url": "https://heinze-media.com/wp-content/uploads/2024/04/screenshot_wildwest_16x9-1-1024x576.jpg",
+      "type": "embedded",
+      "title": "Embedded Image"
+    },
+    {
+      "url": "https://heinze-media.com/wp-content/uploads/2024/04/screenshot_ard_studio-1024x1024.jpg",
+      "type": "embedded",
+      "title": "Embedded Image"
+    },
+    {
+      "url": "https://heinze-media.com/wp-content/uploads/2024/04/screenshot_romanbath_16x9_c-1024x576.jpg",
+      "type": "embedded",
+      "title": "Embedded Image"
+    },
+    {
+      "url": "https://heinze-media.com/wp-content/uploads/2026/01/seo-banner.jpg",
+      "type": "embedded",
+      "title": "Embedded Image"
+    },
+    {
+      "url": "https://heinze-media.com/wp-content/uploads/2025/06/bildschirmfoto_20250609_131641-1.png",
+      "type": "embedded",
+      "title": "Embedded Image"
+    },
+    {
+      "url": "https://heinze-media.com/wp-content/uploads/2025/06/image-8.png",
+      "type": "embedded",
+      "title": "Embedded Image"
+    },
+    {
+      "url": "https://heinze-media.com/wp-content/uploads/2025/06/pat-man.png",
+      "type": "embedded",
+      "title": "Embedded Image"
+    },
+    {
+      "url": "https://heinze-media.com/wp-content/uploads/2025/06/image-10.png",
+      "type": "embedded",
+      "title": "Embedded Image"
+    }
+  ],
+  "grouped": {
+    "2024": [
+      {
+        "url": "https://heinze-media.com/wp-content/uploads/2024/04/features_hero-300x199.png",
+        "type": "embedded",
+        "title": "Embedded Image"
+      },
+      {
+        "url": "https://heinze-media.com/wp-content/uploads/2024/04/screenshot_showroom_16x9_c-1-1024x576.jpg",
+        "type": "embedded",
+        "title": "Embedded Image"
+      },
+      {
+        "url": "https://heinze-media.com/wp-content/uploads/2024/04/screenshot_gallery_16x9_c-1024x576.jpg",
+        "type": "embedded",
+        "title": "Embedded Image"
+      },
+      {
+        "url": "https://heinze-media.com/wp-content/uploads/2024/04/screenshot_wildwest_16x9-1-1024x576.jpg",
+        "type": "embedded",
+        "title": "Embedded Image"
+      },
+      {
+        "url": "https://heinze-media.com/wp-content/uploads/2024/04/screenshot_ard_studio-1024x1024.jpg",
+        "type": "embedded",
+        "title": "Embedded Image"
+      },
+      {
+        "url": "https://heinze-media.com/wp-content/uploads/2024/04/screenshot_romanbath_16x9_c-1024x576.jpg",
+        "type": "embedded",
+        "title": "Embedded Image"
+      }
+    ],
+    "2025": [
+      {
+        "url": "https://heinze-media.com/wp-content/uploads/2025/02/earth.webm",
+        "type": "embedded",
+        "title": "Embedded Image"
+      },
+      {
+        "url": "https://heinze-media.com/wp-content/uploads/2025/06/bildschirmfoto_20250609_131641-1.png",
+        "type": "embedded",
+        "title": "Embedded Image"
+      },
+      {
+        "url": "https://heinze-media.com/wp-content/uploads/2025/06/image-8.png",
+        "type": "embedded",
+        "title": "Embedded Image"
+      },
+      {
+        "url": "https://heinze-media.com/wp-content/uploads/2025/06/pat-man.png",
+        "type": "embedded",
+        "title": "Embedded Image"
+      },
+      {
+        "url": "https://heinze-media.com/wp-content/uploads/2025/06/image-10.png",
+        "type": "embedded",
+        "title": "Embedded Image"
+      }
+    ],
+    "2026": [
+      {
+        "url": "https://heinze-media.com/wp-content/uploads/2026/01/seo-banner.jpg",
+        "type": "embedded",
+        "title": "Embedded Image"
+      }
+    ]
+  }
+}

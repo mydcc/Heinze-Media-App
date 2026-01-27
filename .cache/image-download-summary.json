@@ -1,0 +1,89 @@
+{
+  "totalImages": 12,
+  "organizedFolders": 4,
+  "structure": {
+    "2024/04": [
+      {
+        "original": "https://heinze-media.com/wp-content/uploads/2024/04/features_hero-300x199.png",
+        "filename": "features_hero-300x199.png",
+        "destPath": "static/images/2024/04/features_hero-300x199.png",
+        "category": "embedded"
+      },
+      {
+        "original": "https://heinze-media.com/wp-content/uploads/2024/04/screenshot_showroom_16x9_c-1-1024x576.jpg",
+        "filename": "screenshot_showroom_16x9_c-1-1024x576.jpg",
+        "destPath": "static/images/2024/04/screenshot_showroom_16x9_c-1-1024x576.jpg",
+        "category": "embedded"
+      },
+      {
+        "original": "https://heinze-media.com/wp-content/uploads/2024/04/screenshot_gallery_16x9_c-1024x576.jpg",
+        "filename": "screenshot_gallery_16x9_c-1024x576.jpg",
+        "destPath": "static/images/2024/04/screenshot_gallery_16x9_c-1024x576.jpg",
+        "category": "embedded"
+      },
+      {
+        "original": "https://heinze-media.com/wp-content/uploads/2024/04/screenshot_wildwest_16x9-1-1024x576.jpg",
+        "filename": "screenshot_wildwest_16x9-1-1024x576.jpg",
+        "destPath": "static/images/2024/04/screenshot_wildwest_16x9-1-1024x576.jpg",
+        "category": "embedded"
+      },
+      {
+        "original": "https://heinze-media.com/wp-content/uploads/2024/04/screenshot_ard_studio-1024x1024.jpg",
+        "filename": "screenshot_ard_studio-1024x1024.jpg",
+        "destPath": "static/images/2024/04/screenshot_ard_studio-1024x1024.jpg",
+        "category": "embedded"
+      },
+      {
+        "original": "https://heinze-media.com/wp-content/uploads/2024/04/screenshot_romanbath_16x9_c-1024x576.jpg",
+        "filename": "screenshot_romanbath_16x9_c-1024x576.jpg",
+        "destPath": "static/images/2024/04/screenshot_romanbath_16x9_c-1024x576.jpg",
+        "category": "embedded"
+      }
+    ],
+    "2025/02": [
+      {
+        "original": "https://heinze-media.com/wp-content/uploads/2025/02/earth.webm",
+        "filename": "earth.webm",
+        "destPath": "static/images/2025/02/earth.webm",
+        "category": "embedded"
+      }
+    ],
+    "2026/01": [
+      {
+        "original": "https://heinze-media.com/wp-content/uploads/2026/01/seo-banner.jpg",
+        "filename": "seo-banner.jpg",
+        "destPath": "static/images/2026/01/seo-banner.jpg",
+        "category": "embedded"
+      }
+    ],
+    "2025/06": [
+      {
+        "original": "https://heinze-media.com/wp-content/uploads/2025/06/bildschirmfoto_20250609_131641-1.png",
+        "filename": "bildschirmfoto_20250609_131641-1.png",
+        "destPath": "static/images/2025/06/bildschirmfoto_20250609_131641-1.png",
+        "category": "embedded"
+      },
+      {
+        "original": "https://heinze-media.com/wp-content/uploads/2025/06/image-8.png",
+        "filename": "image-8.png",
+        "destPath": "static/images/2025/06/image-8.png",
+        "category": "embedded"
+      },
+      {
+        "original": "https://heinze-media.com/wp-content/uploads/2025/06/pat-man.png",
+        "filename": "pat-man.png",
+        "destPath": "static/images/2025/06/pat-man.png",
+        "category": "embedded"
+      },
+      {
+        "original": "https://heinze-media.com/wp-content/uploads/2025/06/image-10.png",
+        "filename": "image-10.png",
+        "destPath": "static/images/2025/06/image-10.png",
+        "category": "embedded"
+      }
+    ]
+  },
+  "downloaded": 12,
+  "failed": 0,
+  "timestamp": "2026-01-25T14:20:28.805Z"
+}

@@ -3,7 +3,7 @@ title: "Metaverse for Business"
 date: "2024-06-10T04:49:19.000Z"
 slug: "metaverse-for-business"
 type: "blog"
-image: "/uploads/2024/04/technology.jpg"
+image: "/images/blog/technology.jpg"
 categories: ["XR"]
 ---
 

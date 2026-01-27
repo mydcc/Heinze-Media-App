@@ -13,7 +13,7 @@
     <span class="text-xs font-bold uppercase tracking-widest opacity-50"
         >Identity</span
     >
-    <div class="flex gap-2.5">
+    <div class="flex gap-2.5 items-center">
         {#each themes as t}
             <button
                 onclick={() => themeState.setTheme(t.id)}
@@ -22,7 +22,7 @@
                 aria-label="Set theme to {t.label}"
                 title={t.label}
             >
-                {#if themeState.theme === t.id}
+                {#if themeState.override === "manual" && themeState.theme === t.id}
                     <span
                         class="absolute inset-0 flex items-center justify-center bg-white/20 rounded-lg"
                     >

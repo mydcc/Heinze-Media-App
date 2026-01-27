@@ -1,8 +1,16 @@
 <script lang="ts">
-    import { page } from "$app/stores";
     import ThemeToggle from "$lib/components/ThemeToggle.svelte";
+    // Svelte 5 Runes: direkt im <script> verwenden, nicht importieren
+    import { page as pageStore } from "$app/stores";
 
-    const links = [
+    type Link = {
+        href: string;
+        label: string;
+        submenu?: { href: string; label: string; target?: string }[];
+    };
+
+    const { links: propLinks } = $props<{ links?: Link[] }>();
+    const defaultLinks: Link[] = [
         { href: "/", label: "Home" },
         { href: "/about", label: "About" },
         { href: "/work", label: "Work" },
@@ -20,6 +28,11 @@
         { href: "/blog", label: "News" },
         { href: "/contact", label: "Contact" },
     ];
+    function getLinks() {
+        return propLinks && propLinks.length > 0 ? propLinks : defaultLinks;
+    }
+    const mobileMenuOpen = $state(false);
+    // Svelte store auto-subscription: $pageStore
 </script>
 
 <header
@@ -30,7 +43,8 @@
             href="/"
             class="text-2xl font-black tracking-tight text-text-main group"
         >
-            HEINZE<span
+            <span class="transition-all group-hover:text-white">HEINZE</span
+            ><span
                 class="text-accent group-hover:drop-shadow-[0_0_8px_rgba(var(--color-accent),0.5)] transition-all"
                 >MEDIA</span
             >
@@ -38,12 +52,12 @@
 
         <div class="hidden lg:flex items-center gap-10">
             <nav class="flex gap-8">
-                {#each links as link}
+                {#each getLinks() as link}
                     <div class="relative group">
                         <a
                             href={link.href}
                             class="text-sm font-bold uppercase tracking-widest hover:text-accent transition-all text-text-muted relative flex items-center gap-1 py-2"
-                            class:text-accent={$page.url.pathname.startsWith(
+                            class:text-accent={$pageStore.url.pathname.startsWith(
                                 link.href,
                             ) && link.href !== "/"}
                         >
@@ -65,7 +79,8 @@
                             {/if}
                             <span
                                 class="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full"
-                                class:w-full={$page.url.pathname === link.href}
+                                class:w-full={$pageStore.url.pathname ===
+                                    link.href}
                             ></span>
                         </a>
 

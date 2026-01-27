@@ -1,0 +1,5 @@
+[
+    "sveltejs/kit",
+    "nodejs/node",
+    "facebook/react"
+]

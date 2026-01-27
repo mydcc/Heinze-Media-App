@@ -1,99 +1,61 @@
 <script lang="ts">
     import { page } from "$app/stores";
-    import type { SEOConfig } from "$lib/seo/schema";
-    import {
-        JSONLDBuilder,
-        getCanonicalUrl,
-        getOpenGraphTags,
-        getTwitterCardTags,
-        getMetaTags,
-    } from "$lib/seo/schema";
 
-    let { config }: { config?: SEOConfig } = $props();
+    interface Props {
+        title: string;
+        description: string;
+        ogImage?: string;
+        jsonLD?: object;
+    }
 
-    // Fallback config if not provided
-    const seoConfig = $derived.by(() => {
-        return (
-            config || {
-                title: "HEINZE MEDIA - XR/AR/VR Solutions & Metaverse",
-                description:
-                    "Partner für immersive 3D-Web-Erlebnisse, Metaverse-Lösungen und XR-Studios der nächsten Generation.",
-                keywords: ["XR", "AR", "VR", "Metaverse", "3D Web", "Berlin"],
-                url: getCanonicalUrl($page.url.pathname),
-                type: "website" as const,
-                image: "https://heinze.media/og-default.png",
-            }
-        );
-    });
+    let {
+        title = "",
+        description = "",
+        ogImage = "",
+        jsonLD,
+    }: Props = $props();
 
-    // Generate structured data
-    const schemas = $derived.by(() => [
-        JSONLDBuilder.organization(),
-        JSONLDBuilder.website(),
-        JSONLDBuilder.localBusiness(),
-        JSONLDBuilder.breadcrumb([
-            { name: "Home", url: "https://heinze.media" },
-            { name: "Current Page", url: seoConfig.url },
-        ]),
-    ]);
-
-    // Generate meta tags
-    const metaTags = $derived(getMetaTags(seoConfig));
-    const ogTags = $derived(getOpenGraphTags(seoConfig));
-    const twitterTags = $derived(getTwitterCardTags(seoConfig));
+    const siteUrl = "https://heinze-media.com";
+    const imageUrl = ogImage
+        ? `${siteUrl}${ogImage}`
+        : `${siteUrl}/images/og-default.png`;
+    const currentUrl = $page.url.href;
 </script>
 
 <svelte:head>
-    <!-- Primary Meta Tags -->
-    <title>{seoConfig.title}</title>
-    <meta name="description" content={seoConfig.description} />
-    {#if seoConfig.keywords && seoConfig.keywords.length > 0}
-        <meta name="keywords" content={seoConfig.keywords.join(", ")} />
-    {/if}
-    <meta name="author" content={seoConfig.author || "HEINZE MEDIA"} />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="charset" content="UTF-8" />
-    <meta name="robots" content="index, follow" />
-
-    <!-- Canonical URL -->
-    <link rel="canonical" href={seoConfig.url} />
+    <!-- Essential Meta Tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
 
     <!-- Open Graph / Facebook -->
-    {#each Object.entries(ogTags) as [key, value]}
-        <meta property={key} content={value} />
-    {/each}
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={currentUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:site_name" content="Heinze Media" />
 
     <!-- Twitter -->
-    {#each Object.entries(twitterTags) as [key, value]}
-        <meta name={key} content={value} />
-    {/each}
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={currentUrl} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={imageUrl} />
 
-    <!-- HREFLANG for multi-language support -->
-    <link rel="alternate" hreflang="de" href={seoConfig.url} />
-    <link
-        rel="alternate"
-        hreflang="en"
-        href={seoConfig.url.replace("/de/", "/en/") || seoConfig.url}
-    />
+    <!-- Canonical -->
+    <link rel="canonical" href={currentUrl} />
 
-    <!-- Preconnect to external resources -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossOrigin="anonymous"
-    />
-    <!-- JSON-LD Structured Data -->
-    {#each schemas as schema (schema["@type"])}
+    <!-- DSGVO / Security -->
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="de" />
+
+    <!-- JSON-LD Schema -->
+    {#if jsonLD}
         <script type="application/ld+json">
-			{JSON.stringify(schema)}
+			{JSON.stringify(jsonLD)}
         </script>
-    {/each}
-
-    <!-- Favicon & App Icons -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="theme-color" content="#334eff" />
-    <meta name="application-name" content="HEINZE MEDIA" />
-    <meta name="apple-mobile-web-app-title" content="HEINZE MEDIA" />
+    {/if}
 </svelte:head>

@@ -1,6 +1,69 @@
 @import "tailwindcss";
 
 /* =========================================
+   TAILWIND V4 THEME CONFIGURATION (CSS-FIRST)
+   Moderne Tailwind v4 Theme-Definition
+   ========================================= */
+@theme {
+    --color-meteorite-primary: #4e21e7;
+    --color-meteorite-base: #433f65;
+    --color-meteorite-light: #ede8fd;
+    --color-meteorite-dark: #0c082f;
+
+    --color-steel-primary: #334eff;
+    --color-steel-light: #eaedff;
+    --color-steel-dark: #08103f;
+
+    --color-ever-primary: #0da49a;
+    --color-ever-light: #e0f8f5;
+    --color-ever-dark: #062b27;
+
+    --color-insight-primary: #ee485f;
+    --color-insight-light: #fce4e6;
+    --color-insight-dark: #3d1118;
+
+    /* Spacing Scale (4px base) */
+    --spacing-0: 0px;
+    --spacing-1: 4px;
+    --spacing-2: 8px;
+    --spacing-3: 12px;
+    --spacing-4: 16px;
+    --spacing-6: 24px;
+    --spacing-8: 32px;
+    --spacing-12: 48px;
+    --spacing-16: 64px;
+    --spacing-20: 80px;
+    --spacing-24: 96px;
+
+    /* Typography Scale */
+    --font-family-heading: "Montserrat", sans-serif;
+    --font-family-body: "Inter", sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+    --font-size-5xl: 3rem;
+
+    /* Border Radius */
+    --radius-none: 0px;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-full: 9999px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+}
+
+/* =========================================
    1. GLOBAL VARIABLES & BRAND ASSETS
    ========================================= */
 /* =========================================
@@ -11,6 +74,33 @@
 /* =========================================
    2. THEME DEFINITIONS (4 CATEGORIES)
    ========================================= */
+
+/* Footer special role: always readable on dark footer background (also in light mode) */
+.footer-dark {
+    color: var(--clr-light);
+    --text-main: var(--clr-light);
+    --text-muted: color-mix(in srgb, var(--clr-light) 70%, var(--highlight-primary));
+    --text-tertiary: color-mix(in srgb, var(--clr-light) 50%, var(--core-base));
+    --color-text-main: var(--clr-light);
+    --color-text-muted: color-mix(in srgb, var(--clr-light) 70%, var(--highlight-primary));
+    --color-text-tertiary: color-mix(in srgb, var(--clr-light) 50%, var(--core-base));
+}
+
+.footer-dark .footer-link {
+    color: color-mix(in srgb, var(--clr-light) 70%, transparent);
+    text-decoration: none;
+    transition: color 200ms ease, transform 200ms ease, letter-spacing 200ms ease;
+}
+
+.footer-dark .footer-link:hover {
+    color: color-mix(in srgb, var(--color-accent) 70%, var(--clr-light));
+    letter-spacing: 0.04em;
+    transform: translateX(2px);
+}
+
+.footer-dark .footer-dot {
+    background-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
+}
 
 /* --- THEME 1: METEORITE (Default / Blog / Generic) --- */
 .theme-meteorite {
@@ -394,8 +484,11 @@ a:hover {
 .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(var(--core-primary), 0.23);
-    filter: brightness(1.1);
     color: var(--btn-primary-text) !important;
+}
+
+[data-mode="light"] .btn-primary:hover {
+    color: var(--text-main) !important;
 }
 
 .btn-secondary {
@@ -417,9 +510,12 @@ a:hover {
 }
 
 .btn-secondary:hover {
-    background-color: var(--color-accent);
-    color: #ffffff !important;
     transform: translateY(-2px);
+    color: var(--color-accent) !important;
+}
+
+[data-mode="light"] .btn-secondary:hover {
+    color: var(--text-main) !important;
 }
 
 /* =========================================

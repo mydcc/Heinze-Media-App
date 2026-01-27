@@ -1,13 +1,36 @@
 import { error } from '@sveltejs/kit';
-import { getPost } from '$lib/server/posts';
-import { marked } from 'marked';
+import { loadContentBySlug, listContent } from '$lib/content/loader';
+import { renderMarkdown, generateSEOMeta, generateJsonLD, getReadingTime } from '$lib/content/render';
+import type { PageServerLoad } from './$types';
 
-export async function load({ params }) {
-    const post = await getPost(params.slug, 'blog');
-    if (!post) throw error(404, 'Post not found');
+export const prerender = true;
 
-    const contentHtml = await marked(post.content || '');
+export async function load({ params }: Parameters<PageServerLoad>[0]) {
+    const { slug } = params;
+
+    const content = loadContentBySlug('blog', slug);
+
+    if (!content) {
+        throw error(404, 'Blog post not found');
+    }
+
+    const html = await renderMarkdown(content.content);
+    const readingTime = getReadingTime(content.content);
+    const seoMeta = generateSEOMeta(content.metadata);
+    const jsonLD = generateJsonLD(content.metadata, 'https://heinze-media.com');
+
     return {
-        post: { ...post, contentHtml }
+        metadata: content.metadata,
+        html,
+        readingTime,
+        seoMeta,
+        jsonLD
     };
+}
+
+export async function entries() {
+    const posts = listContent('blog');
+    return posts.map(post => ({
+        slug: post.slug
+    }));
 }

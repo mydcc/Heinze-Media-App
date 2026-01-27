@@ -1,62 +1,67 @@
 <script lang="ts">
     import SEOHead from "$lib/components/SEOHead.svelte";
-    import type { SEOConfig } from "$lib/seo/schema";
+    import type { PageData } from "./$types";
 
-    let { data } = $props();
-    // Use derived to access destructured values
-    let post = $derived(data.post);
+    let { data }: { data: PageData } = $props();
 
-    // Generate SEO config for work/case study
-    const seoConfig: SEOConfig = {
-        title: `${post.title} | Case Study | HEINZE MEDIA`,
-        description:
-            post.description || `Entdecken Sie das Projekt ${post.title}`,
-        keywords: (post.categories as string[]) || [
-            "XR",
-            "Case Study",
-            "Portfolio",
-        ],
-        url: `https://heinze.media/work/${post.slug}`,
-        type: "website",
-        image: post.image || "https://heinze.media/og-work.png",
-        author: "HEINZE MEDIA",
-    };
+    const metadata = $derived(data.metadata);
+    const html = $derived(data.html);
+    const seoMeta = $derived(data.seoMeta);
+    const jsonLD = $derived(data.jsonLD);
 </script>
 
-<SEOHead config={seoConfig} />
+<SEOHead
+    title={`${metadata.title} | Heinze Media Portfolio`}
+    description={seoMeta.description}
+    ogImage={seoMeta.image}
+    {jsonLD}
+/>
 
-<svelte:head>
-    <title>{seoConfig.title}</title>
-</svelte:head>
-
-<div class="pt-24 pb-12 bg-brand-navy">
-    <div class="container mx-auto px-6 text-center">
-        <h1 class="text-4xl md:text-6xl font-bold mb-6">{post.title}</h1>
-        {#if post.categories}
-            <div class="flex gap-2 justify-center mb-8">
-                {#each post.categories as cat}
-                    <span
-                        class="text-sm border border-brand-cyan text-brand-cyan px-3 py-1 rounded-full"
-                        >{cat}</span
-                    >
-                {/each}
+<article>
+    <!-- Hero Section -->
+    <div class="relative py-20 md:py-28 overflow-hidden">
+        <div
+            class="absolute inset-0 bg-gradient-to-b from-accent/10 to-transparent"
+        ></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="max-w-3xl mx-auto">
+                <span
+                    class="text-accent text-sm font-semibold uppercase tracking-widest"
+                    >Portfolio</span
+                >
+                <h1
+                    class="text-4xl md:text-5xl lg:text-6xl font-black mb-6 mt-4"
+                >
+                    {metadata.title}
+                </h1>
+                {#if metadata.description}
+                    <p class="text-lg text-white/70 mb-8">
+                        {metadata.description}
+                    </p>
+                {/if}
+                <div class="flex flex-wrap gap-6 text-sm text-white/60">
+                    {#if metadata.date}
+                        <span
+                            >📅 {new Date(metadata.date).toLocaleDateString(
+                                "de-DE",
+                            )}</span
+                        >
+                    {/if}
+                    {#if metadata.author}
+                        <span>✍️ {metadata.author}</span>
+                    {/if}
+                    {#if data.readingTime}
+                        <span>⏱️ {data.readingTime} min Lesezeit</span>
+                    {/if}
+                </div>
             </div>
-        {/if}
+        </div>
     </div>
-</div>
 
-{#if post.image}
-    <div class="w-full h-[60vh] max-h-[800px] overflow-hidden">
-        <img
-            src={post.image}
-            alt={post.title}
-            class="w-full h-full object-cover"
-        />
+    <!-- Content -->
+    <div class="container mx-auto px-6 py-16 md:py-24">
+        <div class="max-w-3xl mx-auto prose prose-invert dark">
+            {@html html}
+        </div>
     </div>
-{/if}
-
-<div class="container mx-auto px-6 py-20">
-    <div class="prose prose-invert prose-xl max-w-4xl mx-auto">
-        {@html post.contentHtml}
-    </div>
-</div>
+</article>

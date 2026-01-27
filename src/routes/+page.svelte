@@ -73,18 +73,8 @@
                 digitale Zwillinge für Ihr Unternehmen.
             </p>
             <div class="flex flex-col md:flex-row gap-4 justify-center">
-                <a
-                    href="/work"
-                    class="px-8 py-3 bg-cyan-500 text-slate-900 font-bold rounded hover:bg-white transition-colors shadow-lg hover:shadow-xl"
-                >
-                    View Our Work
-                </a>
-                <a
-                    href="/contact"
-                    class="px-8 py-3 border-2 border-cyan-400 text-white font-bold rounded hover:bg-cyan-500/20 transition-colors shadow-lg"
-                >
-                    Contact Us
-                </a>
+                <a href="/work" class="btn-primary"> View Our Work </a>
+                <a href="/contact" class="btn-secondary"> Contact Us </a>
             </div>
         </div>
     </div>
@@ -94,27 +84,27 @@
 <section class="py-20 bg-brand-dark">
     <div class="container mx-auto px-6 grid md:grid-cols-3 gap-12 text-center">
         <div
-            class="p-6 border border-white/5 rounded-xl hover:border-brand-cyan/30 transition-colors"
+            class="p-6 border border-white/10 hover:border-brand-cyan/60 bg-white/0 hover:bg-white/2 rounded-xl shadow-none hover:shadow-md transition-all duration-200"
         >
             <h3 class="text-2xl font-bold mb-4">XR Studios</h3>
-            <p class="text-white/60">
+            <p class="text-white/90">
                 Virtuelle Produktionsstudios für Broadcast und Events auf
                 höchstem Niveau.
             </p>
         </div>
         <div
-            class="p-6 border border-white/5 rounded-xl hover:border-brand-cyan/30 transition-colors"
+            class="p-6 border border-white/10 hover:border-brand-cyan/60 bg-white/0 hover:bg-white/2 rounded-xl shadow-none hover:shadow-md transition-all duration-200"
         >
             <h3 class="text-2xl font-bold mb-4">Metaverse</h3>
-            <p class="text-white/60">
+            <p class="text-white/90">
                 Dezentrale, browser-basierte 3D-Welten ohne App-Download.
             </p>
         </div>
         <div
-            class="p-6 border border-white/5 rounded-xl hover:border-brand-cyan/30 transition-colors"
+            class="p-6 border border-white/10 hover:border-brand-cyan/60 bg-white/0 hover:bg-white/2 rounded-xl shadow-none hover:shadow-md transition-all duration-200"
         >
             <h3 class="text-2xl font-bold mb-4">3D Web Apps</h3>
-            <p class="text-white/60">
+            <p class="text-white/90">
                 Interaktive Produkt-Konfiguratoren und Showrooms mit Svelte &
                 Three.js.
             </p>

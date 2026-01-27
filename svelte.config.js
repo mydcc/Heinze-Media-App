@@ -13,7 +13,17 @@ const config = {
 			strict: false
 		}),
 		prerender: {
-			handleHttpError: 'warn'
+			handleHttpError: 'warn',
+			handleMissingId: 'warn',
+			handleUnseenRoutes: 'warn'
+		},
+		alias: {
+			$lib: 'src/lib',
+			$components: 'src/lib/components',
+			$utils: 'src/lib/utils',
+			$data: 'src/lib/data',
+			$seo: 'src/lib/seo',
+			$state: 'src/lib/state'
 		}
 	}
 };

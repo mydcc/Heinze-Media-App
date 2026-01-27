@@ -1,8 +1,13 @@
-import { getPosts } from '$lib/server/posts';
+import { listContent } from '$lib/content/loader';
+import type { PageServerLoad } from './$types';
 
-export async function load() {
-    const posts = await getPosts('blog');
+export const prerender = true;
+
+export const load: PageServerLoad = async () => {
+    const blogPosts = listContent('blog').slice(0, 50); // Latest 50 posts
+
     return {
-        posts
+        blogPosts,
+        totalPosts: blogPosts.length
     };
-}
+};

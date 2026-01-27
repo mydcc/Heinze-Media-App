@@ -7,8 +7,11 @@ slug: "pat-man"
 ---
 
 # Pat-Man Arcade Game
+
 ## <strong>Dynamic and Captivating Gaming Experience</strong><p>A demonstration of modern web technologies to create a dynamic and captivating gaming experience in the browser.</p>
+
 ### 1. Project Overview
+
 <p><strong>Pat-Man</strong> is a browser-based arcade game developed as a tribute to the timeless classic, Pac-Man. However, the project goes beyond a mere copy, enhancing the original gameplay with a variety of modern features. The goal was to prove that a complex, high-performance, and visually appealing gaming experience with high replayability can be created using only pure HTML, CSS, and JavaScript.</p>
 <p>The game was developed from scratch, with a focus on procedural level generation, advanced AI behaviors, and a rewarding player progression system.</p>
 ### 2. Project Goals
@@ -75,4 +78,4 @@ slug: "pat-man"
 ### 6. Result
 <p>The "Pat-Man" project is a complete success. It is an entertaining, challenging, and infinitely replayable browser game that impressively demonstrates the capabilities of modern web technologies. It serves as an excellent example of implementing procedural logic, artificial intelligence, and real-time graphics rendering using standard web tools.</p>
 
-<a href="/apps/patman.html">Open Web App</a>
+<a href="/apps/pat-man.html">Open Web App</a>

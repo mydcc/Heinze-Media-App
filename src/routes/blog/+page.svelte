@@ -1,33 +1,93 @@
 <script lang="ts">
     import SEOHead from "$lib/components/SEOHead.svelte";
-    import type { SEOConfig } from "$lib/seo/schema";
+    import type { PageData } from "./$types";
 
-    let { data } = $props();
+    let { data }: { data: PageData } = $props();
 
-    const seoConfig: SEOConfig = {
-        title: "Blog - News & Insights | HEINZE MEDIA",
-        description:
-            "Neueste Artikel und Insights über XR, Metaverse, 3D Web-Technologien und digitale Innovation für Unternehmen.",
-        keywords: [
-            "Blog",
-            "XR News",
-            "Metaverse",
-            "3D Web",
-            "Digital Innovation",
-            "Insights",
-        ],
-        url: "https://heinze.media/blog",
-        type: "website",
-        image: "https://heinze.media/og-blog.png",
-        author: "HEINZE MEDIA",
-    };
+    const blogPosts = $derived(data.blogPosts || []);
 </script>
 
-<SEOHead config={seoConfig} />
+<SEOHead
+    title="Blog - News & Insights | Heinze Media"
+    description="Artikel über XR, Metaverse, 3D Web-Technologien und digitale Transformation"
+    ogImage="/images/og-blog.png"
+/>
 
-<svelte:head>
-    <title>{seoConfig.title}</title>
-</svelte:head>
+<div class="relative py-20 md:py-28 overflow-hidden">
+    <div
+        class="absolute inset-0 bg-gradient-to-b from-accent/10 to-transparent"
+    ></div>
+    <div class="container mx-auto px-6 relative z-10">
+        <div class="max-w-3xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-black mb-6">
+                Blog & Insights
+            </h1>
+            <p class="text-lg text-white/70">
+                Neueste Artikel über immersive Technologien und digitale
+                Innovation
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="container mx-auto px-6 py-16 md:py-24">
+    {#if blogPosts.length === 0}
+        <div class="text-center py-12">
+            <p class="text-white/60">Noch keine Blog-Posts verfügbar.</p>
+        </div>
+    {:else}
+        <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto"
+        >
+            {#each blogPosts as post (post.slug)}
+                <article
+                    class="group rounded-lg bg-white/5 hover:bg-white/10 backdrop-blur-sm border border-white/10 hover:border-accent/30 transition-all overflow-hidden"
+                >
+                    <a href={`/blog/${post.slug}`} class="block p-6">
+                        <div class="flex flex-col h-full">
+                            <time
+                                class="text-xs text-accent font-semibold uppercase tracking-widest mb-2"
+                            >
+                                {post.date
+                                    ? new Date(post.date).toLocaleDateString(
+                                          "de-DE",
+                                      )
+                                    : "Kein Datum"}
+                            </time>
+                            <h3
+                                class="text-xl font-bold mb-3 group-hover:text-accent transition-colors"
+                            >
+                                {post.title}
+                            </h3>
+                            <p class="text-white/60 text-sm flex-grow mb-4">
+                                {post.description ||
+                                    "Kein Description verfügbar"}
+                            </p>
+                            <div
+                                class="flex items-center text-accent text-sm font-semibold"
+                            >
+                                Weiterlesen
+                                <svg
+                                    class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M13 7l5 5m0 0l-5 5m5-5H6"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+                </article>
+            {/each}
+        </div>
+    {/if}
+</div>
 
 <div class="container mx-auto px-6 py-24">
     <h1 class="text-4xl md:text-5xl font-bold mb-12 text-center">
@@ -37,7 +97,7 @@
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         {#each data.posts as post}
             <a
-                href="/blog/{post.slug}"
+                href={`/blog/${post.slug}`}
                 class="group block bg-white/5 rounded-xl overflow-hidden hover:bg-white/10 transition-colors border border-white/5 hover:border-brand-cyan/20"
             >
                 {#if post.image}

@@ -12,6 +12,7 @@
 
 	<script>
 		// THEME INITIALIZATION (Prevents FOUC/Flickering)
+		// KRITISCH: Override ist IMMER 'auto', Theme wird IMMER nach Route gesetzt
 		(function () {
 			function getCookie(name) {
 				var value = "; " + document.cookie;
@@ -19,11 +20,35 @@
 				if (parts.length === 2) return parts.pop().split(";").shift();
 				return null;
 			}
-			var theme = localStorage.getItem('hm-theme') || getCookie('hm-theme') || 'meteorite';
+
+			/**
+			 * Theme Resolution: IMMER Route-basiert
+			 */
+			function resolveInitialTheme() {
+				var pathname = window.location.pathname || '/';
+				var segment = pathname.split('/').filter(function (s) { return s.length > 0; })[0] || '';
+
+				var themeMap = {
+					'': 'steel', 'home': 'steel',
+					'about': 'steel', 'contact': 'steel', 'solutions': 'steel',
+					'services': 'steel', 'work': 'steel', 'consulting': 'steel',
+					'offer': 'insight', 'special': 'insight',
+					'metaverse': 'meteorite', 'xr-studio': 'meteorite', 'blog': 'meteorite',
+					'free': 'ever',
+					'imprint': 'meteorite', 'privacy-policy': 'meteorite',
+					'terms': 'meteorite', 'sitemap': 'meteorite'
+				};
+
+				return themeMap[segment.toLowerCase()] || 'meteorite';
+			}
+
+			var theme = resolveInitialTheme();
 			var mode = localStorage.getItem('hm-mode') || getCookie('hm-mode') || 'dark';
+
 			var doc = document.documentElement;
 			doc.classList.add('theme-' + theme);
 			doc.setAttribute('data-mode', mode);
+			doc.setAttribute('data-theme-override', 'auto');
 			if (mode === 'dark') doc.classList.add('dark');
 			else doc.classList.remove('dark');
 		})();

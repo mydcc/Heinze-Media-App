@@ -1,46 +1,22 @@
 import { browser } from '$app/environment';
+import { resolvePathToTheme, type Theme } from './themeRouter.svelte';
 
-export type Theme = 'meteorite' | 'steel' | 'ever' | 'insight';
+export type { Theme };
 export type Mode = 'light' | 'dark';
+export type ThemeOverride = 'auto' | 'manual';
 
 const THEME_KEY = 'hm-theme';
 const MODE_KEY = 'hm-mode';
+const OVERRIDE_KEY = 'hm-theme-override';
 const VALID_THEMES: Theme[] = ['meteorite', 'steel', 'ever', 'insight'];
 const VALID_MODES: Mode[] = ['light', 'dark'];
-
-const CATEGORY_THEME_MAP: Record<string, Theme> = {
-    // --- BLUE / STEEL (Corporate, Trust, Business) ---
-    'home': 'steel',
-    'about': 'steel',
-    'contact': 'steel',
-    'solutions': 'steel',
-    'services': 'steel',
-    'work': 'steel',
-    'consulting': 'steel',
-
-    // --- RED / INSIGHT (Conversion, Offers, Action) ---
-    'offer': 'insight',
-    'special': 'insight',
-
-    // --- PURPLE / METEORITE (Tech, Innovation, Content) ---
-    'metaverse': 'meteorite',
-    'xr-studio': 'meteorite',
-    'blog': 'meteorite',
-
-    // --- GREEN / EVER (Growth, Free, Community) ---
-    'free': 'ever',
-
-    // --- DEFAULTS (Legal, Misc) ---
-    'imprint': 'meteorite',
-    'privacy-policy': 'meteorite',
-    'terms': 'meteorite',
-    'sitemap': 'meteorite'
-};
 
 class ThemeStore {
     theme = $state<Theme>('meteorite');
     mode = $state<Mode>('dark');
+    override = $state<ThemeOverride>('auto');
     private initialized = false;
+    private lastAppliedPath: string | null = null; // Track to prevent duplicate applies
 
     // Derived computed state (only works in components, so mark as computed getters)
     get themeClass(): string {
@@ -65,23 +41,28 @@ class ThemeStore {
         if (browser) {
             this.init();
             this.applyToDOM();
+            // NICHT applyPageTheme hier! Das wird vom $effect gemacht.
         }
     }
 
     private init() {
-        // Load from localStorage with validation
-        const savedTheme = localStorage.getItem(THEME_KEY) as Theme | null;
+        // Load mode preference only (NOT theme, NOT override)
+        // Theme is determined by route, override is always 'auto' on page load
         const savedMode = localStorage.getItem(MODE_KEY) as Mode | null;
-
-        if (savedTheme && VALID_THEMES.includes(savedTheme)) {
-            this.theme = savedTheme;
-        }
 
         if (savedMode && VALID_MODES.includes(savedMode)) {
             this.mode = savedMode;
         } else {
             this.initSystemMode();
         }
+
+        // CRITICAL: Override is ALWAYS 'auto' on page load
+        // This enables automatic route-based theme switching
+        this.override = 'auto';
+
+        // Clean up old localStorage entries
+        localStorage.removeItem(THEME_KEY);
+        localStorage.removeItem(OVERRIDE_KEY);
 
         this.initialized = true;
     }
@@ -97,26 +78,65 @@ class ThemeStore {
 
     /**
      * Apply theme based on page pathname
+     * 
+     * Logik:
+     * - Wenn override === 'manual', nicht reagieren
+     * - Wenn override === 'auto', Theme via Router auflösen
+     * - Caching: Wenn Pathname identisch mit letztem Apply, skip
      */
-    applyPageTheme(pathname: string) {
+    applyPageTheme(pathname: string): void {
         if (!browser) return;
 
-        if (pathname === '/' || pathname === '/home') {
-            this.theme = 'steel';
+        console.log('[ThemeStore] applyPageTheme:', {
+            pathname,
+            override: this.override,
+            lastAppliedPath: this.lastAppliedPath,
+            currentTheme: this.theme,
+        });
+
+        // Skip wenn Manual-Override aktiv
+        if (this.override === 'manual') {
+            console.log('[ThemeStore] Skipping - Manual override active');
             return;
         }
 
-        const segment = pathname.split('/')[1]?.toLowerCase();
-        if (segment && CATEGORY_THEME_MAP[segment]) {
-            this.theme = CATEGORY_THEME_MAP[segment];
+        // Skip wenn gleicher Pfad wie zuletzt
+        if (this.lastAppliedPath === pathname) {
+            console.log('[ThemeStore] Skipping - Same path as last apply');
+            return;
+        }
+
+        this.lastAppliedPath = pathname;
+        const newTheme = resolvePathToTheme(pathname);
+
+        console.log('[ThemeStore] Resolved theme:', newTheme);
+
+        if (newTheme !== this.theme) {
+            console.log('[ThemeStore] Theme changed:', { from: this.theme, to: newTheme });
+            this.theme = newTheme;
+            this.applyToDOM();
+        } else {
+            console.log('[ThemeStore] Theme unchanged');
         }
     }
 
     setTheme(newTheme: Theme) {
+        this.setThemeManual(newTheme);
+    }
+
+    setThemeManual(newTheme: Theme) {
         if (!VALID_THEMES.includes(newTheme)) return;
+        this.override = 'manual';
         this.theme = newTheme;
+        // NO PERSIST: Manual theme is temporary for current page only
         this.applyToDOM();
-        if (browser) localStorage.setItem(THEME_KEY, newTheme);
+    }
+
+    setAuto(pathname?: string) {
+        this.override = 'auto';
+        const targetPath = pathname ?? (browser ? window.location.pathname : '/');
+        this.lastAppliedPath = null; // Reset cache to force re-apply
+        this.applyPageTheme(targetPath);
     }
 
     toggleMode() {
@@ -138,7 +158,12 @@ class ThemeStore {
         // Apply mode attribute
         root.setAttribute('data-mode', this.mode);
         root.classList.toggle('dark', this.isDarkMode);
+
+        // Apply override attribute for debugging / CSS hooks if needed
+        root.setAttribute('data-theme-override', this.override);
     }
+
+    // No longer needed: Theme and override are not persisted
 }
 
 export const themeState = new ThemeStore();

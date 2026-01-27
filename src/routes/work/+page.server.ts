@@ -1,8 +1,13 @@
-import { getPosts } from '$lib/server/posts';
+import { listContent } from '$lib/content/loader';
+import type { PageServerLoad } from './$types';
 
-export async function load() {
-    const posts = await getPosts('work');
-    return {
-        posts
-    };
-}
+export const prerender = true;
+
+export const load: PageServerLoad = async () => {
+	const workItems = listContent('work');
+
+	return {
+		workItems,
+		totalItems: workItems.length
+	};
+};

@@ -1,0 +1,94 @@
+{
+  "timestamp": "2026-01-25T14:16:37.519Z",
+  "totalItems": 21,
+  "pages": [
+    {
+      "title": "Solutions",
+      "slug": "solutions"
+    },
+    {
+      "title": "Contact",
+      "slug": "contact"
+    },
+    {
+      "title": "Login",
+      "slug": "login"
+    },
+    {
+      "title": "Home",
+      "slug": "home"
+    },
+    {
+      "title": "XR Studio",
+      "slug": "xr-studio"
+    },
+    {
+      "title": "Legal Notice / Imprint",
+      "slug": "imprint"
+    },
+    {
+      "title": "Cookies &amp; Private Policy",
+      "slug": "privacy-policy"
+    },
+    {
+      "title": "Terms",
+      "slug": "terms-and-conditions"
+    },
+    {
+      "title": "About",
+      "slug": "about"
+    },
+    {
+      "title": "Glossar",
+      "slug": "glossar"
+    },
+    {
+      "title": "Über uns",
+      "slug": "ueber-uns"
+    },
+    {
+      "title": "Preise",
+      "slug": "preise"
+    },
+    {
+      "title": "Interactive web app for analyzing candlestick patterns",
+      "slug": "candlesticks"
+    },
+    {
+      "title": "Pat-Man Arcade Game",
+      "slug": "pat-man"
+    },
+    {
+      "title": "Interactive chess game app",
+      "slug": "chess-game"
+    },
+    {
+      "title": "Chart Pattern Visualizer",
+      "slug": "chart-pattern"
+    },
+    {
+      "title": "Work",
+      "slug": "work"
+    },
+    {
+      "title": "Products",
+      "slug": "products"
+    },
+    {
+      "title": "Metaverse",
+      "slug": "metaverse"
+    },
+    {
+      "title": "Cachy – Professional Risk Management & Trading Journal",
+      "slug": "cachy-professional-risk-management-trading-journal"
+    }
+  ],
+  "blogPosts": [
+    {
+      "title": "n8n, nodes und Postiz",
+      "slug": "n8n-nodes-und-postiz",
+      "date": "2025-11-27 14:32:20"
+    }
+  ],
+  "portfolioItems": []
+}
