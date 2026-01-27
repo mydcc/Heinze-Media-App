@@ -1,9 +1,8 @@
 ---
-
-title: "Cookies &amp; Private Policy"
+title: "Cookies & Private Policy"
 date: "Tue, 23 Apr 2024 20:43:56 +0000"
 slug: "privacy-policy"
-
+published: true
 ---
 
 #### Privacy Policy

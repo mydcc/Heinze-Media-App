@@ -4,6 +4,7 @@ date: "2024-10-14T18:35:14.000Z"
 slug: "aktuellen-stand-und-den-zukunftigen-moglichkeiten-von-xr-und-metaverse"
 type: "blog"
 categories: ["XR"]
+published: true
 ---
 
 January 1, 2019

@@ -3,6 +3,7 @@
 title: "Pat-Man Arcade Game"
 date: "Mon, 09 Jun 2025 12:43:08 +0000"
 slug: "pat-man"
+published: true
 
 ---
 

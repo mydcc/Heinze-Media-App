@@ -3,12 +3,16 @@
 title: "Interactive chess game app"
 date: "Wed, 11 Jun 2025 17:31:31 +0000"
 slug: "chess-game"
+published: true
 
 ---
 
 # Interactive Chess
+
 ## Web Application with AI Analysis<p>Play chess with AI analysis for an engaging and educational experience. Browser-based and packed with modern features.</p>
+
 #### <strong>1. Project Overview</strong>
+
 <p>The goal of this project was to develop a fully functional, browser-based chess application suitable for both casual players and ambitious amateurs. The app was designed not only to offer a smooth gaming experience in Player-vs-Player (PvP) and Player-vs-Environment (PvE) modes but also to create genuine added value through the integration of advanced AI functions. The focus was on a clean, intuitive user interface, responsive design, and high performance.</p>
 #### <strong>2. The Challenge</strong>
 <p>Developing a chess application presents several complex challenges:</p>

@@ -4,6 +4,7 @@ date: "2025-11-27T13:32:20.000Z"
 slug: "n8n-nodes-und-postiz"
 type: "blog"
 categories: ["Uncategorized"]
+published: true
 ---
 
 # Einführung
@@ -32,13 +33,13 @@ Alternativ können Sie das SDK mit curl verwenden; weitere Informationen finden
 
 [](https://www.npmjs.com/package/n8n-nodes-postiz#installation-quick-installation)
 
-*   Klicken Sie auf Einstellungen
-*   Klicken Sie auf Community-Knoten
-*   Klicken Sie auf Installieren
-*   Fügen Sie "n8n-nodes-postiz" zu "npm-Paketname" hinzu
-*   Klicken Sie auf Installieren
+* Klicken Sie auf Einstellungen
+* Klicken Sie auf Community-Knoten
+* Klicken Sie auf Installieren
+* Fügen Sie "n8n-nodes-postiz" zu "npm-Paketname" hinzu
+* Klicken Sie auf Installieren
 
-[![community-node.png](/uploads/2025/11/community-node.png)](https://github.com/gitroomhq/postiz-n8n/blob/HEAD/community-node.png)
+<!-- Bild entfernt: Broken Link /uploads/2025/11/community-node.png nicht gefunden -->
 
 * * *
 

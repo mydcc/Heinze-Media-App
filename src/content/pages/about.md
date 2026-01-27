@@ -3,11 +3,14 @@
 title: "About"
 date: "Tue, 30 Apr 2024 05:34:44 +0000"
 slug: "about"
+published: true
 
 ---
 
 # Play Forward
+
 ### A collaborative and strategic partner
+
 <p>When you're ready to use technology to drive your business forward, you need the right partner. We drive business growth for our clients through interactive 3D sales tools, engaged employees through VR and immersive corporate experiences, training and developed web, mobile and app platforms.</p>
 <p>We have the proven team and skills you need to create technology experiences that set your business apart. At HS, we work with our partners to find the right mix of technology, design, content and business strategy.</p>
 ## Heinze Media<p>We love technology and design</p>

@@ -23,7 +23,7 @@ function parseFrontmatter(raw: string) {
 
 export const load: PageServerLoad = async () => {
     try {
-        const modules = import.meta.glob('/src/content/projects/*.md', { as: 'raw' });
+        const modules = import.meta.glob('/src/content/projects/*.md', { query: '?raw', import: 'default' });
         const entries = Object.entries(modules);
         const items = [];
         for (const [path, loader] of entries) {

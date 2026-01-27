@@ -5,6 +5,7 @@ slug: "metaverse-for-business"
 type: "blog"
 image: "/images/blog/technology.jpg"
 categories: ["XR"]
+published: true
 ---
 
 Das Metaverse ist ein immersives, digitales Universum, das die reale und die virtuelle Welt miteinander verschmilzt. Unternehmen erkennen zunehmend das Potenzial des Metaverse, um innovative und ansprechende Geschäftserlebnisse zu schaffen. Heinze Media (HM) positioniert sich mit seiner Metaverse Creation Platform (MCP) als Partner für Unternehmen, die diese neuen Möglichkeiten erschließen wollen.

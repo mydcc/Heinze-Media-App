@@ -3,12 +3,16 @@
 title: "Chart Pattern Visualizer"
 date: "Thu, 12 Jun 2025 13:59:35 +0000"
 slug: "chart-pattern"
+published: true
 
 ---
 
 # <strong>Chart Pattern Visualizer</strong>
+
 ## dynamic platform to visually chart patterns<p>A web application developed for educational purposes in the field of technical analysis of financial markets. </p>
+
 ## Project Overview
+
 <p>The "Interactive Chart Pattern Visualizer" is a web application developed for educational purposes in the field of technical analysis of financial markets. The app provides users with a dynamic and interactive platform to visually grasp classic chart patterns, study their properties, and understand the theoretical trading implications. The goal was to create an intuitive learning tool that makes the complex subject of chart analysis accessible and understandable.</p>
 ### Problem Statement
 <p>Technical chart analysis is a fundamental part of trading, but it is often abstract and difficult for beginners to grasp. Static images in books or on websites can inadequately convey the dynamic nature of pattern formation and the associated concepts. There was a need for a tool that combines clear, interactive visualization with well-founded, context-related information.</p>

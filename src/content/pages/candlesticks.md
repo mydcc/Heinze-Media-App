@@ -3,12 +3,16 @@
 title: "Interactive web app for analyzing candlestick patterns"
 date: "Mon, 09 Jun 2025 10:37:16 +0000"
 slug: "candlesticks"
+published: true
 
 ---
 
 # Candlestick Pattern Analysis
+
 ## Single-Page Application (SPA)<p>Development of an interactive Single-Page Application (SPA) as an educational tool for analyzing candlestick chart patterns.</p>
+
 #### <strong>Project Overview</strong>
+
 <p>Development of an interactive Single-Page Application (SPA) as an educational tool for analyzing candlestick chart patterns. The application was intentionally built without external frameworks or libraries, using Vanilla JavaScript (ES6+), HTML5, and CSS3 to ensure high performance and maintainability.</p>
 #### <strong>Technical Core Components</strong>
 <ul>
