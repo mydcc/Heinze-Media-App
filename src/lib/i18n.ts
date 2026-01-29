@@ -1,25 +1,15 @@
-import { localizeHref, getLocale } from "$lib/paraglide/runtime.js";
+import { register, init, getLocaleFromNavigator, locale } from 'svelte-i18n';
+import { browser } from '$app/environment';
 
-/**
- * Adapter to maintain compatibility with components expecting the `i18n` object
- * while using the Paraglide-JS v2 (beta adapter) API.
- */
-export const i18n = {
-    /**
-     * Resolves a route to the current locale.
-     * Maps to localizeHref.
-     */
-    resolveRoute: (path: string, lang?: string) => {
-        return localizeHref(path, { locale: lang ?? getLocale() });
-    },
+register('en', () => import('../locales/en.json'));
+register('de', () => import('../locales/de.json'));
 
-    /**
-     * Helper to get the canonical path (without language prefix).
-     * This is an approximation as deLocalizeHref returns the full href or path.
-     */
-    route: (path: string) => {
-        // This is tricky as deLocalizeHref exists but we might not need it often.
-        // For now, let's satisfy the interface if used.
-        return path;
-    }
-};
+export function setupI18n() {
+    init({
+        fallbackLocale: 'en',
+        initialLocale: browser ? (window.navigator.language?.split('-')[0] || 'en') : 'en',
+    });
+}
+
+// Export locale store for usage in components
+export { locale, _, isLoading } from 'svelte-i18n';

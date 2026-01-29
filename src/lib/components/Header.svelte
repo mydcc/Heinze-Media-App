@@ -1,8 +1,7 @@
 <script lang="ts">
     import ThemeToggle from "$lib/components/ThemeToggle.svelte";
     import { page as pageStore } from "$app/stores";
-    import * as m from "$lib/paraglide/messages.js";
-    import { i18n } from "$lib/i18n";
+    import { _ } from "svelte-i18n";
 
     type Link = {
         href: string;
@@ -12,12 +11,12 @@
 
     const { links: propLinks } = $props<{ links?: Link[] }>();
     const defaultLinks: Link[] = $derived([
-        { href: i18n.resolveRoute("/"), label: m.header_home() },
-        { href: i18n.resolveRoute("/about"), label: m.header_about() },
-        { href: i18n.resolveRoute("/work"), label: m.header_work() },
+        { href: "/", label: $_('header_home') },
+        { href: "/about", label: $_('header_about') },
+        { href: "/work", label: $_('header_work') },
         {
-            href: i18n.resolveRoute("/services"),
-            label: m.header_services(),
+            href: "/services",
+            label: $_('header_services'),
             submenu: [
                 {
                     href: "https://xrpress.org",
@@ -26,8 +25,8 @@
                 },
             ],
         },
-        { href: i18n.resolveRoute("/blog"), label: m.header_news() },
-        { href: i18n.resolveRoute("/contact"), label: m.header_contact() },
+        { href: "/blog", label: $_('header_news') },
+        { href: "/contact", label: $_('header_contact') },
     ]);
     function getLinks() {
         return propLinks && propLinks.length > 0 ? propLinks : defaultLinks;

@@ -2,8 +2,9 @@
 import { z } from 'zod';
 import { marked } from 'marked';
 import matter from 'gray-matter';
-import { getLocale as languageTag, locales as availableLanguageTags } from '$lib/paraglide/runtime.js';
 import { validateContent } from './validator';
+
+const availableLanguageTags = ['en', 'de'];
 
 const blockSchema = z.object({
     type: z.string(),
@@ -21,7 +22,7 @@ const frontmatterSchema = z.object({
     slug: z.string().optional() // Optionaler Override
 });
 
-export async function getAllPages() {
+export async function getAllPages(lang: string = 'en') {
     // Rekursive Suche in der neuen Struktur: /src/content/{lang}/{type}/**/*.md
     const modules = import.meta.glob('/src/content/**/*.md', { eager: true, as: 'raw' });
     const grouped: Record<string, Record<string, any>> = {};
@@ -63,7 +64,7 @@ export async function getAllPages() {
         }
     }
 
-    const currentLang = languageTag();
+    const currentLang = lang;
     const finalPages = [];
 
     // Zusammenstellen der Seiten für die aktuelle Sprache
@@ -86,8 +87,8 @@ export async function getAllPages() {
     return finalPages;
 }
 
-export async function getPage(slug: string, type?: string) {
-    const pages = await getAllPages();
+export async function getPage(slug: string, type?: string, lang: string = 'en') {
+    const pages = await getAllPages(lang);
 
     // Suche nach Slug (kann auch ein Pfad sein wie 'pages/about')
     const found = pages.find((p) => {

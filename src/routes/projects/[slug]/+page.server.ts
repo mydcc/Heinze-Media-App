@@ -21,9 +21,7 @@ export const load: PageServerLoad = async ({ params }) => {
             });
         }
         throw error(404, {
-            message: `Projekt "${slug}" nicht gefunden. Verfügbare Projekte: ${available.join(', ')}`,
-            searched: slug,
-            available
+            message: `Projekt "${slug}" nicht gefunden. Verfügbare Projekte: ${available.join(', ')}`
         });
     }
 
@@ -42,9 +40,7 @@ export const load: PageServerLoad = async ({ params }) => {
             });
         }
         throw error(404, {
-            message: `Projekt "${slug}" konnte nicht geladen werden.`,
-            searched: slug,
-            available
+            message: `Projekt "${slug}" konnte nicht geladen werden.`
         });
     }
 };

@@ -2,7 +2,6 @@
     import ThemePreview from "$lib/components/brand/ThemePreview.svelte";
     import LogoDownload from "$lib/components/brand/LogoDownload.svelte";
     import SEOHead from "$lib/components/SEOHead.svelte";
-    import * as m from "$lib/paraglide/messages.js";
 
     const themes = [
         {

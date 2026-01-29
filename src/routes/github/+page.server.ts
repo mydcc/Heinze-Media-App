@@ -42,7 +42,7 @@ export const load: PageServerLoad = async () => {
             });
         }
         // sort: featured first, then by date
-        items.sort((a, b) => (b.featured - a.featured) || (new Date(b.date).getTime() - new Date(a.date).getTime()));
+        items.sort((a, b) => (Number(b.featured) - Number(a.featured)) || (new Date(b.date).getTime() - new Date(a.date).getTime()));
         return { projects: items };
     } catch (e) {
         throw error(500, 'Could not load projects');

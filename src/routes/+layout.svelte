@@ -8,6 +8,11 @@
   import { themeState } from "$lib/state/theme.svelte";
   import { adminState } from "$lib/state/admin.svelte";
   import { page as pageStore } from "$app/stores";
+  import { setupI18n, isLoading } from "$lib/i18n";
+  import ToastContainer from "$lib/components/shared/ToastContainer.svelte";
+  import WindowContainer from "$lib/components/window/WindowContainer.svelte";
+
+  setupI18n();
 
   // Svelte 5 Runes: direkt im <script> verwenden
   const { children, data } = $props();
@@ -53,11 +58,20 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<div class="flex flex-col min-h-screen text-text-main">
-  <Header />
-  <main class="flex-grow pt-20">
-    <!-- Added padding-top for fixed header -->
-    {@render children()}
-  </main>
-  <Footer />
-</div>
+{#if $isLoading}
+  <div class="flex items-center justify-center min-h-screen bg-bg-surface text-white">
+    Loading...
+  </div>
+{:else}
+  <div class="flex flex-col min-h-screen text-text-main">
+    <Header />
+    <main class="flex-grow pt-20">
+      <!-- Added padding-top for fixed header -->
+      {@render children()}
+    </main>
+    <Footer />
+  </div>
+
+  <ToastContainer />
+  <WindowContainer />
+{/if}

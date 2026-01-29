@@ -1,10 +1,14 @@
 <script lang="ts">
     import ThemeSwitcher from "$lib/components/ThemeSwitcher.svelte";
     import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
-    import * as m from "$lib/paraglide/messages.js";
-    import { i18n } from "$lib/i18n";
+    import { _ } from "svelte-i18n";
+    import { windowManager } from "$lib/state/windowManager.svelte";
+    import ThreeWindowContent from "$lib/components/window/ThreeWindowContent.svelte";
+    import { toastService } from "$lib/state/toast.svelte";
+
     // Svelte 5 Runes: direkt im <script> verwenden, nicht importieren
     import { adminState } from "$lib/state/admin.svelte";
+
 </script>
 
 <footer
@@ -29,10 +33,10 @@
                 <p
                     class="text-xs text-text-muted uppercase tracking-widest mb-4 font-semibold"
                 >
-                    {m.footer_tagline()}
+                    {$_('footer_tagline')}
                 </p>
                 <p class="text-sm text-text-main leading-relaxed mb-8 max-w-xs">
-                    {m.footer_description()}
+                    {$_('footer_description')}
                 </p>
 
                 <!-- Social Media Icons -->
@@ -87,7 +91,7 @@
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
-                    {m.footer_products()}
+                    {$_('footer_products')}
                 </h4>
                 <ul class="space-y-3 text-sm">
                     <li>
@@ -138,7 +142,7 @@
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
-                    {m.footer_solutions()}
+                    {$_('footer_solutions')}
                 </h4>
                 <ul class="space-y-3 text-sm">
                     <li>
@@ -189,7 +193,7 @@
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
-                    {m.footer_resources()}
+                    {$_('footer_resources')}
                 </h4>
                 <ul class="space-y-3 text-sm">
                     <li>
@@ -242,6 +246,16 @@
                             Sitemap
                         </a>
                     </li>
+                    <li>
+                        <button
+                            onclick={open3DWindow}
+                            class="footer-link inline-flex items-center gap-2 cursor-pointer text-left w-full hover:text-accent transition-colors"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            Open 3D Window
+                        </button>
+                    </li>
                 </ul>
             </div>
 
@@ -250,7 +264,7 @@
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
-                    {m.footer_company()}
+                    {$_('footer_company')}
                 </h4>
                 <ul class="space-y-3 text-sm">
                     <li>
@@ -311,7 +325,7 @@
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
-                    {m.footer_legal()}
+                    {$_('footer_legal')}
                 </h4>
                 <ul class="space-y-3 text-sm">
                     <li>
@@ -489,7 +503,7 @@
                         href="#newsletter"
                         class="text-accent text-sm font-semibold hover:text-accent/80 transition-colors inline-flex items-center gap-2"
                     >
-                        {m.footer_cta_label()}
+                        {$_('footer_cta_label')}
                         <svg
                             class="w-4 h-4"
                             fill="none"
