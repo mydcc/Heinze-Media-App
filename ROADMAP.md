@@ -9,16 +9,16 @@
     *   [ ] **Marked-Entfernung:** `marked` wird noch in `RichText.svelte`, `render.ts` und anderen Komponenten verwendet. Diese sollten auf `mdsvex` (via Component-Import) umgestellt werden, um eine einheitliche Rendering-Engine zu garantieren.
     *   [ ] **Type-Safety:** Verbesserung der TypeScript-Typen für die Frontmatter-Daten, die nun strikt validiert sind.
 
-## Phase 2: "The Metaverse Interface" (3D Integration)
+## Phase 2: "The Metaverse Interface" (3D Integration) - [ABGESCHLOSSEN]
 *   **Ziel:** Erfüllung der Kernvision "3D directly into Svelte components".
 *   **Tasks:**
-    *   [ ] **Komponente `<Model3D />`:** Erstellen einer Threlte-basierten Komponente, die Pfad, Skalierung und Animation als Props akzeptiert.
-    *   [ ] **Markdown-Integration:** Testen der Einbindung:
+    *   [x] **Komponente `<Model3D />`:** Erstellen einer Threlte-basierten Komponente, die Pfad, Skalierung und Animation als Props akzeptiert.
+    *   [x] **Markdown-Integration:** Testen der Einbindung:
         ```markdown
         # Mein 3D Modell
         <Model3D src="/models/avatar.glb" scale={2} />
         ```
-    *   [ ] **Draco-Pipeline:** Setup eines Scripts zur automatischen Komprimierung von GLB-Dateien im Build-Prozess.
+    *   [x] **Draco-Pipeline:** Setup eines Scripts zur automatischen Komprimierung von GLB-Dateien im Build-Prozess.
 
 ## Phase 3: "Tailwind via Frontmatter" (Dynamic Design)
 *   **Ziel:** Markdown-gesteuerte Themes.
