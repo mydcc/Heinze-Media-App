@@ -20,12 +20,12 @@
         ```
     *   [x] **Draco-Pipeline:** Setup eines Scripts zur automatischen Komprimierung von GLB-Dateien im Build-Prozess.
 
-## Phase 3: "Tailwind via Frontmatter" (Dynamic Design)
+## Phase 3: "Tailwind via Frontmatter" (Dynamic Design) - [ABGESCHLOSSEN]
 *   **Ziel:** Markdown-gesteuerte Themes.
 *   **Tasks:**
-    *   [ ] **Frontmatter-Erweiterung:** Definieren von Farbfeldern im Zod-Schema (z.B. `brandColor`, `accentColor`).
-    *   [ ] **CSS-Variable Injection:** In `+layout.svelte` oder `+page.svelte` diese Werte als Inline-Styles an `:root` oder den Wrapper binden (`style="--brand: {data.meta.brandColor}"`).
-    *   [ ] **Tailwind Config:** Sicherstellen, dass Tailwind diese CSS-Variablen nutzt (`colors: { brand: 'var(--brand)' }`).
+    *   [x] **Frontmatter-Erweiterung:** Definieren von Farbfeldern im Zod-Schema (z.B. `brandColor`, `accentColor`).
+    *   [x] **CSS-Variable Injection:** In `+layout.svelte` oder `+page.svelte` diese Werte als Inline-Styles an `:root` oder den Wrapper binden (`style="--brand: {data.meta.brandColor}"`).
+    *   [x] **Tailwind Config:** Sicherstellen, dass Tailwind diese CSS-Variablen nutzt (`colors: { brand: 'var(--brand)' }`).
 
 ## Phase 4: Static Search & Performance
 *   **Ziel:** Backend-lose Suche und High-Speed Performance.

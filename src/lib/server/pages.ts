@@ -15,7 +15,9 @@ const frontmatterSchema = z.object({
     layout: z.string().optional().default('default'),
     blocks: z.array(blockSchema).optional(),
     theme: z.string().optional(),
-    slug: z.string().optional()
+    slug: z.string().optional(),
+    brandColor: z.string().optional(),
+    accentColor: z.string().optional()
 });
 
 export async function getAllPages() {
