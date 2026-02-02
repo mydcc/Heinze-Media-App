@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
-import glob from 'glob';
+import { globSync } from 'glob';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,7 +17,7 @@ if (!fs.existsSync(MODELS_DIR)) {
 }
 
 // Find all .glb files
-const files = glob.sync(`${MODELS_DIR}/**/*.glb`);
+const files = globSync(`${MODELS_DIR}/**/*.glb`);
 
 files.forEach(file => {
     if (file.includes('.draco.glb')) return; // Skip already compressed files

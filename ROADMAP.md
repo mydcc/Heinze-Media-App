@@ -27,11 +27,11 @@
     *   [x] **CSS-Variable Injection:** In `+layout.svelte` oder `+page.svelte` diese Werte als Inline-Styles an `:root` oder den Wrapper binden (`style="--brand: {data.meta.brandColor}"`).
     *   [x] **Tailwind Config:** Sicherstellen, dass Tailwind diese CSS-Variablen nutzt (`colors: { brand: 'var(--brand)' }`).
 
-## Phase 4: Static Search & Performance
+## Phase 4: Static Search & Performance - [ABGESCHLOSSEN]
 *   **Ziel:** Backend-lose Suche und High-Speed Performance.
 *   **Tasks:**
-    *   [ ] **Pagefind Integration:** Setup des `pagefind` Indexers als Post-Build-Step.
-    *   [ ] **Search UI:** Bauen einer Svelte-Komponente für das Suchfeld.
+    *   [x] **Pagefind Integration:** Setup des `pagefind` Indexers als Post-Build-Step.
+    *   [x] **Search UI:** Bauen einer Svelte-Komponente für das Suchfeld.
     *   [ ] **Asset-Check:** Script zur Prüfung, ob alle in Markdown referenzierten Bilder/Modelle auch tatsächlich existieren (Broken Link Checker).
 
 ## Priorisierung
