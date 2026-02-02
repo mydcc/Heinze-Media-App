@@ -9,6 +9,6 @@ published: true
 
 ## Welcome in our office
 
-<iframe src="https://metaverse.heinze-media.com/index.php?plot_id=office"></iframe>
+<iframe title="Metaverse Office" src="https://metaverse.heinze-media.com/index.php?plot_id=office"></iframe>
 
 <a href="https://metaverse.heinze-media.com/index.php?plot_id=office">OPEN in NEW WINDOW</a>

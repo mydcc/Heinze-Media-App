@@ -2,17 +2,12 @@
 import { error } from '@sveltejs/kit';
 
 export const load = async ({ data }) => {
-    // data comes from +page.server.ts
-    // We need to dynamically import the markdown file to get the component
-
-    // Glob all markdown files (non-eager / lazy load)
+    // Dynamic import for mdsvex component
     const modules = import.meta.glob('/src/content/**/*.md');
-
-    // Resolve the specific file
     const match = modules[data.filePath];
 
     if (!match) {
-        throw error(500, `Content file not found: ${data.filePath}`);
+        throw error(500, 'Content file not found');
     }
 
     const module = await match();

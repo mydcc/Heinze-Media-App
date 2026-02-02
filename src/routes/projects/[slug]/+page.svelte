@@ -1,41 +1,45 @@
 <script lang="ts">
-    let { data } = $props();
-    let meta = $derived(() => data?.meta ?? {});
-    let contentHtml = $derived(() => data?.contentHtml ?? "");
-    let slug = $derived(() => data?.slug ?? "");
+    import SEOHead from "$lib/components/SEOHead.svelte";
+    import BlockRenderer from "$lib/components/cms/BlockRenderer.svelte";
+    import type { PageData } from "./$types";
+
+    let { data }: { data: PageData } = $props();
+
+    const metadata = $derived(data.metadata);
+    const ContentComponent = $derived(data.component);
+    const seoMeta = $derived(data.seoMeta);
+    const blocks = $derived(data.metadata.blocks || []);
 </script>
 
-<svelte:head>
-    <title>{meta.title} — HEINZE MEDIA</title>
-    <meta name="description" content={meta.description || ""} />
-</svelte:head>
+<SEOHead
+    title={`${metadata.title} | Heinze Media`}
+    description={seoMeta.description}
+    ogImage={seoMeta.image}
+/>
 
-<main class="container mx-auto px-6 py-12">
-    <div class="max-w-3xl">
-        <h1 class="text-2xl font-black mb-2">{meta.title}</h1>
-        <p class="text-muted mb-4">{meta.description}</p>
+<main class="min-h-screen pb-24 pt-32">
+    <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto">
+            <header class="mb-16">
+                <h1 class="text-5xl md:text-7xl font-black text-text-main mb-8">
+                    {metadata.title}
+                </h1>
+                {#if metadata.description}
+                    <p class="text-xl md:text-2xl text-text-muted leading-relaxed">
+                        {metadata.description}
+                    </p>
+                {/if}
+            </header>
 
-        <div class="mb-6">
-            <a
-                href={meta.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-accent font-semibold">Repo auf GitHub →</a
-            >
-        </div>
+            <article class="prose prose-invert max-w-none">
+                <ContentComponent />
+            </article>
 
-        <article class="prose prose-invert max-w-none">
-            {@html contentHtml}
-        </article>
-
-        <div class="mt-8">
-            <h3 class="font-bold mb-2">Interesse an Integration?</h3>
-            <p class="mb-4">
-                Ich biete: POC, Server‑Integration, CI/CD, Skalierung. <a
-                    href="/contact"
-                    class="text-accent font-semibold">Kontaktieren Sie mich</a
-                >.
-            </p>
+            {#if blocks.length > 0}
+                <div class="mt-16">
+                    <BlockRenderer {blocks} />
+                </div>
+            {/if}
         </div>
     </div>
 </main>
