@@ -8,10 +8,12 @@
     let { data }: { data: PageData } = $props();
 
     const metadata = $derived(data.metadata);
-    const html = $derived(data.html);
+    // Component is now loaded dynamically via mdsvex
+    const ContentComponent = $derived(data.component);
+
     const seoMeta = $derived(data.seoMeta);
     const jsonLD = $derived(data.jsonLD);
-    const blocks = $derived(data.blocks || []);
+    const blocks = $derived(data.metadata.blocks || []);
     const layout = $derived(metadata?.layout || "default");
 
     // Animation states
@@ -106,7 +108,10 @@
                         <article
                             class="prose prose-invert max-w-none prose-headings:text-text-main prose-p:text-text-muted prose-strong:text-accent prose-a:text-accent"
                         >
-                            {@html html}
+                            <!-- Render the mdsvex component dynamically -->
+                            {#if ContentComponent}
+                                <ContentComponent />
+                            {/if}
                         </article>
                     </div>
                 </div>

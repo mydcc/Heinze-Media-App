@@ -16,7 +16,7 @@ published: true
 <p>Development of an interactive Single-Page Application (SPA) as an educational tool for analyzing candlestick chart patterns. The application was intentionally built without external frameworks or libraries, using Vanilla JavaScript (ES6+), HTML5, and CSS3 to ensure high performance and maintainability.</p>
 #### <strong>Technical Core Components</strong>
 <ul>
-<li><strong>Custom Canvas Engine:</strong> A custom-built rendering engine dynamically draws chart patterns on an HTML5 <code><canvas></code> element. This allows for full control over presentation and interactivity.</li>
+<li><strong>Custom Canvas Engine:</strong> A custom-built rendering engine dynamically draws chart patterns on an HTML5 <code><canvas></canvas></code> element. This allows for full control over presentation and interactivity.</li>
 <li><strong>Declarative Highlighting:</strong> A unique feature is the visual highlighting of key characteristics (e.g., gaps, engulfing bodies, long wicks). These are not marked as static images but are procedurally drawn on the canvas by interpreting an instruction array within each pattern's data object.</li>
 <li><strong>Data-Driven Architecture:</strong> The entire application, from the pattern list to the detail view, is dynamically generated from a central JavaScript data object. This makes the application easily scalable and extensible.</li>
 <li><strong>Persistent User Preferences:</strong> A favorites system and a switchable dark/light theme use the browser's <code>localStorage</code> API to save user settings client-side.</li>

@@ -1,9 +1,6 @@
 
 import { z } from 'zod';
-import { marked } from 'marked';
-import matter from 'gray-matter';
 import { getLocale as languageTag, locales as availableLanguageTags } from '$lib/paraglide/runtime.js';
-import { validateContent } from './validator';
 
 const blockSchema = z.object({
     type: z.string(),
@@ -18,64 +15,61 @@ const frontmatterSchema = z.object({
     layout: z.string().optional().default('default'),
     blocks: z.array(blockSchema).optional(),
     theme: z.string().optional(),
-    slug: z.string().optional() // Optionaler Override
+    slug: z.string().optional()
 });
 
 export async function getAllPages() {
-    // Rekursive Suche in der neuen Struktur: /src/content/{lang}/{type}/**/*.md
-    const modules = import.meta.glob('/src/content/**/*.md', { eager: true, as: 'raw' });
+    // Import modules directly (mdsvex handles parsing)
+    // Note: eager=true is essential for static site generation
+    const modules = import.meta.glob('/src/content/**/*.md', { eager: true });
     const grouped: Record<string, Record<string, any>> = {};
 
-    for (const [file, raw] of Object.entries(modules)) {
+    for (const [file, module] of Object.entries(modules)) {
+        // Path analysis: /src/content/de/pages/home.md
+        const parts = file.replace('/src/content/', '').split('/');
+        if (parts.length < 3) continue;
+
+        const lang = parts[0];
+        const type = parts[1];
+        const slugPath = parts.slice(2).join('/').replace(/\.md$/, '');
+
+        // Only process supported languages
+        if (!availableLanguageTags.includes(lang as any)) continue;
+
+        const rawMetadata = (module as any).metadata;
+
+        // Strict Validation: Throw on failure
+        // This stops the build process as required by AGENT.md
+        let meta;
         try {
-            // Beispiel Pfad: /src/content/de/pages/home.md
-            const parts = file.replace('/src/content/', '').split('/');
-            if (parts.length < 3) continue;
-
-            const lang = parts[0]; // 'de' oder 'en'
-            const type = parts[1]; // 'pages', 'blog', 'work'
-            const slugPath = parts.slice(2).join('/').replace(/\.md$/, '');
-
-            // Fallback: Sichert ab, dass wir nur unterstützte Sprachen laden
-            if (!availableLanguageTags.includes(lang as any)) continue;
-
-            // Frontmatter extrahieren
-            const { data, content } = matter(raw as string);
-            const meta = frontmatterSchema.parse(data);
-            const contentHtml = await marked(content || '');
-
-            // ID ist der Pfad innerhalb des Sprachordners (z.B. pages/home)
-            const id = `${type}/${slugPath}`;
-
-            if (!grouped[id]) grouped[id] = {};
-            grouped[id][lang] = {
-                id,
-                slug: meta.slug || slugPath, // Nutze Slug aus Metadata oder Dateinamen
-                type,
-                meta,
-                content,
-                contentHtml,
-                lang
-            };
+            meta = frontmatterSchema.parse(rawMetadata);
         } catch (e) {
-            console.error(`[ERROR] Invalid content in ${file}:`, e);
-            continue;
+            console.error(`[VALIDATION ERROR] File: ${file}`);
+            throw e; // Build-Breaker
         }
+
+        const id = `${type}/${slugPath}`;
+
+        if (!grouped[id]) grouped[id] = {};
+        grouped[id][lang] = {
+            id,
+            slug: meta.slug || slugPath,
+            type,
+            meta,
+            // Component is NOT returned here to keep payload serializable
+            // The component will be loaded by +page.ts via dynamic import
+            lang,
+            filePath: file
+        };
     }
 
     const currentLang = languageTag();
     const finalPages = [];
 
-    // Zusammenstellen der Seiten für die aktuelle Sprache
     for (const [id, translations] of Object.entries(grouped)) {
-        // Prio 1: Aktuelle Sprache
-        // Prio 2: Fallback auf DE (da dies die Primärsprache ist laut User)
-        // Prio 3: Erste verfügbare Übersetzung
         const page = translations[currentLang] || translations['de'] || Object.values(translations)[0];
 
         if (page) {
-            // Wenn die Seite in der aktuellen Sprache fehlt, markieren wir sie als "fallback"
-            // Dies kann im Load-Event genutzt werden, um auf die Startseite umzuleiten (gefordert vom User)
             if (!translations[currentLang]) {
                 page.isFallback = true;
             }
@@ -89,7 +83,6 @@ export async function getAllPages() {
 export async function getPage(slug: string, type?: string) {
     const pages = await getAllPages();
 
-    // Suche nach Slug (kann auch ein Pfad sein wie 'pages/about')
     const found = pages.find((p) => {
         if (type && p.type !== type) return false;
         return p.slug === slug || p.id === slug || p.id.endsWith(`/${slug}`);

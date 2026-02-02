@@ -4,15 +4,17 @@
         locales as availableLanguageTags,
     } from "$lib/paraglide/runtime.js";
     import { page } from "$app/stores";
-
+    import { browser } from "$app/environment";
     import { i18n } from "$lib/i18n";
 
     /**
      * Get the relative href for a language
      */
     function getHref(lang: string) {
-        // i18n.resolveRoute handles the correct prefixing/unprefixing
-        return i18n.resolveRoute($page.url.pathname, lang) + $page.url.search;
+        const path = i18n.resolveRoute($page.url.pathname, lang);
+        // Avoid accessing url.search during prerendering/server-side to prevent build errors
+        if (!browser) return path;
+        return path + $page.url.search;
     }
 </script>
 
@@ -24,7 +26,7 @@
         {#each availableLanguageTags as lang}
             <a
                 href={getHref(lang)}
-                class="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center text-[10px] font-black uppercase tracking-widest transition-all duration-300 relative
+                class="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center text-xs font-black uppercase tracking-widest transition-all duration-300 relative
                 {languageTag() === lang
                     ? 'bg-accent text-white shadow-[0_0_15px_rgba(var(--color-accent),0.4)] scale-110 z-10'
                     : 'bg-white/5 text-text-muted hover:bg-white/10 hover:text-white hover:scale-105'}"

@@ -1,50 +1,35 @@
 
 import { error } from '@sveltejs/kit';
-import { marked } from 'marked';
-import { frontmatterSchema } from '$lib/server/frontmatterSchema';
-import { dev } from '$app/environment';
-import type { PageServerLoad } from './$types';
+import { getPage } from '$lib/server/pages';
 
 export const prerender = true;
 
-export const load: PageServerLoad = async ({ params }) => {
+export async function entries() {
+    const { getAllPages } = await import('$lib/server/pages');
+    const pages = await getAllPages();
+    // Filter for projects only
+    return pages
+        .filter(p => p.type === 'projects')
+        .map(p => ({ slug: p.slug }));
+}
+
+export const load = async ({ params }) => {
     const { slug } = params;
-    const modules = import.meta.glob('/src/content/projects/*.md', { query: '?raw', import: 'default' });
-    const possible = `/src/content/projects/${slug}.md`;
-    const available = Object.keys(modules).map((p) => p.replace('/src/content/projects/', '').replace('.md', ''));
+    // Reuse the central logic which now uses mdsvex/glob
+    // We request type 'projects' explicitly
+    const page = await getPage(slug, 'projects');
 
-    if (!modules[possible]) {
-        if (dev) {
-            console.error('[404] Project not found:', {
-                searched: slug,
-                available
-            });
-        }
-        throw error(404, {
-            message: `Projekt "${slug}" nicht gefunden. Verfügbare Projekte: ${available.join(', ')}`,
-            searched: slug,
-            available
-        });
+    if (!page) {
+        throw error(404, 'Project not found');
     }
 
-    try {
-        const raw = await (modules[possible] as () => Promise<string>)();
-        const { default: matter } = await import('gray-matter');
-        const { data, content } = matter(raw as string);
-        const meta = frontmatterSchema.parse(data);
-        const contentHtml = await marked(content || '');
-        return { meta, contentHtml, slug };
-    } catch (e: any) {
-        if (dev) {
-            console.error('[500] Fehler beim Parsen des Projekts:', {
-                slug,
-                error: e?.message || e
-            });
+    return {
+        metadata: { ...page.meta, slug: page.slug },
+        filePath: page.filePath,
+        seoMeta: {
+            title: page.meta.title,
+            description: page.meta.description || '',
+            image: '/og-default.png'
         }
-        throw error(404, {
-            message: `Projekt "${slug}" konnte nicht geladen werden.`,
-            searched: slug,
-            available
-        });
-    }
+    };
 };

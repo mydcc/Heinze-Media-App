@@ -66,7 +66,7 @@ published: true
 </ul>
 ### 4. Technical Implementation
 <ul>
-<li><strong>Graphics Engine:</strong> The entire game is rendered in real-time on an <strong>HTML5 <code><canvas></code> element</strong>.</li>
+<li><strong>Graphics Engine:</strong> The entire game is rendered in real-time on an <strong>HTML5 <code><canvas></canvas></code> element</strong>.</li>
 <li><strong>Game Logic:</strong> The entire logic—from movement control and collision detection to the AI—is implemented in object-oriented <strong>Vanilla JavaScript</strong>. A central game loop (<code>requestAnimationFrame</code>) ensures smooth animations.</li>
 <li><strong>Styling:</strong> The user interface was designed with <strong>Tailwind CSS</strong> for a fast and responsive layout, supplemented by custom CSS for the retro feel and visual effects.</li>
 </ul>
