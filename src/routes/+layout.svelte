@@ -27,6 +27,13 @@
     }
   }
 
+  // Dynamic Theme Colors from Frontmatter
+  // We extract brandColor and accentColor from the current page's metadata
+  // These are passed down from +page.server.ts -> +layout.server.ts (implicit) -> data
+  const metadata = $derived(data?.metadata as any);
+  const brandColor = $derived(metadata?.brandColor);
+  const accentColor = $derived(metadata?.accentColor);
+
   $effect(() => {
     const pathname = $pageStore.url.pathname;
     if (pathname) {
@@ -53,7 +60,11 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<div class="flex flex-col min-h-screen text-text-main">
+<div
+  class="flex flex-col min-h-screen text-text-main"
+  style:--color-brand={brandColor}
+  style:--color-accent={accentColor}
+>
   <Header />
   <main class="flex-grow pt-20">
     <!-- Added padding-top for fixed header -->
