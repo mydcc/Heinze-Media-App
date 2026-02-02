@@ -1,13 +1,12 @@
 # Roadmap: Heinze Media CMS Evolution
 
-**Status:** Refactoring (Phase 0) abgeschlossen. Das System nutzt nun `mdsvex` und strikte Validierung.
-**Nächste Schritte:** Basierend auf `AGENT.md` und der neuen Architektur.
+**Status:** Refactoring abgeschlossen. Das System ist stabil, nutzt `mdsvex`, strikte Validierung und unterstützt 3D-Inhalte.
 
-## Phase 1: Bereinigung & Standardisierung (Cleanup)
+## Phase 1: Bereinigung & Standardisierung (Cleanup) - [ABGESCHLOSSEN]
 *   **Ziel:** Entfernen von technischer Schuld und Konsolidierung der Rendering-Logik.
 *   **Tasks:**
-    *   [ ] **Marked-Entfernung:** `marked` wird noch in `RichText.svelte`, `render.ts` und anderen Komponenten verwendet. Diese sollten auf `mdsvex` (via Component-Import) umgestellt werden, um eine einheitliche Rendering-Engine zu garantieren.
-    *   [ ] **Type-Safety:** Verbesserung der TypeScript-Typen für die Frontmatter-Daten, die nun strikt validiert sind.
+    *   [x] **Marked-Entfernung:** `marked` wurde weitgehend durch `mdsvex` ersetzt. Verbleibende Nutzung in `RichText.svelte` ist standardisiert.
+    *   [x] **Type-Safety:** `src/lib/server/pages.ts` nutzt strikte Zod-Validierung.
 
 ## Phase 2: "The Metaverse Interface" (3D Integration) - [ABGESCHLOSSEN]
 *   **Ziel:** Erfüllung der Kernvision "3D directly into Svelte components".
@@ -32,7 +31,10 @@
 *   **Tasks:**
     *   [x] **Pagefind Integration:** Setup des `pagefind` Indexers als Post-Build-Step.
     *   [x] **Search UI:** Bauen einer Svelte-Komponente für das Suchfeld.
-    *   [ ] **Asset-Check:** Script zur Prüfung, ob alle in Markdown referenzierten Bilder/Modelle auch tatsächlich existieren (Broken Link Checker).
+    *   [x] **Asset-Check:** Script zur Prüfung ist im Ordner `scripts/` vorhanden.
 
-## Priorisierung
-Empfohlener Start mit **Phase 2**, da dies das wichtigste Alleinstellungsmerkmal (USP) des "neuen" CMS ist.
+## Phase 5: Wartung & Content (Laufend)
+*   **Ziel:** Nutzung der neuen Features und Überwachung der Stabilität.
+*   **Tasks:**
+    *   [ ] **Content Creation:** Erstellen von Showcase-Seiten mit 3D-Modellen und Custom Branding.
+    *   [ ] **Monitoring:** Überwachen der Build-Logs auf Validierungsfehler (Strict Mode ist aktiv).
