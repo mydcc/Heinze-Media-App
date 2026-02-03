@@ -2,7 +2,7 @@
     import ThemeToggle from "$lib/components/ThemeToggle.svelte";
     import { page as pageStore } from "$app/stores";
     import * as m from "$lib/paraglide/messages.js";
-    import { i18n } from "$lib/i18n";
+    import { localizeHref, getLocale as languageTag } from "$lib/paraglide/runtime.js";
 
     type Link = {
         href: string;
@@ -11,12 +11,15 @@
     };
 
     const { links: propLinks } = $props<{ links?: Link[] }>();
+
+    // We explicitly use languageTag() inside the derived to force reactivity when language changes.
+    // The previous implementation using i18n wrapper might have obscured the dependency.
     const defaultLinks: Link[] = $derived([
-        { href: i18n.resolveRoute("/"), label: m.header_home() },
-        { href: i18n.resolveRoute("/about"), label: m.header_about() },
-        { href: i18n.resolveRoute("/work"), label: m.header_work() },
+        { href: localizeHref("/", { locale: languageTag() }), label: m.header_home() },
+        { href: localizeHref("/about", { locale: languageTag() }), label: m.header_about() },
+        { href: localizeHref("/work", { locale: languageTag() }), label: m.header_work() },
         {
-            href: i18n.resolveRoute("/services"),
+            href: localizeHref("/services", { locale: languageTag() }),
             label: m.header_services(),
             submenu: [
                 {
@@ -26,8 +29,8 @@
                 },
             ],
         },
-        { href: i18n.resolveRoute("/blog"), label: m.header_news() },
-        { href: i18n.resolveRoute("/contact"), label: m.header_contact() },
+        { href: localizeHref("/blog", { locale: languageTag() }), label: m.header_news() },
+        { href: localizeHref("/contact", { locale: languageTag() }), label: m.header_contact() },
     ]);
     function getLinks() {
         return propLinks && propLinks.length > 0 ? propLinks : defaultLinks;

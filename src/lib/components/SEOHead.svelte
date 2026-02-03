@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores";
+    import { localizeHref, locales } from "$lib/paraglide/runtime.js";
 
     interface Props {
         title: string;
@@ -20,6 +21,17 @@
         ogImage ? `${siteUrl}${ogImage}` : `${siteUrl}/images/og-default.png`,
     );
     const currentUrl = $derived($page.url.href);
+
+    // Hreflang Tags Generation
+    const hreflangs = $derived(
+        locales.map((locale) => {
+            const path = localizeHref($page.url.pathname, { locale });
+            return {
+                href: `${siteUrl}${path}`,
+                hreflang: locale
+            };
+        })
+    );
 </script>
 
 <svelte:head>
@@ -47,10 +59,14 @@
     <!-- Canonical -->
     <link rel="canonical" href={currentUrl} />
 
+    <!-- Hreflang Tags for SEO -->
+    {#each hreflangs as alt}
+        <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+    {/each}
+
     <!-- DSGVO / Security -->
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <meta name="robots" content="index, follow" />
-    <meta name="language" content="de" />
 
     <!-- JSON-LD Schema -->
     {#if jsonLD}
