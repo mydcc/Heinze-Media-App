@@ -1,127 +1,191 @@
 <script lang="ts">
-    import { adminState } from "$lib/state/admin.svelte";
+    import ThemeSwitcher from "$lib/components/ThemeSwitcher.svelte";
+    import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
     import * as m from "$lib/paraglide/messages.js";
     import { i18n } from "$lib/i18n";
-
-    // Footer Links - Centralized configuration for easier maintenance
-    const footerLinks = [
-        {
-            title: m.footer_products(),
-            links: [
-                { label: "Metaverse Platform", href: "/products" },
-                { label: "XR Studio", href: "/xr-studio" },
-                { label: "Asset Pipeline", href: "/products#pipeline" },
-                { label: "Virtual Events", href: "/products#events" },
-            ],
-        },
-        {
-            title: m.footer_solutions(),
-            links: [
-                { label: "E-Commerce 3D", href: "/solutions#ecommerce" },
-                { label: "Education & Training", href: "/solutions#edu" },
-                { label: "Marketing & Brand", href: "/solutions#marketing" },
-                { label: "Real Estate VR", href: "/solutions#realestate" },
-            ],
-        },
-        {
-            title: m.footer_resources(),
-            links: [
-                { label: "Blog & News", href: "/blog" },
-                { label: "Case Studies", href: "/work" },
-                { label: "Whitepapers", href: "/resources" },
-                { label: "Documentation", href: "/docs" },
-            ],
-        },
-        {
-            title: m.footer_company(),
-            links: [
-                { label: "About Us", href: "/about" },
-                { label: "Careers", href: "/careers" },
-                { label: "Partners", href: "/partners" },
-                { label: "Contact", href: "/contact" },
-            ],
-        },
-    ];
+    // Svelte 5 Runes: direkt im <script> verwenden, nicht importieren
+    import { adminState } from "$lib/state/admin.svelte";
 </script>
 
-<footer class="bg-bg-footer border-t border-white/10 relative overflow-hidden">
-    <!-- Background Elements -->
-    <div
-        class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent"
-    ></div>
-    <div
-        class="absolute -top-40 -right-40 w-96 h-96 bg-accent/5 rounded-full blur-3xl pointer-events-none"
-    ></div>
-    <div
-        class="absolute bottom-0 left-0 w-full h-full bg-[url('/grid.svg')] opacity-[0.03] pointer-events-none"
-    ></div>
-
-    <div class="container mx-auto px-6 py-20 relative z-10">
-        <!-- Top Section: Logo & Description -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12 mb-16">
-            <div class="lg:col-span-1">
-                <a
-                    href="/"
-                    class="text-3xl font-black tracking-tight text-white mb-6 block group"
+<footer
+    class="footer-dark bg-gradient-to-b from-bg-footer via-bg-footer to-bg-footer/95 border-t border-border-color/20 py-24 transition-colors duration-500 overflow-hidden relative"
+>
+    <!-- Background Decoration -->
+    <div class="absolute inset-0 opacity-5 pointer-events-none">
+        <div
+            class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-accent blur-[120px] rounded-full"
+        ></div>
+    </div>
+    <div class="container mx-auto px-6">
+        <!-- Main Footer Grid: 6 columns -->
+        <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 md:gap-8 mb-16"
+        >
+            <!-- Column 1: Brand + Social Media -->
+            <div class="lg:col-span-2">
+                <h3 class="text-white font-black text-2xl mb-3 tracking-tight">
+                    HEINZE<span class="text-accent">MEDIA</span>
+                </h3>
+                <p
+                    class="text-xs text-text-muted uppercase tracking-widest mb-4 font-semibold"
                 >
-                    <span class="group-hover:text-accent transition-colors"
-                        >HEINZE</span
-                    ><span class="text-white/50">MEDIA</span>
-                </a>
-                <p class="text-text-muted text-sm leading-relaxed mb-6">
+                    {m.footer_tagline()}
+                </p>
+                <p class="text-sm text-text-main leading-relaxed mb-8 max-w-xs">
                     {m.footer_description()}
                 </p>
-                <div class="flex gap-4">
-                    <!-- Social Icons (Placeholder) -->
-                    {#each ["twitter", "github", "linkedin", "discord"] as social}
-                        <a
-                            href="https://{social}.com"
-                            target="_blank"
-                            class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/60 hover:bg-accent hover:text-white transition-all hover:scale-110"
-                            aria-label={social}
+
+                <!-- Social Media Icons -->
+                <div class="flex gap-4 mb-6">
+                    <a
+                        href="https://linkedin.com/in/pheinze"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="w-9 h-9 rounded-full bg-white/10 hover:bg-accent/20 transition-colors flex items-center justify-center text-white hover:text-accent"
+                        aria-label="LinkedIn"
+                    >
+                        <svg
+                            class="w-4 h-4"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
                         >
-                            <span class="capitalize text-[10px]">{social[0]}</span
-                            >
-                        </a>
-                    {/each}
+                            <path
+                                d="M16.338 16.338H13.67V12.16c0-.995-.017-2.292-1.194-2.292-1.195 0-1.38.932-1.38 1.893v4.577H8.368V7.5h2.577v1.002h.037c.36-.68 1.237-1.395 2.546-1.395 2.717 0 3.217 1.787 3.217 4.111v5.52zM3.421 6.378a1.392 1.392 0 11.851-1.393c0 .77-.611 1.393-1.851 1.393zm1.326 9.96h-2.65V7.5h2.65v8.838zM17.865 2.5H2.135C1.135 2.5.5 3.116.5 4.154v11.692c0 1.038.635 1.654 1.635 1.654h15.73c1 0 1.635-.616 1.635-1.654V4.154c0-1.038-.635-1.654-1.635-1.654z"
+                            />
+                        </svg>
+                    </a>
+                    <a
+                        href="https://github.com/mydcc"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="w-9 h-9 rounded-full bg-white/10 hover:bg-accent/20 transition-colors flex items-center justify-center text-white hover:text-accent"
+                        aria-label="GitHub"
+                    >
+                        <svg
+                            class="w-4 h-4"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.868-.013-1.703-2.782.603-3.369-1.343-3.369-1.343-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.544 2.914 1.186.092-.923.35-1.544.636-1.9-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0110 4.817a9.568 9.568 0 012.5.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C17.138 18.194 20 14.44 20 10.017 20 4.484 15.522 0 10 0z"
+                                clip-rule="evenodd"
+                            />
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Theme Switcher -->
+                <div class="flex flex-col gap-6 mt-8">
+                    <ThemeSwitcher />
+                    <LanguageSwitcher />
                 </div>
             </div>
 
-            <!-- Links Columns -->
-            <div class="lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-8">
-                {#each footerLinks as column}
-                    <div>
-                        <h4
-                            class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
+            <!-- Column 2: Products & Services -->
+            <div>
+                <h4
+                    class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
+                >
+                    {m.footer_products()}
+                </h4>
+                <ul class="space-y-3 text-sm">
+                    <li>
+                        <a
+                            href="/services/xr-studio"
+                            class="footer-link inline-flex items-center gap-2"
                         >
-                            {column.title}
-                        </h4>
-                        <ul class="space-y-3 text-sm">
-                            {#each column.links as link}
-                                <li>
-                                    <a
-                                        href={i18n.resolveRoute(link.href)}
-                                        class="footer-link inline-flex items-center gap-2"
-                                    >
-                                        <span
-                                            class="footer-dot w-1 h-1 rounded-full"
-                                        ></span>
-                                        {link.label}
-                                    </a>
-                                </li>
-                            {/each}
-                        </ul>
-                    </div>
-                {/each}
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            XR Studio Pro
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="/services"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            Web Services
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="/metaverse"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            Metaverse
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="/offer/special-deal"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            <span>Special Offers</span>
+                        </a>
+                    </li>
+                </ul>
             </div>
-        </div>
 
-        <!-- Additional Resources Row -->
-        <div
-            class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 py-10 border-t border-white/5"
-        >
-            <!-- Column 5: Brand Resources -->
-            <div class="md:col-start-3 lg:col-start-5">
+            <!-- Column 3: Solutions -->
+            <div>
+                <h4
+                    class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
+                >
+                    {m.footer_solutions()}
+                </h4>
+                <ul class="space-y-3 text-sm">
+                    <li>
+                        <a
+                            href="/solutions"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            Consulting
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="/solutions#enterprise"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            Enterprise
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="/solutions#startup"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            For Startups
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="/offer/free-ebook"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            Free eBook
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Column 4: Resources -->
+            <div>
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
@@ -130,12 +194,103 @@
                 <ul class="space-y-3 text-sm">
                     <li>
                         <a
+                            href="/blog"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            Blog & News
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="/github"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            GitHub‑Projekte
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="/blog#insights"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            Insights
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="/work"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            Case Studies
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="/sitemap"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            Sitemap
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Column 5: Company -->
+            <div>
+                <h4
+                    class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
+                >
+                    {m.footer_company()}
+                </h4>
+                <ul class="space-y-3 text-sm">
+                    <li>
+                        <a
+                            href="/about"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            Über uns
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="/contact"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            Kontakt
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="mailto:jobs@heinze-media.de"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            Karriere
+                        </a>
+                    </li>
+                    <li>
+                        <a
                             href="/brand-guidelines"
                             class="footer-link inline-flex items-center gap-2"
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
                             ></span>
-                            {m.footer_brand_assets()}
+                            Brand Assets
                         </a>
                     </li>
                     <li>
@@ -145,7 +300,7 @@
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
                             ></span>
-                            <span>{m.footer_design_manual()}</span>
+                            <span>Design Manual</span>
                         </a>
                     </li>
                 </ul>
@@ -166,7 +321,7 @@
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
                             ></span>
-                            {m.footer_design_guide()}
+                            Design Guide
                         </a>
                     </li>
                     <li>
@@ -176,7 +331,7 @@
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
                             ></span>
-                            {m.footer_imprint()}
+                            Impressum
                         </a>
                     </li>
                     <li>
@@ -186,7 +341,7 @@
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
                             ></span>
-                            {m.footer_privacy()}
+                            Datenschutz
                         </a>
                     </li>
                     <li>
@@ -196,7 +351,7 @@
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
                             ></span>
-                            {m.footer_terms()}
+                            AGB
                         </a>
                     </li>
                 </ul>
@@ -212,7 +367,7 @@
                     <h4
                         class="text-accent font-bold uppercase tracking-widest text-xs"
                     >
-                        🔐 {m.footer_dev_tools()}
+                        🔐 Dev Tools
                     </h4>
                     <span class="w-2 h-2 rounded-full bg-accent animate-pulse"
                     ></span>
@@ -239,7 +394,7 @@
                                     d="M13 10V3L4 14h7v7l9-11h-7z"
                                 />
                             </svg>
-                            {m.footer_quick_ref()}
+                            Quick Reference
                         </a>
                     </li>
 
@@ -261,7 +416,7 @@
                                     d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
                                 />
                             </svg>
-                            {m.footer_cms_guide()}
+                            CMS Guide
                         </a>
                     </li>
                 </ul>
@@ -279,7 +434,7 @@
                         © {new Date().getFullYear()} HEINZE MEDIA
                     </p>
                     <p class="text-[10px] text-white/30 mt-2">
-                        {m.footer_all_rights()} {m.footer_made_in()}
+                        All Rights Reserved. Made in Berlin, Germany 🇩🇪
                     </p>
                 </div>
 
@@ -328,7 +483,7 @@
                     <p
                         class="text-[11px] text-white/40 uppercase tracking-[0.15em] font-semibold mb-3"
                     >
-                        {m.footer_stay_updated()}
+                        Stay Updated
                     </p>
                     <a
                         href="#newsletter"
@@ -355,7 +510,7 @@
             <!-- Final Bottom: Version / Status -->
             <div class="pt-8 border-t border-white/5 text-center">
                 <p class="text-[9px] text-white/20 uppercase tracking-[0.2em]">
-                    {m.footer_version()}
+                    v2.0 Beta • Powered by Svelte 5 + Tailwind v4 • Secured
                 </p>
             </div>
         </div>
