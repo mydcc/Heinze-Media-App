@@ -12,26 +12,30 @@
 
     const { links: propLinks } = $props<{ links?: Link[] }>();
 
-    // We explicitly use languageTag() inside the derived to force reactivity when language changes.
-    // The previous implementation using i18n wrapper might have obscured the dependency.
-    const defaultLinks: Link[] = $derived([
-        { href: localizeHref("/", { locale: languageTag() }), label: m.header_home() },
-        { href: localizeHref("/about", { locale: languageTag() }), label: m.header_about() },
-        { href: localizeHref("/work", { locale: languageTag() }), label: m.header_work() },
-        {
-            href: localizeHref("/services", { locale: languageTag() }),
-            label: m.header_services(),
-            submenu: [
-                {
-                    href: "https://xrpress.org",
-                    label: "XRPress",
-                    target: "_blank",
-                },
-            ],
-        },
-        { href: localizeHref("/blog", { locale: languageTag() }), label: m.header_news() },
-        { href: localizeHref("/contact", { locale: languageTag() }), label: m.header_contact() },
-    ]);
+    // We use $derived.by() and access $pageStore.url to force reactivity when the URL (and thus language) changes.
+    const defaultLinks: Link[] = $derived.by(() => {
+        // Dependency tracking: access url to force re-evaluation
+        $pageStore.url;
+
+        return [
+            { href: localizeHref("/", { locale: languageTag() }), label: m.header_home() },
+            { href: localizeHref("/about", { locale: languageTag() }), label: m.header_about() },
+            { href: localizeHref("/work", { locale: languageTag() }), label: m.header_work() },
+            {
+                href: localizeHref("/services", { locale: languageTag() }),
+                label: m.header_services(),
+                submenu: [
+                    {
+                        href: "https://xrpress.org",
+                        label: "XRPress",
+                        target: "_blank",
+                    },
+                ],
+            },
+            { href: localizeHref("/blog", { locale: languageTag() }), label: m.header_news() },
+            { href: localizeHref("/contact", { locale: languageTag() }), label: m.header_contact() },
+        ];
+    });
     function getLinks() {
         return propLinks && propLinks.length > 0 ? propLinks : defaultLinks;
     }
