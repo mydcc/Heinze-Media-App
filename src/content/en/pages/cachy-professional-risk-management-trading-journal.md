@@ -49,4 +49,4 @@ published: true
 <p>In a world of data breaches and opaque fee structures, Cachy provides traders with a tool that combines <strong>Capital Preservation ("Money First")</strong>, <strong>User Experience ("User First")</strong>, and <strong>Data Privacy ("Community First")</strong>.</p>
 <p><strong>Cachy – Take control of your trades and your data.</strong></p>
 
-<a href="https;//cachy.app/">Open Cachy App</a>
+<a href="https://cachy.app/">Open Cachy App</a>

@@ -100,7 +100,7 @@
                     class="flex justify-center p-8 bg-brand-dark rounded-2xl border border-white/5 shadow-2xl"
                 >
                     <img
-                        src="/static/images/brand/logo.png"
+                        src="/images/brand/logo.png"
                         alt="HEINZE MEDIA Logo"
                         class="max-w-xs"
                     />
