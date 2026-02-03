@@ -112,7 +112,9 @@
                                 <path d={social.path} />
                             </svg>
                         </a>
-                    </li>
+                    {/each}
+                    </div>
+                    <ul class="mt-8 space-y-3">
                     <li>
                         <a
                             href="/services"
