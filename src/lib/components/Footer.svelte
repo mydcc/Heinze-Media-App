@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { adminState } from "$lib/state/admin.svelte";
+    import ThemeSwitcher from "$lib/components/ThemeSwitcher.svelte";
+    import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
     import * as m from "$lib/paraglide/messages.js";
     import { i18n } from "$lib/i18n";
 
@@ -109,8 +110,38 @@
                                 <path d={social.path} />
                             </svg>
                         </a>
-                    {/each}
-                </div>
+                    </li>
+                    <li>
+                        <a
+                            href="/services"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            Web Services
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="/metaverse"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            Metaverse
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="/offer/special-deal"
+                            class="footer-link inline-flex items-center gap-2"
+                        >
+                            <span class="footer-dot w-1 h-1 rounded-full"
+                            ></span>
+                            <span>Special Offers</span>
+                        </a>
+                    </li>
+                </ul>
             </div>
 
             <!-- Links Columns (Each spans 1 column) -->
@@ -140,12 +171,8 @@
             {/each}
         </div>
 
-        <!-- Additional Resources Row -->
-        <div
-            class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 py-10 border-t border-white/5"
-        >
-            <!-- Column 5: Brand Resources -->
-            <div class="md:col-start-3 lg:col-start-5">
+            <!-- Column 4: Resources -->
+            <div>
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
@@ -159,7 +186,7 @@
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
                             ></span>
-                            {m.footer_brand_assets()}
+                            Brand Assets
                         </a>
                     </li>
                     <li>
@@ -169,7 +196,7 @@
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
                             ></span>
-                            <span>{m.footer_design_manual()}</span>
+                            <span>Design Manual</span>
                         </a>
                     </li>
                 </ul>
@@ -190,7 +217,7 @@
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
                             ></span>
-                            {m.footer_design_guide()}
+                            Design Guide
                         </a>
                     </li>
                     <li>
@@ -200,7 +227,7 @@
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
                             ></span>
-                            {m.footer_imprint()}
+                            Impressum
                         </a>
                     </li>
                     <li>
@@ -210,7 +237,7 @@
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
                             ></span>
-                            {m.footer_privacy()}
+                            Datenschutz
                         </a>
                     </li>
                     <li>
@@ -220,7 +247,7 @@
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
                             ></span>
-                            {m.footer_terms()}
+                            AGB
                         </a>
                     </li>
                 </ul>
@@ -236,7 +263,7 @@
                     <h4
                         class="text-accent font-bold uppercase tracking-widest text-xs"
                     >
-                        🔐 {m.footer_dev_tools()}
+                        🔐 Dev Tools
                     </h4>
                     <span class="w-2 h-2 rounded-full bg-accent animate-pulse"
                     ></span>
@@ -263,7 +290,7 @@
                                     d="M13 10V3L4 14h7v7l9-11h-7z"
                                 />
                             </svg>
-                            {m.footer_quick_ref()}
+                            Quick Reference
                         </a>
                     </li>
 
@@ -285,7 +312,7 @@
                                     d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
                                 />
                             </svg>
-                            {m.footer_cms_guide()}
+                            CMS Guide
                         </a>
                     </li>
                 </ul>
@@ -303,7 +330,7 @@
                         © {new Date().getFullYear()} HEINZE MEDIA
                     </p>
                     <p class="text-[10px] text-white/30 mt-2">
-                        {m.footer_all_rights()} {m.footer_made_in()}
+                        All Rights Reserved. Made in Berlin, Germany 🇩🇪
                     </p>
                 </div>
 
@@ -352,7 +379,7 @@
                     <p
                         class="text-[11px] text-white/40 uppercase tracking-[0.15em] font-semibold mb-3"
                     >
-                        {m.footer_stay_updated()}
+                        Stay Updated
                     </p>
                     <a
                         href="#newsletter"
@@ -379,7 +406,7 @@
             <!-- Final Bottom: Version / Status -->
             <div class="pt-8 border-t border-white/5 text-center">
                 <p class="text-[9px] text-white/20 uppercase tracking-[0.2em]">
-                    {m.footer_version()}
+                    v2.0 Beta • Powered by Svelte 5 + Tailwind v4 • Secured
                 </p>
             </div>
         </div>

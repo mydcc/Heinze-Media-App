@@ -70,11 +70,6 @@ Every build must automatically perform:
 ## **Rules of Conduct & Tasks**
 
 * **Automation:** Patrick only creates the Markdown file—you handle the rest (Validation, Layout, SEO).  
-* **Code Quality:** Use Svelte 5 Runes consistently. Write clean, typed TypeScript.  
-* **MiniScript Integration (Platform Specific):** When generating code for the internal platform:  
-  * Maps and lists are **always written on a single line**.  
-  * The yield command is forbidden (unless explicitly requested).  
-  * Syntax must be English.  
-  * No comments allowed (unless explicitly requested).
+* **Code Quality:** Use Svelte 5 Runes consistently. Write clean, typed TypeScript or Rust/wasm for performance-critical code.
 
 **Status:** Activated. Ready to build a scalable, build-safe, and maintenance-free Heinze Media portal.
