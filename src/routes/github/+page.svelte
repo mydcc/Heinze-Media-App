@@ -3,7 +3,7 @@
     import { page } from "$app/stores";
 
     let { data }: { data?: { projects?: Array<any> } } = $props();
-    let { projects = [] } = data ?? {};
+    const projects = $derived(data?.projects ?? []);
 </script>
 
 <svelte:head>

@@ -15,7 +15,7 @@
         highlighted = false,
     }: Props = $props();
 
-    const Component = href ? "a" : "div";
+    const Component = $derived(href ? "a" : "div");
 </script>
 
 <svelte:element
@@ -29,7 +29,7 @@
 >
     <div
         class="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-    />
+    ></div>
 
     <div class="relative z-10">
         {#if icon}
