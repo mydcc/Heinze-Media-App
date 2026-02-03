@@ -1,26 +1,11 @@
-import { z } from 'zod';
+import { pageSchema, blogSchema, workSchema } from './schemas';
 import { getLocale as languageTag, locales as availableLanguageTags } from '$lib/paraglide/runtime.js';
-
-const blockSchema = z.object({
-    type: z.string(),
-    data: z.record(z.string(), z.any()).optional()
-});
-
-const frontmatterSchema = z.object({
-    title: z.string(),
-    description: z.string().optional(),
-    date: z.any().optional(),
-    published: z.boolean().optional().default(true),
-    layout: z.string().optional().default('default'),
-    blocks: z.array(blockSchema).optional(),
-    theme: z.string().optional(),
-    slug: z.string().optional(),
-    brandColor: z.string().optional(),
-    accentColor: z.string().optional(),
-    sitemap: z.boolean().optional().default(true)
-});
+import { validateContent } from './validator';
 
 export async function getRawPagesGrouped() {
+    // Start validation (runs in background or logs warnings)
+    validateContent();
+
     // Import modules directly (mdsvex handles parsing)
     // Note: eager=true is essential for static site generation
     const modules = import.meta.glob('/src/content/**/*.md', { eager: true });
@@ -39,12 +24,13 @@ export async function getRawPagesGrouped() {
         if (!availableLanguageTags.includes(lang as any)) continue;
 
         const rawMetadata = (module as any).metadata;
+        const schema = type === 'blog' ? blogSchema : type === 'work' ? workSchema : pageSchema;
 
         // Strict Validation: Throw on failure
         // This stops the build process as required by AGENT.md
         let meta;
         try {
-            meta = frontmatterSchema.parse(rawMetadata);
+            meta = schema.parse(rawMetadata || {});
         } catch (e) {
             console.error(`[VALIDATION ERROR] File: ${file}`);
             throw e; // Build-Breaker

@@ -7,11 +7,6 @@ brandColor: "#ff0080"
 accentColor: "#00ffff"
 ---
 
-<script>
-    import Model3D from '$lib/components/3d/Model3D.svelte';
-    import Button from '$lib/components/Button.svelte';
-    import Card from '$lib/components/Card.svelte';
-</script>
 
 # The New Heinze Media CMS
 

@@ -2,7 +2,10 @@
     import ThemeToggle from "$lib/components/ThemeToggle.svelte";
     import { page as pageStore } from "$app/stores";
     import * as m from "$lib/paraglide/messages.js";
-    import { localizeHref, getLocale as languageTag } from "$lib/paraglide/runtime.js";
+    import {
+        localizeHref,
+        getLocale as languageTag,
+    } from "$lib/paraglide/runtime.js";
 
     type Link = {
         href: string;
@@ -18,9 +21,18 @@
         $pageStore.url;
 
         return [
-            { href: localizeHref("/", { locale: languageTag() }), label: m.header_home() },
-            { href: localizeHref("/about", { locale: languageTag() }), label: m.header_about() },
-            { href: localizeHref("/work", { locale: languageTag() }), label: m.header_work() },
+            {
+                href: localizeHref("/", { locale: languageTag() }),
+                label: m.header_home(),
+            },
+            {
+                href: localizeHref("/about", { locale: languageTag() }),
+                label: m.header_about(),
+            },
+            {
+                href: localizeHref("/work", { locale: languageTag() }),
+                label: m.header_work(),
+            },
             {
                 href: localizeHref("/services", { locale: languageTag() }),
                 label: m.header_services(),
@@ -32,8 +44,14 @@
                     },
                 ],
             },
-            { href: localizeHref("/blog", { locale: languageTag() }), label: m.header_news() },
-            { href: localizeHref("/contact", { locale: languageTag() }), label: m.header_contact() },
+            {
+                href: localizeHref("/blog", { locale: languageTag() }),
+                label: m.header_news(),
+            },
+            {
+                href: localizeHref("/contact", { locale: languageTag() }),
+                label: m.header_contact(),
+            },
         ];
     });
     function getLinks() {
@@ -47,7 +65,7 @@
 >
     <div class="container mx-auto px-6 py-5 flex justify-between items-center">
         <a
-            href="/"
+            href={localizeHref("/", { locale: languageTag() })}
             class="text-2xl font-black tracking-tight text-text-main group"
         >
             <span class="transition-all group-hover:text-white">HEINZE</span

@@ -1,0 +1,45 @@
+
+> heinze-media-app@0.0.1 build
+> vite build && npx -y pagefind --site build
+
+vite v7.3.1 building ssr environment for production...
+ℹ [paraglide] Compiling inlang project...
+✔ [paraglide] Compilation complete
+transforming...
+"Camera", "SpriteMaterial", "Texture", "EquirectangularReflectionMapping", "ReplaceStencilOp", "AlwaysStencilFunc", "Material" and "WireframeGeometry" are imported from external module "three" but never used in "node_modules/@threlte/extras/dist/hooks/useViewport.js", "node_modules/@threlte/extras/dist/components/HTML/utils.js", "node_modules/@threlte/extras/dist/components/AnimatedSpriteMaterial/AnimatedSpriteMaterial.svelte", "node_modules/@threlte/extras/dist/components/Decal/Decal.svelte", "node_modules/@threlte/extras/dist/components/MeshRefractionMaterial/MeshRefractionMaterial.svelte", "node_modules/@threlte/extras/dist/components/environment/Environment/Environment.svelte", "node_modules/@threlte/extras/dist/components/Mask/Mask.svelte" and "node_modules/@threlte/extras/dist/components/Wireframe/Wireframe.svelte".
+"fileURLToPath" is imported from external module "node:url" but never used in "src/lib/content/loader.ts".
+"DecalGeometry" is imported from external module "three/examples/jsm/geometries/DecalGeometry.js" but never used in "node_modules/@threlte/extras/dist/components/Decal/Decal.svelte".
+"ThreePerf" is imported from external module "three-perf" but never used in "node_modules/@threlte/extras/dist/components/PerfMonitor/PerfMonitor.svelte".
+"preloadFont" is imported from external module "troika-three-text" but never used in "node_modules/@threlte/extras/dist/components/Text/Text.svelte".
+✓ 616 modules transformed.
+rendering chunks...
+[METADATA MISSING] File: /src/content/de/blog/aktuellen-stand-und-den-zukunftigen-moglichkeiten-von-xr-und-metaverse.md
+[MODULE KEYS]: default
+[VALIDATION ERROR] File: /src/content/de/blog/aktuellen-stand-und-den-zukunftigen-moglichkeiten-von-xr-und-metaverse.md
+node:internal/event_target:1105
+  process.nextTick(() => { throw err; });
+                           ^
+
+ZodError: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": [
+      "title"
+    ],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+    at getRawPagesGrouped (file:///home/pat/Dokumente/GitHub/Heinze-Media-App/.svelte-kit/output/server/chunks/pages.js:190:21)
+    at getAllPages (file:///home/pat/Dokumente/GitHub/Heinze-Media-App/.svelte-kit/output/server/chunks/pages.js:223:25)
+    at entries (file:///home/pat/Dokumente/GitHub/Heinze-Media-App/.svelte-kit/output/server/entries/pages/projects/_slug_/_page.server.ts.js:6:23)
+    at async analyse (file:///home/pat/Dokumente/GitHub/Heinze-Media-App/node_modules/@sveltejs/kit/src/core/postbuild/analyse.js:167:17)
+    at async MessagePort.<anonymous> (file:///home/pat/Dokumente/GitHub/Heinze-Media-App/node_modules/@sveltejs/kit/src/utils/fork.js:23:16)
+Emitted 'error' event on Worker instance at:
+    at [kOnErrorMessage] (node:internal/worker:333:10)
+    at [kOnMessage] (node:internal/worker:344:37)
+    at MessagePort.<anonymous> (node:internal/worker:233:57)
+    at [nodejs.internal.kHybridDispatch] (node:internal/event_target:831:20)
+    at MessagePort.<anonymous> (node:internal/per_context/messageport:23:28)
+
+Node.js v20.20.0

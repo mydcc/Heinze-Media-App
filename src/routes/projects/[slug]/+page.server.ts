@@ -9,7 +9,7 @@ export async function entries() {
     const pages = await getAllPages();
     // Filter for projects only
     return pages
-        .filter(p => p.type === 'projects')
+        .filter(p => p.type === 'work')
         .map(p => ({ slug: p.slug }));
 }
 
@@ -17,7 +17,7 @@ export const load = async ({ params }) => {
     const { slug } = params;
     // Reuse the central logic which now uses mdsvex/glob
     // We request type 'projects' explicitly
-    const page = await getPage(slug, 'projects');
+    const page = await getPage(slug, 'work');
 
     if (!page) {
         throw error(404, 'Project not found');

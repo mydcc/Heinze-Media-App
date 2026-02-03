@@ -2,9 +2,149 @@
     import ThemeSwitcher from "$lib/components/ThemeSwitcher.svelte";
     import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
     import * as m from "$lib/paraglide/messages.js";
-    import { i18n } from "$lib/i18n";
+    import {
+        localizeHref,
+        getLocale as languageTag,
+    } from "$lib/paraglide/runtime.js";
+    import { page as pageStore } from "$app/stores";
     // Svelte 5 Runes: direkt im <script> verwenden, nicht importieren
     import { adminState } from "$lib/state/admin.svelte";
+
+    // Reaktivität sicherstellen: Wir greifen auf $pageStore.url zu
+    const products = $derived.by(() => {
+        $pageStore.url;
+        return [
+            {
+                href: localizeHref("/services/xr-studio", {
+                    locale: languageTag(),
+                }),
+                label: "XR Studio Pro",
+            },
+            {
+                href: localizeHref("/services", { locale: languageTag() }),
+                label: "Web Services",
+            },
+            {
+                href: localizeHref("/metaverse", { locale: languageTag() }),
+                label: "Metaverse",
+            },
+            {
+                href: localizeHref("/offer/special-deal", {
+                    locale: languageTag(),
+                }),
+                label: "Special Offers",
+            },
+        ];
+    });
+
+    const solutions = $derived.by(() => {
+        $pageStore.url;
+        return [
+            {
+                href: localizeHref("/solutions", { locale: languageTag() }),
+                label: "Consulting",
+            },
+            {
+                href: localizeHref("/solutions#enterprise", {
+                    locale: languageTag(),
+                }),
+                label: "Enterprise",
+            },
+            {
+                href: localizeHref("/solutions#startup", {
+                    locale: languageTag(),
+                }),
+                label: "For Startups",
+            },
+            {
+                href: localizeHref("/offer/free-ebook", {
+                    locale: languageTag(),
+                }),
+                label: "Free eBook",
+            },
+        ];
+    });
+
+    const resources = $derived.by(() => {
+        $pageStore.url;
+        return [
+            {
+                href: localizeHref("/blog", { locale: languageTag() }),
+                label: "Blog & News",
+            },
+            {
+                href: localizeHref("/github", { locale: languageTag() }),
+                label: "GitHub-Projekte",
+            },
+            {
+                href: localizeHref("/blog#insights", { locale: languageTag() }),
+                label: "Insights",
+            },
+            {
+                href: localizeHref("/work", { locale: languageTag() }),
+                label: "Case Studies",
+            },
+            {
+                href: localizeHref("/sitemap", { locale: languageTag() }),
+                label: "Sitemap",
+            },
+        ];
+    });
+
+    const company = $derived.by(() => {
+        $pageStore.url;
+        return [
+            {
+                href: localizeHref("/about", { locale: languageTag() }),
+                label: "Über uns",
+            },
+            {
+                href: localizeHref("/contact", { locale: languageTag() }),
+                label: "Kontakt",
+            },
+            { href: "mailto:jobs@heinze-media.de", label: "Karriere" },
+            {
+                href: localizeHref("/brand-guidelines", {
+                    locale: languageTag(),
+                }),
+                label: "Brand Assets",
+            },
+            {
+                href: localizeHref("/corporate-design", {
+                    locale: languageTag(),
+                }),
+                label: "Design Manual",
+            },
+        ];
+    });
+
+    const legal = $derived.by(() => {
+        $pageStore.url;
+        return [
+            {
+                href: localizeHref("/corporate-design", {
+                    locale: languageTag(),
+                }),
+                label: "Design Guide",
+            },
+            {
+                href: localizeHref("/imprint", { locale: languageTag() }),
+                label: "Impressum",
+            },
+            {
+                href: localizeHref("/privacy-policy", {
+                    locale: languageTag(),
+                }),
+                label: "Datenschutz",
+            },
+            {
+                href: localizeHref("/terms-and-conditions", {
+                    locale: languageTag(),
+                }),
+                label: "AGB",
+            },
+        ];
+    });
 </script>
 
 <footer
@@ -90,46 +230,18 @@
                     {m.footer_products()}
                 </h4>
                 <ul class="space-y-3 text-sm">
-                    <li>
-                        <a
-                            href="/services/xr-studio"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            XR Studio Pro
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/services"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Web Services
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/metaverse"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Metaverse
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/offer/special-deal"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            <span>Special Offers</span>
-                        </a>
-                    </li>
+                    {#each products as link}
+                        <li>
+                            <a
+                                href={link.href}
+                                class="footer-link inline-flex items-center gap-2"
+                            >
+                                <span class="footer-dot w-1 h-1 rounded-full"
+                                ></span>
+                                {link.label}
+                            </a>
+                        </li>
+                    {/each}
                 </ul>
             </div>
 
@@ -141,46 +253,18 @@
                     {m.footer_solutions()}
                 </h4>
                 <ul class="space-y-3 text-sm">
-                    <li>
-                        <a
-                            href="/solutions"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Consulting
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/solutions#enterprise"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Enterprise
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/solutions#startup"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            For Startups
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/offer/free-ebook"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Free eBook
-                        </a>
-                    </li>
+                    {#each solutions as link}
+                        <li>
+                            <a
+                                href={link.href}
+                                class="footer-link inline-flex items-center gap-2"
+                            >
+                                <span class="footer-dot w-1 h-1 rounded-full"
+                                ></span>
+                                {link.label}
+                            </a>
+                        </li>
+                    {/each}
                 </ul>
             </div>
 
@@ -192,56 +276,18 @@
                     {m.footer_resources()}
                 </h4>
                 <ul class="space-y-3 text-sm">
-                    <li>
-                        <a
-                            href="/blog"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Blog & News
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/github"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            GitHub‑Projekte
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/blog#insights"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Insights
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/work"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Case Studies
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/sitemap"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Sitemap
-                        </a>
-                    </li>
+                    {#each resources as link}
+                        <li>
+                            <a
+                                href={link.href}
+                                class="footer-link inline-flex items-center gap-2"
+                            >
+                                <span class="footer-dot w-1 h-1 rounded-full"
+                                ></span>
+                                {link.label}
+                            </a>
+                        </li>
+                    {/each}
                 </ul>
             </div>
 
@@ -253,56 +299,18 @@
                     {m.footer_company()}
                 </h4>
                 <ul class="space-y-3 text-sm">
-                    <li>
-                        <a
-                            href="/about"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Über uns
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/contact"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Kontakt
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="mailto:jobs@heinze-media.de"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Karriere
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/brand-guidelines"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Brand Assets
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/corporate-design"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            <span>Design Manual</span>
-                        </a>
-                    </li>
+                    {#each company as link}
+                        <li>
+                            <a
+                                href={link.href}
+                                class="footer-link inline-flex items-center gap-2"
+                            >
+                                <span class="footer-dot w-1 h-1 rounded-full"
+                                ></span>
+                                {link.label}
+                            </a>
+                        </li>
+                    {/each}
                 </ul>
             </div>
 
@@ -314,46 +322,18 @@
                     {m.footer_legal()}
                 </h4>
                 <ul class="space-y-3 text-sm">
-                    <li>
-                        <a
-                            href="/corporate-design"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Design Guide
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/imprint"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Impressum
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/privacy-policy"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Datenschutz
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/terms-and-conditions"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            AGB
-                        </a>
-                    </li>
+                    {#each legal as link}
+                        <li>
+                            <a
+                                href={link.href}
+                                class="footer-link inline-flex items-center gap-2"
+                            >
+                                <span class="footer-dot w-1 h-1 rounded-full"
+                                ></span>
+                                {link.label}
+                            </a>
+                        </li>
+                    {/each}
                 </ul>
             </div>
         </div>
