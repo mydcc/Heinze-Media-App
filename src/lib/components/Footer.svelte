@@ -466,7 +466,7 @@
                         Stay Updated
                     </p>
                     <a
-                        href="#newsletter"
+                        href="/contact"
                         class="text-accent text-sm font-semibold hover:text-accent/80 transition-colors inline-flex items-center gap-2"
                     >
                         {m.footer_cta_label()}

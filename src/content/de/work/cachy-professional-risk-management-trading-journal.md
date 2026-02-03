@@ -63,4 +63,4 @@ In a world of data breaches and opaque fee structures, Cachy provides traders wi
 
 Open Cachy App
 
-](https;//cachy.app/)
+](https://cachy.app/)
