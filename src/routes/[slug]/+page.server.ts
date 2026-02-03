@@ -8,13 +8,13 @@ export const prerender = true;
 export async function entries() {
     const { getAllPages } = await import('$lib/server/pages');
     const pages = await getAllPages();
-    return pages.map(p => ({ slug: p.slug }));
+    return pages.filter(p => p.type === 'pages').map(p => ({ slug: p.slug }));
 }
 
 export async function load({ params }) {
     const { slug } = params;
     // Strict validation happens inside getPage -> getAllPages
-    const page = await getPage(slug);
+    const page = await getPage(slug, 'pages');
 
     if (!page) {
         throw error(404, 'Page not found');
