@@ -40,8 +40,9 @@
 
     const baseClasses =
         "inline-flex items-center gap-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed";
-    const fullWidthClass = fullWidth ? "w-full justify-center" : "";
-    const buttonClass = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${fullWidthClass}`;
+    
+    let fullWidthClass = $derived(fullWidth ? "w-full justify-center" : "");
+    let buttonClass = $derived(`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${fullWidthClass}`);
 </script>
 
 <button class={buttonClass} {disabled} {onclick}>

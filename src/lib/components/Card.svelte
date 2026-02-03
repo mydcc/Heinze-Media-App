@@ -32,11 +32,14 @@
 
     const baseClasses =
         "rounded-lg bg-white/5 backdrop-blur-sm transition-all duration-200";
-    const hoverClasses = hover
-        ? "hover:bg-white/10 hover:border-accent/50"
-        : "";
-    const interactiveClasses = interactive ? "cursor-pointer" : "";
-    const cardClass = `${baseClasses} ${sizeClasses[size]} ${borderClasses[border]} ${hoverClasses} ${interactiveClasses}`;
+
+    let hoverClasses = $derived(
+        hover ? "hover:bg-white/10 hover:border-accent/50" : "",
+    );
+    let interactiveClasses = $derived(interactive ? "cursor-pointer" : "");
+    let cardClass = $derived(
+        `${baseClasses} ${sizeClasses[size]} ${borderClasses[border]} ${hoverClasses} ${interactiveClasses}`,
+    );
 </script>
 
 <div class={cardClass}>

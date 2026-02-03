@@ -9,7 +9,6 @@ published: true
 
 # Einführung
 
-[](https://www.npmjs.com/package/n8n-nodes-postiz#introduction)
 
 [Postiz](https://postiz.com/) ist ein leistungsstarkes Social-Media-Planungstool, mit dem Sie Ihre Social-Media-Konten effizient verwalten können
 
@@ -31,7 +30,6 @@ Alternativ können Sie das SDK mit curl verwenden; weitere Informationen finden
 
 ## Installation (Schnellinstallation)
 
-[](https://www.npmjs.com/package/n8n-nodes-postiz#installation-quick-installation)
 
 * Klicken Sie auf Einstellungen
 * Klicken Sie auf Community-Knoten
@@ -45,7 +43,6 @@ Alternativ können Sie das SDK mit curl verwenden; weitere Informationen finden
 
 ## Installation (ohne Docker - manuelle Installation)
 
-[](https://www.npmjs.com/package/n8n-nodes-postiz#installation-non-docker---manual-installation)
 
 Gehen Sie zu Ihrem n8n-Installationsverzeichnis, das sich üblicherweise unter befindet `~/.n8n`. Prüfen Sie, ob der `custom`Ordner vorhanden ist. Falls nicht, erstellen Sie ihn und fügen Sie darin eine neue package.json-Datei hinzu.
 
@@ -60,7 +57,6 @@ npm install n8n-nodes-postiz
 
 ## Für Docker-Benutzer (manuelle Installation)
 
-[](https://www.npmjs.com/package/n8n-nodes-postiz#for-docker-users-manual-installation)
 
 Erstellen Sie auf Ihrem Host-Rechner einen neuen Ordner, beispielsweise `~/n8n-custom-nodes`, und erstellen Sie darin eine neue package.json-Datei:
 
