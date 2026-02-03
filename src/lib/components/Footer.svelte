@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from "$app/stores";
     import ThemeSwitcher from "$lib/components/ThemeSwitcher.svelte";
     import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
     import * as m from "$lib/paraglide/messages.js";
@@ -68,6 +69,7 @@
     ];
 </script>
 
+{#key $page.url}
 <footer class="bg-bg-footer border-t border-white/10 relative overflow-hidden">
     <!-- Background Elements -->
     <div
@@ -412,3 +414,4 @@
         </div>
     </div>
 </footer>
+{/key}
