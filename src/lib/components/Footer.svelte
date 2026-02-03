@@ -3,101 +3,112 @@
     import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
     import * as m from "$lib/paraglide/messages.js";
     import { i18n } from "$lib/i18n";
-    // Svelte 5 Runes: direkt im <script> verwenden, nicht importieren
-    import { adminState } from "$lib/state/admin.svelte";
+
+    // Footer Links - Centralized configuration for easier maintenance
+    const footerLinks = [
+        {
+            title: m.footer_products(),
+            links: [
+                { label: "Metaverse Platform", href: "/products" },
+                { label: "XR Studio", href: "/xr-studio" },
+                { label: "Asset Pipeline", href: "/products#pipeline" },
+                { label: "Virtual Events", href: "/products#events" },
+            ],
+        },
+        {
+            title: m.footer_solutions(),
+            links: [
+                { label: "E-Commerce 3D", href: "/solutions#ecommerce" },
+                { label: "Education & Training", href: "/solutions#edu" },
+                { label: "Marketing & Brand", href: "/solutions#marketing" },
+                { label: "Real Estate VR", href: "/solutions#realestate" },
+            ],
+        },
+        {
+            title: m.footer_resources(),
+            links: [
+                { label: "Blog & News", href: "/blog" },
+                { label: "Case Studies", href: "/work" },
+                { label: "Whitepapers", href: "/resources" },
+                { label: "Documentation", href: "/docs" },
+            ],
+        },
+        {
+            title: m.footer_company(),
+            links: [
+                { label: "About Us", href: "/about" },
+                { label: "Careers", href: "/careers" },
+                { label: "Partners", href: "/partners" },
+                { label: "Contact", href: "/contact" },
+            ],
+        },
+    ];
+
+    const socialLinks = [
+        {
+            name: "Twitter",
+            href: "https://twitter.com/HeinzeMedia",
+            path: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+        },
+        {
+            name: "GitHub",
+            href: "https://github.com/heinze-media",
+            path: "M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
+        },
+        {
+            name: "LinkedIn",
+            href: "https://linkedin.com/company/heinze-media",
+            path: "M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
+        },
+        {
+            name: "Discord",
+            href: "https://discord.gg/heinzemedia",
+            path: "M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.772-.6083 1.1588a18.2915 18.2915 0 00-5.4882 0 12.649 12.649 0 00-.6173-1.1588.0776.0776 0 00-.0793-.0376 19.7363 19.7363 0 00-4.8859 1.5152.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.419-2.1568 2.419zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.419-2.1568 2.419z"
+        }
+    ];
 </script>
 
-<footer
-    class="footer-dark bg-gradient-to-b from-bg-footer via-bg-footer to-bg-footer/95 border-t border-border-color/20 py-24 transition-colors duration-500 overflow-hidden relative"
->
-    <!-- Background Decoration -->
-    <div class="absolute inset-0 opacity-5 pointer-events-none">
-        <div
-            class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-accent blur-[120px] rounded-full"
-        ></div>
-    </div>
-    <div class="container mx-auto px-6">
-        <!-- Main Footer Grid: 6 columns -->
-        <div
-            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 md:gap-8 mb-16"
-        >
-            <!-- Column 1: Brand + Social Media -->
+<footer class="bg-bg-footer border-t border-white/10 relative overflow-hidden">
+    <!-- Background Elements -->
+    <div
+        class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent"
+    ></div>
+    <div
+        class="absolute -top-40 -right-40 w-96 h-96 bg-accent/5 rounded-full blur-3xl pointer-events-none"
+    ></div>
+    <div
+        class="absolute bottom-0 left-0 w-full h-full bg-[url('/grid.svg')] opacity-[0.03] pointer-events-none"
+    ></div>
+
+    <div class="container mx-auto px-6 py-20 relative z-10">
+        <!-- Main Grid: 6 Columns to match original design -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 mb-16">
+
+            <!-- Brand Column (Spans 2 columns) -->
             <div class="lg:col-span-2">
-                <h3 class="text-white font-black text-2xl mb-3 tracking-tight">
-                    HEINZE<span class="text-accent">MEDIA</span>
-                </h3>
-                <p
-                    class="text-xs text-text-muted uppercase tracking-widest mb-4 font-semibold"
+                <a
+                    href="/"
+                    class="text-3xl font-black tracking-tight text-white mb-6 block group"
                 >
-                    {m.footer_tagline()}
-                </p>
-                <p class="text-sm text-text-main leading-relaxed mb-8 max-w-xs">
+                    <span class="group-hover:text-accent transition-colors"
+                        >HEINZE</span
+                    ><span class="text-white/50">MEDIA</span>
+                </a>
+                <p class="text-text-muted text-sm leading-relaxed mb-6 max-w-sm">
                     {m.footer_description()}
                 </p>
-
-                <!-- Social Media Icons -->
-                <div class="flex gap-4 mb-6">
-                    <a
-                        href="https://linkedin.com/in/pheinze"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="w-9 h-9 rounded-full bg-white/10 hover:bg-accent/20 transition-colors flex items-center justify-center text-white hover:text-accent"
-                        aria-label="LinkedIn"
-                    >
-                        <svg
-                            class="w-4 h-4"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                        >
-                            <path
-                                d="M16.338 16.338H13.67V12.16c0-.995-.017-2.292-1.194-2.292-1.195 0-1.38.932-1.38 1.893v4.577H8.368V7.5h2.577v1.002h.037c.36-.68 1.237-1.395 2.546-1.395 2.717 0 3.217 1.787 3.217 4.111v5.52zM3.421 6.378a1.392 1.392 0 11.851-1.393c0 .77-.611 1.393-1.851 1.393zm1.326 9.96h-2.65V7.5h2.65v8.838zM17.865 2.5H2.135C1.135 2.5.5 3.116.5 4.154v11.692c0 1.038.635 1.654 1.635 1.654h15.73c1 0 1.635-.616 1.635-1.654V4.154c0-1.038-.635-1.654-1.635-1.654z"
-                            />
-                        </svg>
-                    </a>
-                    <a
-                        href="https://github.com/mydcc"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="w-9 h-9 rounded-full bg-white/10 hover:bg-accent/20 transition-colors flex items-center justify-center text-white hover:text-accent"
-                        aria-label="GitHub"
-                    >
-                        <svg
-                            class="w-4 h-4"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                        >
-                            <path
-                                fill-rule="evenodd"
-                                d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.868-.013-1.703-2.782.603-3.369-1.343-3.369-1.343-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.544 2.914 1.186.092-.923.35-1.544.636-1.9-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0110 4.817a9.568 9.568 0 012.5.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C17.138 18.194 20 14.44 20 10.017 20 4.484 15.522 0 10 0z"
-                                clip-rule="evenodd"
-                            />
-                        </svg>
-                    </a>
-                </div>
-
-                <!-- Theme Switcher -->
-                <div class="flex flex-col gap-6 mt-8">
-                    <ThemeSwitcher />
-                    <LanguageSwitcher />
-                </div>
-            </div>
-
-            <!-- Column 2: Products & Services -->
-            <div>
-                <h4
-                    class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
-                >
-                    {m.footer_products()}
-                </h4>
-                <ul class="space-y-3 text-sm">
-                    <li>
+                <div class="flex gap-4">
+                    {#each socialLinks as social}
                         <a
-                            href="/services/xr-studio"
-                            class="footer-link inline-flex items-center gap-2"
+                            href={social.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/60 hover:bg-accent hover:text-white transition-all hover:scale-110"
+                            aria-label={social.name}
                         >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            XR Studio Pro
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d={social.path} />
+                            </svg>
                         </a>
                     </li>
                     <li>
@@ -133,56 +144,32 @@
                 </ul>
             </div>
 
-            <!-- Column 3: Solutions -->
-            <div>
-                <h4
-                    class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
-                >
-                    {m.footer_solutions()}
-                </h4>
-                <ul class="space-y-3 text-sm">
-                    <li>
-                        <a
-                            href="/solutions"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Consulting
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/solutions#enterprise"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Enterprise
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/solutions#startup"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            For Startups
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/offer/free-ebook"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Free eBook
-                        </a>
-                    </li>
-                </ul>
-            </div>
+            <!-- Links Columns (Each spans 1 column) -->
+            {#each footerLinks as column}
+                <div>
+                    <h4
+                        class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
+                    >
+                        {column.title}
+                    </h4>
+                    <ul class="space-y-3 text-sm">
+                        {#each column.links as link}
+                            <li>
+                                <a
+                                    href={i18n.resolveRoute(link.href)}
+                                    class="footer-link inline-flex items-center gap-2"
+                                >
+                                    <span
+                                        class="footer-dot w-1 h-1 rounded-full"
+                                    ></span>
+                                    {link.label}
+                                </a>
+                            </li>
+                        {/each}
+                    </ul>
+                </div>
+            {/each}
+        </div>
 
             <!-- Column 4: Resources -->
             <div>
@@ -194,98 +181,7 @@
                 <ul class="space-y-3 text-sm">
                     <li>
                         <a
-                            href="/blog"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Blog & News
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/github"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            GitHub‑Projekte
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/blog#insights"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Insights
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/work"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Case Studies
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/sitemap"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Sitemap
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Column 5: Company -->
-            <div>
-                <h4
-                    class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
-                >
-                    {m.footer_company()}
-                </h4>
-                <ul class="space-y-3 text-sm">
-                    <li>
-                        <a
-                            href="/about"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Über uns
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/contact"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Kontakt
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="mailto:jobs@heinze-media.de"
-                            class="footer-link inline-flex items-center gap-2"
-                        >
-                            <span class="footer-dot w-1 h-1 rounded-full"
-                            ></span>
-                            Karriere
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href="/brand-guidelines"
+                            href={i18n.resolveRoute("/brand-guidelines")}
                             class="footer-link inline-flex items-center gap-2"
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
@@ -295,7 +191,7 @@
                     </li>
                     <li>
                         <a
-                            href="/corporate-design"
+                            href={i18n.resolveRoute("/corporate-design")}
                             class="footer-link inline-flex items-center gap-2"
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
@@ -316,7 +212,7 @@
                 <ul class="space-y-3 text-sm">
                     <li>
                         <a
-                            href="/corporate-design"
+                            href={i18n.resolveRoute("/corporate-design")}
                             class="footer-link inline-flex items-center gap-2"
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
@@ -326,7 +222,7 @@
                     </li>
                     <li>
                         <a
-                            href="/imprint"
+                            href={i18n.resolveRoute("/imprint")}
                             class="footer-link inline-flex items-center gap-2"
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
@@ -336,7 +232,7 @@
                     </li>
                     <li>
                         <a
-                            href="/privacy-policy"
+                            href={i18n.resolveRoute("/privacy-policy")}
                             class="footer-link inline-flex items-center gap-2"
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
@@ -346,7 +242,7 @@
                     </li>
                     <li>
                         <a
-                            href="/terms-and-conditions"
+                            href={i18n.resolveRoute("/terms-and-conditions")}
                             class="footer-link inline-flex items-center gap-2"
                         >
                             <span class="footer-dot w-1 h-1 rounded-full"
