@@ -13,5 +13,18 @@
     "footer_legal": "Legal & Docs",
     "footer_description": "Ihr Partner für immersive 3D-Web-Erlebnisse, Metaverse-Lösungen und XR-Studios der nächsten Generation.",
     "footer_tagline": "Immersive Tech & XR Solutions",
-    "footer_cta_label": "Newsletter abonnieren"
+    "footer_cta_label": "Newsletter abonnieren",
+    "footer_brand_assets": "Brand Assets",
+    "footer_design_manual": "Design Manual",
+    "footer_design_guide": "Design Guide",
+    "footer_imprint": "Impressum",
+    "footer_privacy": "Datenschutz",
+    "footer_terms": "AGB",
+    "footer_dev_tools": "Dev Tools",
+    "footer_quick_ref": "Quick Reference",
+    "footer_cms_guide": "CMS Guide",
+    "footer_stay_updated": "Stay Updated",
+    "footer_all_rights": "All Rights Reserved",
+    "footer_made_in": "Made in Berlin, Germany 🇩🇪",
+    "footer_version": "v2.0 Beta • Powered by Svelte 5 + Tailwind v4 • Secured"
 }

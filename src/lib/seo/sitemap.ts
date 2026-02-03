@@ -8,6 +8,7 @@ interface SitemapEntry {
     lastmod?: string;
     priority?: number;
     changefreq?: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never';
+    alternates?: Array<{ href: string; hreflang: string }>;
 }
 
 export class SitemapGenerator {
@@ -31,21 +32,9 @@ export class SitemapGenerator {
      * Add multiple static routes
      */
     addStaticRoutes() {
+        // Deprecated/Legacy: Static routes are now mostly handled dynamically
         const staticRoutes: Array<[string, number, string]> = [
-            ['/', 1.0, 'daily'],
-            ['/about', 0.9, 'monthly'],
-            ['/work', 0.9, 'weekly'],
-            ['/services', 0.9, 'monthly'],
-            ['/blog', 0.8, 'daily'],
-            ['/contact', 0.7, 'monthly'],
-            ['/metaverse', 0.8, 'monthly'],
-            ['/xr-studio', 0.8, 'monthly'],
-            ['/solutions', 0.8, 'monthly'],
-            ['/offer', 0.7, 'weekly'],
-            ['/privacy-policy', 0.5, 'yearly'],
-            ['/imprint', 0.5, 'yearly'],
-            ['/terms-and-conditions', 0.5, 'yearly'],
-            ['/sitemap', 0.3, 'monthly']
+             // Kept empty to encourage dynamic usage, or can be filled if needed
         ];
 
         staticRoutes.forEach(([path, priority, frequency]) => {
@@ -62,13 +51,20 @@ export class SitemapGenerator {
     generateXML(): string {
         const xml = [
             '<?xml version="1.0" encoding="UTF-8"?>',
-            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-            ...this.entries.map(entry => `  <url>
-    <loc>${escapeXml(entry.url)}</loc>
-    ${entry.lastmod ? `<lastmod>${entry.lastmod}</lastmod>` : ''}
-    ${entry.changefreq ? `<changefreq>${entry.changefreq}</changefreq>` : ''}
-    ${entry.priority ? `<priority>${entry.priority.toFixed(1)}</priority>` : ''}
-  </url>`),
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
+            ...this.entries.map(entry => {
+                let s = `  <url>\n    <loc>${escapeXml(entry.url)}</loc>`;
+                if (entry.lastmod) s += `\n    <lastmod>${entry.lastmod}</lastmod>`;
+                if (entry.changefreq) s += `\n    <changefreq>${entry.changefreq}</changefreq>`;
+                if (entry.priority) s += `\n    <priority>${entry.priority.toFixed(1)}</priority>`;
+                if (entry.alternates) {
+                    entry.alternates.forEach(alt => {
+                        s += `\n    <xhtml:link rel="alternate" hreflang="${alt.hreflang}" href="${escapeXml(alt.href)}"/>`;
+                    });
+                }
+                s += `\n  </url>`;
+                return s;
+            }),
             '</urlset>'
         ];
 

@@ -1,4 +1,3 @@
-
 import { z } from 'zod';
 import { getLocale as languageTag, locales as availableLanguageTags } from '$lib/paraglide/runtime.js';
 
@@ -17,10 +16,11 @@ const frontmatterSchema = z.object({
     theme: z.string().optional(),
     slug: z.string().optional(),
     brandColor: z.string().optional(),
-    accentColor: z.string().optional()
+    accentColor: z.string().optional(),
+    sitemap: z.boolean().optional().default(true)
 });
 
-export async function getAllPages() {
+export async function getRawPagesGrouped() {
     // Import modules directly (mdsvex handles parsing)
     // Note: eager=true is essential for static site generation
     const modules = import.meta.glob('/src/content/**/*.md', { eager: true });
@@ -65,6 +65,24 @@ export async function getAllPages() {
         };
     }
 
+    // Strict Validation for Pages and Work
+    for (const [id, translations] of Object.entries(grouped)) {
+        const [type] = id.split('/');
+        if (['pages', 'work'].includes(type)) {
+            const missing = availableLanguageTags.filter(tag => !translations[tag]);
+            if (missing.length > 0) {
+                // We throw an error to break the build if a translation is missing
+                // This ensures content parity as requested.
+                throw new Error(`[STRICT VALIDATION] Missing translations for content '${id}': ${missing.join(', ')}. Ensure file exists in all languages.`);
+            }
+        }
+    }
+
+    return grouped;
+}
+
+export async function getAllPages() {
+    const grouped = await getRawPagesGrouped();
     const currentLang = languageTag();
     const finalPages = [];
 

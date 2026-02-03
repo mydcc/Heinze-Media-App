@@ -11,7 +11,8 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:content": "npx tsx scripts/check-content.ts",
 		"check:links": "npx tsx scripts/check-links.ts",
-		"fix:content": "npx tsx scripts/fix-frontmatter.ts"
+		"fix:content": "npx tsx scripts/fix-frontmatter.ts",
+		"translate": "node scripts/translate-content.js"
 	},
 	"devDependencies": {
 		"@inlang/paraglide-js": "^2.9.1",
