@@ -13,8 +13,8 @@ const globalComponentsPreprocessor = {
 			// Approach: Only inject if not already present or remove manual ones via regex.
 
 			const imports = `
-    import Button from '$lib/components/Button.svelte';
-    import Card from '$lib/components/Card.svelte';
+    import Button from '$lib/components/ui/Button.svelte';
+    import Card from '$lib/components/ui/Card.svelte';
     import Model3D from '$lib/components/3d/Model3D.svelte';
 `;
 

@@ -5,26 +5,25 @@ import { redirect, type Handle } from "@sveltejs/kit";
 
 const redirectHook: Handle = async ({ event, resolve }) => {
     const { pathname } = event.url;
+    const cookieLocale = event.cookies.get(cookieName);
+    
+    // 1. Detect current URL locale
+    const isDePath = pathname.startsWith('/de/') || pathname === '/de';
+    const urlLocale = isDePath ? 'de' : 'en';
 
-    // 1. Only check for redirects on the root or if no locale prefix is present
-    // Paraglide prefix for 'de' is '/de/'. 'en' is default and prefix-less.
-    const isDe = pathname.startsWith('/de/') || pathname === '/de';
-
-    if (!isDe) {
-        // Check if we should redirect to /de/
-        const cookieLocale = event.cookies.get(cookieName);
+    // 2. Handle Root Redirects (Only on '/' or '/de')
+    // This ensures that when a user visits the site, they get their preferred language.
+    if (pathname === '/' || pathname === '/de' || pathname === '/de/') {
         const acceptLanguage = event.request.headers.get('accept-language') || '';
         const prefersGerman = acceptLanguage.toLowerCase().includes('de');
+        
+        // If no cookie exists, use browser preference
+        const targetLocale = cookieLocale || (prefersGerman ? 'de' : 'en');
 
-        // Redirect if:
-        // - Cookie is explicitly 'de'
-        // - OR No cookie exists AND browser prefers German
-        if (cookieLocale === 'de' || (!cookieLocale && prefersGerman)) {
-            // Ensure we don't redirect static assets or internal kit calls
-            if (!pathname.includes('.') && !pathname.startsWith('/_')) {
-                const newPath = `/de${pathname === '/' ? '' : pathname}`;
-                throw redirect(307, newPath);
-            }
+        if (targetLocale === 'de' && !isDePath) {
+            throw redirect(307, '/de');
+        } else if (targetLocale === 'en' && isDePath) {
+            throw redirect(307, '/');
         }
     }
 
@@ -32,8 +31,19 @@ const redirectHook: Handle = async ({ event, resolve }) => {
 };
 
 const langHook: Handle = async ({ event, resolve }) => {
+    const locale = getLocale();
+    
+    // ALWAYS sync the cookie with the current resolved locale from the URL
+    // This makes the "URL choice" persistent immediately.
+    event.cookies.set(cookieName, locale, {
+        path: '/',
+        maxAge: 31536000, // 1 year
+        httpOnly: false,
+        sameSite: 'lax'
+    });
+
     return resolve(event, {
-        transformPageChunk: ({ html }) => html.replace('%lang%', getLocale())
+        transformPageChunk: ({ html }) => html.replace('%lang%', locale)
     });
 };
 

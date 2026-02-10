@@ -5,22 +5,10 @@ date: "2026-01-25"
 slug: "contact"
 layout: "contact"
 published: true
-blocks:
-  - type: "sectionheader"
-    data:
-      title: "Get in Touch"
-      tagline: "XR & Metaverse Strategy"
-      align: "center"
-  - type: "techstack"
-    data:
-      items:
-        - name: "Direct Meeting"
-          category: "Booking"
-          desc: "Schedule a virtual cup of coffee to discuss your vision."
-        - name: "Project Inquiry"
-          category: "Sales"
-          desc: "Structured feedback for enterprise solutions and XR studios."
+tagline: "XR & Metaverse Strategie"
+contactEmail: "kontakt@heinze-media.de"
+locations:
+  - "Berlin"
+  - "Remote"
+  - "Metaverse"
 ---
-
-
-Bitte nutzen Sie das Kontaktformular oder schreiben Sie uns direkt per E-Mail an <a href="mailto:contact@heinze-media.com">contact@heinze-media.com</a>.

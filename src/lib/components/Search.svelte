@@ -9,7 +9,8 @@
   onMount(async () => {
     // Load Pagefind script (only available after build)
     try {
-      pagefind = await import(/* @vite-ignore */ "/pagefind/pagefind.js");
+      const pagefindPath = "/pagefind/pagefind.js";
+      pagefind = await import(/* @vite-ignore */ pagefindPath);
       pagefind.init();
     } catch (e) {
       console.warn("Pagefind not available (dev mode?)");

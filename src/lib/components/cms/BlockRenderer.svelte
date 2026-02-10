@@ -1,28 +1,29 @@
 <script lang="ts">
-    import Hero from "./Hero.svelte";
-    import InfoBox from "./InfoBox.svelte";
-    import Testimonials from "./Testimonials.svelte";
-    import FeaturesGrid from "./FeaturesGrid.svelte";
-    import CTABanner from "./CTABanner.svelte";
-    import ProcessSteps from "./ProcessSteps.svelte";
-    import TechStack from "./TechStack.svelte";
-    import ImageGallery from "./ImageGallery.svelte";
-    import RichText from "./RichText.svelte";
-    import SectionHeader from "./SectionHeader.svelte";
+    import Hero from "../sections/Hero.svelte";
+    import InfoBox from "../sections/InfoBox.svelte";
+    import Testimonials from "../sections/Testimonials.svelte";
+    import Features from "../sections/Features.svelte";
+    import CTA from "../sections/CTA.svelte";
+    import Process from "../sections/Process.svelte";
+    import TechStack from "../sections/TechStack.svelte";
+    import Gallery from "../sections/Gallery.svelte";
+    import RichText from "../sections/RichText.svelte";
+    import SectionHeader from "../sections/SectionHeader.svelte";
 
     let { blocks = [] } = $props<{
         blocks?: Array<{ type: string; data?: any }>;
     }>();
 
+    // Map block types to components
     const components: Record<string, any> = {
         hero: Hero,
         infobox: InfoBox,
         testimonials: Testimonials,
-        features: FeaturesGrid,
-        cta: CTABanner,
-        process: ProcessSteps,
+        features: Features,
+        cta: CTA,
+        process: Process,
         techstack: TechStack,
-        gallery: ImageGallery,
+        gallery: Gallery,
         richtext: RichText,
         sectionheader: SectionHeader,
     };

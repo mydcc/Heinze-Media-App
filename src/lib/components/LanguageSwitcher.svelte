@@ -1,11 +1,18 @@
 <script lang="ts">
     import {
-        getLocale as languageTag,
         locales as availableLanguageTags,
     } from "$lib/paraglide/runtime.js";
     import { page } from "$app/stores";
     import { browser } from "$app/environment";
     import { i18n } from "$lib/i18n";
+
+    // Holistisch & Reaktiv: Die Sprache leitet sich IMMER von der URL ab.
+    // Das ist der SvelteKit-Standard für Robustheit.
+    const currentLang = $derived.by(() => {
+        const path = $page.url.pathname;
+        if (path.startsWith("/de")) return "de";
+        return "en"; // Default / Prefixless
+    });
 
     /**
      * Get the relative href for a language
@@ -15,6 +22,14 @@
         // Avoid accessing url.search during prerendering/server-side to prevent build errors
         if (!browser) return path;
         return path + $page.url.search;
+    }
+
+    function handleLanguageClick(lang: string) {
+        if (browser) {
+            // Cookie & LocalStorage als Backup für die nächste Session
+            document.cookie = `PARAGLIDE_LOCALE=${lang}; path=/; max-age=31536000; SameSite=Lax`;
+            localStorage.setItem('preferred_locale', lang);
+        }
     }
 </script>
 
@@ -26,14 +41,15 @@
         {#each availableLanguageTags as lang}
             <a
                 href={getHref(lang)}
+                onclick={() => handleLanguageClick(lang)}
                 class="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center text-xs font-black uppercase tracking-widest transition-all duration-300 relative
-                {languageTag() === lang
+                {currentLang === lang
                     ? 'bg-accent text-white shadow-[0_0_15px_rgba(var(--color-accent),0.4)] scale-110 z-10'
                     : 'bg-white/5 text-text-muted hover:bg-white/10 hover:text-white hover:scale-105'}"
-                aria-current={languageTag() === lang ? "page" : undefined}
+                aria-current={currentLang === lang ? "page" : undefined}
             >
                 {lang}
-                {#if languageTag() === lang}
+                {#if currentLang === lang}
                     <span
                         class="absolute -top-1 -right-1 w-2 h-2 bg-accent rounded-full animate-pulse border border-bg-footer"
                     ></span>

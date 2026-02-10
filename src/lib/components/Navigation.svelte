@@ -25,7 +25,7 @@
         { label: "Contact", href: "/contact" },
     ];
 
-    const navLinks = links.length > 0 ? links : defaultLinks;
+    const navLinks = $derived(links.length > 0 ? links : defaultLinks);
 
     function isActive(href: string): boolean {
         return (
@@ -69,6 +69,7 @@
         <button
             onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
             class="md:hidden p-2 text-white hover:text-accent transition-colors"
+            aria-label="Toggle Menu"
         >
             <svg
                 class="w-6 h-6"

@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import { loadContentBySlug, listContent } from '$lib/content/loader';
 import { renderMarkdown, generateSEOMeta, generateJsonLD, getReadingTime } from '$lib/content/render';
+import { getLocale as languageTag } from '$lib/paraglide/runtime.js';
 import type { PageServerLoad } from './$types';
 
 export const prerender = true;
@@ -8,7 +9,7 @@ export const prerender = true;
 export async function load({ params }: Parameters<PageServerLoad>[0]) {
     const { slug } = params;
 
-    const content = loadContentBySlug('blog', slug);
+    const content = loadContentBySlug('blog', slug, languageTag());
 
     if (!content) {
         throw error(404, 'Blog post not found');

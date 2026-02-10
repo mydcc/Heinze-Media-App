@@ -1,15 +1,17 @@
 <script lang="ts">
-    import Hero from "$lib/components/Hero.svelte";
-    import Section from "$lib/components/Section.svelte";
-    import Container from "$lib/components/Container.svelte";
-    import Grid from "$lib/components/Grid.svelte";
-    import Button from "$lib/components/Button.svelte";
-    import Card from "$lib/components/Card.svelte";
-    import Badge from "$lib/components/Badge.svelte";
-    import FeatureCard from "$lib/components/FeatureCard.svelte";
-    import Tag from "$lib/components/Tag.svelte";
-    import CTA from "$lib/components/CTA.svelte";
-    import SEOHead from "$lib/components/SEOHead.svelte";
+    import { 
+        Hero, 
+        Section, 
+        Container, 
+        Grid, 
+        Button, 
+        Card, 
+        Badge, 
+        FeatureCard, 
+        Tag, 
+        CTA, 
+        SEOHead 
+    } from "$lib/components";
 </script>
 
 <SEOHead
@@ -130,12 +132,9 @@
     <Container size="md" py="xl">
         <CTA
             title="Ready to build something amazing?"
-            description="Alle Komponenten sind produktionsreif und können sofort verwendet werden."
-            alignment="center"
-            buttons={[
-                { text: "View Docs", href: "#" },
-                { text: "Get Started", href: "#", variant: "secondary" },
-            ]}
+            subtitle="Alle Komponenten sind produktionsreif und können sofort verwendet werden."
+            buttonText="View Docs"
+            buttonLink="#"
         />
     </Container>
 </Section>

@@ -9,21 +9,7 @@ const ROOT_DIR = path.join(__dirname, '../../../');
 const CONTENT_DIR = path.join(ROOT_DIR, 'src/content');
 const STATIC_DIR = path.join(ROOT_DIR, 'static');
 
-/**
- * Parsed Frontmatter grob extrahieren (Minimale Logik für Validator)
- */
-function getFrontmatter(content: string): any {
-    const match = content.match(/^---\n([\s\S]*?)\n---/);
-    if (!match) return {};
-    const obj: any = {};
-    match[1].split('\n').forEach(line => {
-        const [key, ...val] = line.split(':');
-        if (key && val.length > 0) {
-            obj[key.trim()] = val.join(':').trim().replace(/^["']|["']$/g, '');
-        }
-    });
-    return obj;
-}
+import matter from 'gray-matter';
 
 /**
  * Validiert die Konsistenz der Markdown-Dateien zwischen DE und EN sowie die Frontmatter-Integrität.
@@ -52,7 +38,7 @@ export function validateContent(): string[] {
 
             // 2. Frontmatter Validation (DE)
             const content = fs.readFileSync(dePath, 'utf-8');
-            const fm = getFrontmatter(content);
+            const { data: fm } = matter(content);
             const result = schema.safeParse({ ...fm, slug: fm.slug || file.replace('.md', '') });
 
             if (!result.success) {

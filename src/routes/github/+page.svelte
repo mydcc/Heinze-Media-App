@@ -1,5 +1,5 @@
 <script lang="ts">
-    import FeatureCard from "$lib/components/FeatureCard.svelte";
+    import { FeatureCard } from "$lib/components";
     import { page } from "$app/stores";
 
     let { data }: { data?: { projects?: Array<any> } } = $props();

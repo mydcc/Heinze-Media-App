@@ -1,5 +1,6 @@
 <script lang="ts">
     import SEOHead from "$lib/components/SEOHead.svelte";
+    import { localizeHref } from "$lib/paraglide/runtime.js";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
@@ -44,7 +45,7 @@
                 <article
                     class="group rounded-lg bg-gradient-to-br from-white/5 to-white/0 hover:from-white/10 hover:to-accent/5 backdrop-blur-sm border border-white/10 hover:border-accent/30 transition-all overflow-hidden"
                 >
-                    <a href={`/work/${project.slug}`} class="block p-6">
+                    <a href={localizeHref(`/work/${project.slug}`)} class="block p-6">
                         <div class="flex flex-col h-full">
                             <h3
                                 class="text-xl font-bold mb-3 group-hover:text-accent transition-colors"

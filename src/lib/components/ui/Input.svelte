@@ -18,11 +18,13 @@
         onchange,
         error,
     }: Props = $props();
+
+    const id = `input-${Math.random().toString(36).slice(2, 9)}`;
 </script>
 
 <div class="space-y-2">
     {#if label}
-        <label class="block text-sm font-semibold text-white">
+        <label for={id} class="block text-sm font-semibold text-white">
             {label}
             {#if required}
                 <span class="text-accent">*</span>
@@ -32,6 +34,7 @@
 
     {#if type === "textarea"}
         <textarea
+            {id}
             {placeholder}
             {required}
             {value}
@@ -41,6 +44,7 @@
         ></textarea>
     {:else}
         <input
+            {id}
             {type}
             {placeholder}
             {required}

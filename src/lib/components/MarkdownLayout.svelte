@@ -1,5 +1,5 @@
 <script lang="ts">
-    import SectionHeader from "$lib/components/cms/SectionHeader.svelte";
+    import SectionHeader from "$lib/components/sections/SectionHeader.svelte";
 
     interface Props {
         title?: string;

@@ -3,34 +3,39 @@
     import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
     import * as m from "$lib/paraglide/messages.js";
     import {
-        localizeHref,
-        getLocale as languageTag,
+        localizeHref
     } from "$lib/paraglide/runtime.js";
     import { page as pageStore } from "$app/stores";
     // Svelte 5 Runes: direkt im <script> verwenden, nicht importieren
     import { adminState } from "$lib/state/admin.svelte";
 
-    // Reaktivität sicherstellen: Wir greifen auf $pageStore.url zu
+    // Holistisch & Reaktiv: Die Sprache leitet sich IMMER von der URL ab.
+    const currentLang = $derived.by(() => {
+        const path = $pageStore.url.pathname;
+        if (path.startsWith("/de")) return "de";
+        return "en";
+    });
+
+    // Reaktivität sicherstellen: Wir greifen auf currentLang zu
     const products = $derived.by(() => {
-        $pageStore.url;
         return [
             {
                 href: localizeHref("/services/xr-studio", {
-                    locale: languageTag(),
+                    locale: currentLang,
                 }),
                 label: "XR Studio Pro",
             },
             {
-                href: localizeHref("/services", { locale: languageTag() }),
+                href: localizeHref("/services", { locale: currentLang }),
                 label: "Web Services",
             },
             {
-                href: localizeHref("/metaverse", { locale: languageTag() }),
+                href: localizeHref("/metaverse", { locale: currentLang }),
                 label: "Metaverse",
             },
             {
                 href: localizeHref("/offer/special-deal", {
-                    locale: languageTag(),
+                    locale: currentLang,
                 }),
                 label: "Special Offers",
             },
@@ -38,27 +43,26 @@
     });
 
     const solutions = $derived.by(() => {
-        $pageStore.url;
         return [
             {
-                href: localizeHref("/solutions", { locale: languageTag() }),
+                href: localizeHref("/solutions", { locale: currentLang }),
                 label: "Consulting",
             },
             {
                 href: localizeHref("/solutions#enterprise", {
-                    locale: languageTag(),
+                    locale: currentLang,
                 }),
                 label: "Enterprise",
             },
             {
                 href: localizeHref("/solutions#startup", {
-                    locale: languageTag(),
+                    locale: currentLang,
                 }),
                 label: "For Startups",
             },
             {
                 href: localizeHref("/offer/free-ebook", {
-                    locale: languageTag(),
+                    locale: currentLang,
                 }),
                 label: "Free eBook",
             },
@@ -66,52 +70,50 @@
     });
 
     const resources = $derived.by(() => {
-        $pageStore.url;
         return [
             {
-                href: localizeHref("/blog", { locale: languageTag() }),
+                href: localizeHref("/blog", { locale: currentLang }),
                 label: "Blog & News",
             },
             {
-                href: localizeHref("/github", { locale: languageTag() }),
+                href: localizeHref("/github", { locale: currentLang }),
                 label: "GitHub-Projekte",
             },
             {
-                href: localizeHref("/blog#insights", { locale: languageTag() }),
+                href: localizeHref("/blog#insights", { locale: currentLang }),
                 label: "Insights",
             },
             {
-                href: localizeHref("/work", { locale: languageTag() }),
+                href: localizeHref("/work", { locale: currentLang }),
                 label: "Case Studies",
             },
             {
-                href: localizeHref("/sitemap", { locale: languageTag() }),
+                href: localizeHref("/sitemap", { locale: currentLang }),
                 label: "Sitemap",
             },
         ];
     });
 
     const company = $derived.by(() => {
-        $pageStore.url;
         return [
             {
-                href: localizeHref("/about", { locale: languageTag() }),
+                href: localizeHref("/about", { locale: currentLang }),
                 label: "Über uns",
             },
             {
-                href: localizeHref("/contact", { locale: languageTag() }),
+                href: localizeHref("/contact", { locale: currentLang }),
                 label: "Kontakt",
             },
             { href: "mailto:jobs@heinze-media.de", label: "Karriere" },
             {
                 href: localizeHref("/brand-guidelines", {
-                    locale: languageTag(),
+                    locale: currentLang,
                 }),
                 label: "Brand Assets",
             },
             {
                 href: localizeHref("/corporate-design", {
-                    locale: languageTag(),
+                    locale: currentLang,
                 }),
                 label: "Design Manual",
             },
@@ -119,27 +121,26 @@
     });
 
     const legal = $derived.by(() => {
-        $pageStore.url;
         return [
             {
                 href: localizeHref("/corporate-design", {
-                    locale: languageTag(),
+                    locale: currentLang,
                 }),
                 label: "Design Guide",
             },
             {
-                href: localizeHref("/imprint", { locale: languageTag() }),
+                href: localizeHref("/imprint", { locale: currentLang }),
                 label: "Impressum",
             },
             {
                 href: localizeHref("/privacy-policy", {
-                    locale: languageTag(),
+                    locale: currentLang,
                 }),
                 label: "Datenschutz",
             },
             {
                 href: localizeHref("/terms-and-conditions", {
-                    locale: languageTag(),
+                    locale: currentLang,
                 }),
                 label: "AGB",
             },

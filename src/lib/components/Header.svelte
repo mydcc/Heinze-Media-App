@@ -3,8 +3,7 @@
     import { page as pageStore } from "$app/stores";
     import * as m from "$lib/paraglide/messages.js";
     import {
-        localizeHref,
-        getLocale as languageTag,
+        localizeHref
     } from "$lib/paraglide/runtime.js";
 
     type Link = {
@@ -15,26 +14,29 @@
 
     const { links: propLinks } = $props<{ links?: Link[] }>();
 
-    // We use $derived.by() and access $pageStore.url to force reactivity when the URL (and thus language) changes.
-    const defaultLinks: Link[] = $derived.by(() => {
-        // Dependency tracking: access url to force re-evaluation
-        $pageStore.url;
+    // Holistisch & Reaktiv: Die Sprache leitet sich IMMER von der URL ab.
+    const currentLang = $derived.by(() => {
+        const path = $pageStore.url.pathname;
+        if (path.startsWith("/de")) return "de";
+        return "en";
+    });
 
+    const defaultLinks: Link[] = $derived.by(() => {
         return [
             {
-                href: localizeHref("/", { locale: languageTag() }),
+                href: localizeHref("/", { locale: currentLang }),
                 label: m.header_home(),
             },
             {
-                href: localizeHref("/about", { locale: languageTag() }),
+                href: localizeHref("/about", { locale: currentLang }),
                 label: m.header_about(),
             },
             {
-                href: localizeHref("/work", { locale: languageTag() }),
+                href: localizeHref("/work", { locale: currentLang }),
                 label: m.header_work(),
             },
             {
-                href: localizeHref("/services", { locale: languageTag() }),
+                href: localizeHref("/services", { locale: currentLang }),
                 label: m.header_services(),
                 submenu: [
                     {
@@ -45,11 +47,11 @@
                 ],
             },
             {
-                href: localizeHref("/blog", { locale: languageTag() }),
+                href: localizeHref("/blog", { locale: currentLang }),
                 label: m.header_news(),
             },
             {
-                href: localizeHref("/contact", { locale: languageTag() }),
+                href: localizeHref("/contact", { locale: currentLang }),
                 label: m.header_contact(),
             },
         ];
@@ -65,7 +67,7 @@
 >
     <div class="container mx-auto px-6 py-5 flex justify-between items-center">
         <a
-            href={localizeHref("/", { locale: languageTag() })}
+            href={localizeHref("/", { locale: currentLang })}
             class="text-2xl font-black tracking-tight text-text-main group"
         >
             <span class="transition-all group-hover:text-white">HEINZE</span

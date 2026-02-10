@@ -30,7 +30,7 @@
   // Dynamic Theme Colors from Frontmatter
   // We extract brandColor and accentColor from the current page's metadata
   // These are passed down from +page.server.ts -> +layout.server.ts (implicit) -> data
-  const metadata = $derived(data?.metadata as any);
+  const metadata = $derived((data as any)?.metadata);
   const brandColor = $derived(metadata?.brandColor);
   const accentColor = $derived(metadata?.accentColor);
 

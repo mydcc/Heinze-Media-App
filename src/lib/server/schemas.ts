@@ -6,6 +6,17 @@ const blockSchema = z.object({
 });
 
 /**
+ * Helper to transform string booleans from frontmatter
+ */
+const booleanSchema = z.preprocess((val) => {
+    if (typeof val === 'string') {
+        if (val.toLowerCase() === 'true') return true;
+        if (val.toLowerCase() === 'false') return false;
+    }
+    return val;
+}, z.boolean().optional().default(true));
+
+/**
  * Common fields for all content types
  */
 const baseSchema = z.object({
@@ -16,8 +27,8 @@ const baseSchema = z.object({
     brandColor: z.string().optional(),
     accentColor: z.string().optional(),
     ogImage: z.string().optional(),
-    published: z.boolean().optional().default(true),
-    sitemap: z.boolean().optional().default(true),
+    published: booleanSchema,
+    sitemap: booleanSchema,
 });
 
 /**
