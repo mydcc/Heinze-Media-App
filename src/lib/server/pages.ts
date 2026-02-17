@@ -2,7 +2,11 @@ import { pageSchema, blogSchema, workSchema } from './schemas';
 import { getLocale as languageTag, locales as availableLanguageTags } from '$lib/paraglide/runtime.js';
 import { validateContent } from './validator';
 
+let cachedGrouped: Record<string, Record<string, any>> | null = null;
+
 export async function getRawPagesGrouped() {
+    if (cachedGrouped) return cachedGrouped;
+
     // Start validation (runs in background or logs warnings)
     validateContent();
 
@@ -64,6 +68,7 @@ export async function getRawPagesGrouped() {
         }
     }
 
+    cachedGrouped = grouped;
     return grouped;
 }
 
