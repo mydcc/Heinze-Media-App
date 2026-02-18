@@ -17,13 +17,17 @@
         mounted = true;
     });
 
+    const metadata = (data.homepage?.metadata || {}) as any;
+    const hero = metadata.hero || {};
+    const features = metadata.features || [
+        { title: "XR Studios", description: "Virtuelle Produktionsstudios für Broadcast und Events auf höchstem Niveau." },
+        { title: "Metaverse", description: "Dezentrale, browser-basierte 3D-Welten ohne App-Download." },
+        { title: "3D Web Apps", description: "Interaktive Produkt-Konfiguratoren und Showrooms mit Svelte & Three.js." }
+    ];
+
     const seoConfig: SEOConfig = {
-        title:
-            data.homepage?.metadata?.title ||
-            "HEINZE MEDIA - Metaverse, XR & 3D Web Solutions",
-        description:
-            data.homepage?.metadata?.description ||
-            "Wir erschaffen immersive 3D-Web-Erlebnisse, XR-Studios und digitale Zwillinge.",
+        title: metadata.title || "HEINZE MEDIA - Metaverse, XR & 3D Web Solutions",
+        description: metadata.description || "Wir erschaffen immersive 3D-Web-Erlebnisse, XR-Studios und digitale Zwillinge.",
         keywords: [
             "Metaverse",
             "XR Studio",
@@ -70,31 +74,30 @@
             <h1
                 class="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-white drop-shadow-lg"
             >
-                Metaverse Service <br />
+                {hero.titlePrefix || "Metaverse Service"} <br />
                 <span
                     class="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent"
                 >
-                    Provider Nr. 1
+                    {hero.titleGradient || "Provider Nr. 1"}
                 </span>
             </h1>
             <p
                 class="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto mb-10 drop-shadow"
             >
-                Wir erschaffen immersive 3D-Web-Erlebnisse, XR-Studios und
-                digitale Zwillinge für Ihr Unternehmen.
+                {hero.description || "Wir erschaffen immersive 3D-Web-Erlebnisse, XR-Studios und digitale Zwillinge für Ihr Unternehmen."}
             </p>
             <div class="flex flex-col md:flex-row gap-4 justify-center">
                 <a
-                    href="/work"
+                    href={hero.ctaPrimaryLink || "/work"}
                     class="px-8 py-3 bg-cyan-500 text-slate-900 font-bold rounded hover:bg-white transition-colors shadow-lg hover:shadow-xl"
                 >
-                    View Our Work
+                    {hero.ctaPrimary || "View Our Work"}
                 </a>
                 <a
-                    href="/contact"
+                    href={hero.ctaSecondaryLink || "/contact"}
                     class="px-8 py-3 border-2 border-cyan-400 text-white font-bold rounded hover:bg-cyan-500/20 transition-colors shadow-lg"
                 >
-                    Contact Us
+                    {hero.ctaSecondary || "Contact Us"}
                 </a>
             </div>
         </div>
@@ -104,32 +107,16 @@
 <!-- Services / Intro -->
 <section class="py-20 bg-brand-dark">
     <div class="container mx-auto px-6 grid md:grid-cols-3 gap-12 text-center">
+        {#each features as feature}
         <div
             class="p-6 border border-white/5 rounded-xl hover:border-brand-cyan/30 transition-colors"
         >
-            <h3 class="text-2xl font-bold mb-4">XR Studios</h3>
+            <h3 class="text-2xl font-bold mb-4">{feature.title}</h3>
             <p class="text-white/60">
-                Virtuelle Produktionsstudios für Broadcast und Events auf
-                höchstem Niveau.
+                {feature.description}
             </p>
         </div>
-        <div
-            class="p-6 border border-white/5 rounded-xl hover:border-brand-cyan/30 transition-colors"
-        >
-            <h3 class="text-2xl font-bold mb-4">Metaverse</h3>
-            <p class="text-white/60">
-                Dezentrale, browser-basierte 3D-Welten ohne App-Download.
-            </p>
-        </div>
-        <div
-            class="p-6 border border-white/5 rounded-xl hover:border-brand-cyan/30 transition-colors"
-        >
-            <h3 class="text-2xl font-bold mb-4">3D Web Apps</h3>
-            <p class="text-white/60">
-                Interaktive Produkt-Konfiguratoren und Showrooms mit Svelte &
-                Three.js.
-            </p>
-        </div>
+        {/each}
     </div>
 </section>
 

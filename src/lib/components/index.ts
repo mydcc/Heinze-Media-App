@@ -27,7 +27,6 @@ export { default as Footer } from './Footer.svelte';
 export { default as SEOHead } from './SEOHead.svelte';
 export { default as ThemeSwitcher } from './ThemeSwitcher.svelte';
 export { default as ThemeToggle } from './ThemeToggle.svelte';
-export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
 export { default as AdminGuard } from './AdminGuard.svelte';
 export { default as Search } from './Search.svelte';
 export { default as BlockRenderer } from './cms/BlockRenderer.svelte';

@@ -1,151 +1,44 @@
 <script lang="ts">
     import ThemeSwitcher from "$lib/components/ThemeSwitcher.svelte";
-    import LanguageSwitcher from "$lib/components/LanguageSwitcher.svelte";
-    import * as m from "$lib/paraglide/messages.js";
-    import {
-        localizeHref
-    } from "$lib/paraglide/runtime.js";
     import { page as pageStore } from "$app/stores";
-    // Svelte 5 Runes: direkt im <script> verwenden, nicht importieren
     import { adminState } from "$lib/state/admin.svelte";
 
-    // Holistisch & Reaktiv: Die Sprache leitet sich IMMER von der URL ab.
-    const currentLang = $derived.by(() => {
-        const path = $pageStore.url.pathname;
-        if (path.startsWith("/de")) return "de";
-        return "en";
-    });
+    const products = [
+        { href: "/services/xr-studio", label: "XR Studio Pro" },
+        { href: "/services", label: "Web Services" },
+        { href: "/metaverse", label: "Metaverse" },
+        { href: "/offer/special-deal", label: "Special Offers" },
+    ];
 
-    // Reaktivität sicherstellen: Wir greifen auf currentLang zu
-    const products = $derived.by(() => {
-        return [
-            {
-                href: localizeHref("/services/xr-studio", {
-                    locale: currentLang,
-                }),
-                label: "XR Studio Pro",
-            },
-            {
-                href: localizeHref("/services", { locale: currentLang }),
-                label: "Web Services",
-            },
-            {
-                href: localizeHref("/metaverse", { locale: currentLang }),
-                label: "Metaverse",
-            },
-            {
-                href: localizeHref("/offer/special-deal", {
-                    locale: currentLang,
-                }),
-                label: "Special Offers",
-            },
-        ];
-    });
+    const solutions = [
+        { href: "/solutions", label: "Consulting" },
+        { href: "/solutions#enterprise", label: "Enterprise" },
+        { href: "/solutions#startup", label: "For Startups" },
+        { href: "/offer/free-ebook", label: "Free eBook" },
+    ];
 
-    const solutions = $derived.by(() => {
-        return [
-            {
-                href: localizeHref("/solutions", { locale: currentLang }),
-                label: "Consulting",
-            },
-            {
-                href: localizeHref("/solutions#enterprise", {
-                    locale: currentLang,
-                }),
-                label: "Enterprise",
-            },
-            {
-                href: localizeHref("/solutions#startup", {
-                    locale: currentLang,
-                }),
-                label: "For Startups",
-            },
-            {
-                href: localizeHref("/offer/free-ebook", {
-                    locale: currentLang,
-                }),
-                label: "Free eBook",
-            },
-        ];
-    });
+    const resources = [
+        { href: "/blog", label: "Blog & News" },
+        { href: "/github", label: "GitHub Projects" },
+        { href: "/blog#insights", label: "Insights" },
+        { href: "/work", label: "Case Studies" },
+        { href: "/sitemap", label: "Sitemap" },
+    ];
 
-    const resources = $derived.by(() => {
-        return [
-            {
-                href: localizeHref("/blog", { locale: currentLang }),
-                label: "Blog & News",
-            },
-            {
-                href: localizeHref("/github", { locale: currentLang }),
-                label: "GitHub-Projekte",
-            },
-            {
-                href: localizeHref("/blog#insights", { locale: currentLang }),
-                label: "Insights",
-            },
-            {
-                href: localizeHref("/work", { locale: currentLang }),
-                label: "Case Studies",
-            },
-            {
-                href: localizeHref("/sitemap", { locale: currentLang }),
-                label: "Sitemap",
-            },
-        ];
-    });
+    const company = [
+        { href: "/about", label: "About Us" },
+        { href: "/contact", label: "Contact" },
+        { href: "mailto:jobs@heinze-media.de", label: "Careers" },
+        { href: "/brand-guidelines", label: "Brand Assets" },
+        { href: "/corporate-design", label: "Design Manual" },
+    ];
 
-    const company = $derived.by(() => {
-        return [
-            {
-                href: localizeHref("/about", { locale: currentLang }),
-                label: "Über uns",
-            },
-            {
-                href: localizeHref("/contact", { locale: currentLang }),
-                label: "Kontakt",
-            },
-            { href: "mailto:jobs@heinze-media.de", label: "Karriere" },
-            {
-                href: localizeHref("/brand-guidelines", {
-                    locale: currentLang,
-                }),
-                label: "Brand Assets",
-            },
-            {
-                href: localizeHref("/corporate-design", {
-                    locale: currentLang,
-                }),
-                label: "Design Manual",
-            },
-        ];
-    });
-
-    const legal = $derived.by(() => {
-        return [
-            {
-                href: localizeHref("/corporate-design", {
-                    locale: currentLang,
-                }),
-                label: "Design Guide",
-            },
-            {
-                href: localizeHref("/imprint", { locale: currentLang }),
-                label: "Impressum",
-            },
-            {
-                href: localizeHref("/privacy-policy", {
-                    locale: currentLang,
-                }),
-                label: "Datenschutz",
-            },
-            {
-                href: localizeHref("/terms-and-conditions", {
-                    locale: currentLang,
-                }),
-                label: "AGB",
-            },
-        ];
-    });
+    const legal = [
+        { href: "/corporate-design", label: "Design Guide" },
+        { href: "/imprint", label: "Imprint" },
+        { href: "/privacy-policy", label: "Privacy Policy" },
+        { href: "/terms-and-conditions", label: "Terms & Conditions" },
+    ];
 </script>
 
 <footer
@@ -170,10 +63,10 @@
                 <p
                     class="text-xs text-text-muted uppercase tracking-widest mb-4 font-semibold"
                 >
-                    {m.footer_tagline()}
+                    Independent Digital Galaxies
                 </p>
                 <p class="text-sm text-text-main leading-relaxed mb-8 max-w-xs">
-                    {m.footer_description()}
+                    Building the next generation of digital interaction.
                 </p>
 
                 <!-- Social Media Icons -->
@@ -219,7 +112,6 @@
                 <!-- Theme Switcher -->
                 <div class="flex flex-col gap-6 mt-8">
                     <ThemeSwitcher />
-                    <LanguageSwitcher />
                 </div>
             </div>
 
@@ -228,7 +120,7 @@
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
-                    {m.footer_products()}
+                    Products
                 </h4>
                 <ul class="space-y-3 text-sm">
                     {#each products as link}
@@ -251,7 +143,7 @@
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
-                    {m.footer_solutions()}
+                    Solutions
                 </h4>
                 <ul class="space-y-3 text-sm">
                     {#each solutions as link}
@@ -274,7 +166,7 @@
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
-                    {m.footer_resources()}
+                    Resources
                 </h4>
                 <ul class="space-y-3 text-sm">
                     {#each resources as link}
@@ -297,7 +189,7 @@
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
-                    {m.footer_company()}
+                    Company
                 </h4>
                 <ul class="space-y-3 text-sm">
                     {#each company as link}
@@ -320,7 +212,7 @@
                 <h4
                     class="text-white font-bold uppercase tracking-widest text-xs mb-6 pb-3 border-b border-accent/30"
                 >
-                    {m.footer_legal()}
+                    Legal
                 </h4>
                 <ul class="space-y-3 text-sm">
                     {#each legal as link}
@@ -470,7 +362,7 @@
                         href="/contact"
                         class="text-accent text-sm font-semibold hover:text-accent/80 transition-colors inline-flex items-center gap-2"
                     >
-                        {m.footer_cta_label()}
+                        Get Started
                         <svg
                             class="w-4 h-4"
                             fill="none"

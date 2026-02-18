@@ -1,10 +1,6 @@
 <script lang="ts">
     import ThemeToggle from "$lib/components/ThemeToggle.svelte";
     import { page as pageStore } from "$app/stores";
-    import * as m from "$lib/paraglide/messages.js";
-    import {
-        localizeHref
-    } from "$lib/paraglide/runtime.js";
 
     type Link = {
         href: string;
@@ -14,52 +10,28 @@
 
     const { links: propLinks } = $props<{ links?: Link[] }>();
 
-    // Holistisch & Reaktiv: Die Sprache leitet sich IMMER von der URL ab.
-    const currentLang = $derived.by(() => {
-        const path = $pageStore.url.pathname;
-        if (path.startsWith("/de")) return "de";
-        return "en";
-    });
+    const defaultLinks: Link[] = [
+        { href: "/", label: "Home" },
+        { href: "/about", label: "About" },
+        { href: "/work", label: "Work" },
+        {
+            href: "/services",
+            label: "Services",
+            submenu: [
+                {
+                    href: "https://xrpress.org",
+                    label: "XRPress",
+                    target: "_blank",
+                },
+            ],
+        },
+        { href: "/blog", label: "News" },
+        { href: "/contact", label: "Contact" },
+    ];
 
-    const defaultLinks: Link[] = $derived.by(() => {
-        return [
-            {
-                href: localizeHref("/", { locale: currentLang }),
-                label: m.header_home(),
-            },
-            {
-                href: localizeHref("/about", { locale: currentLang }),
-                label: m.header_about(),
-            },
-            {
-                href: localizeHref("/work", { locale: currentLang }),
-                label: m.header_work(),
-            },
-            {
-                href: localizeHref("/services", { locale: currentLang }),
-                label: m.header_services(),
-                submenu: [
-                    {
-                        href: "https://xrpress.org",
-                        label: "XRPress",
-                        target: "_blank",
-                    },
-                ],
-            },
-            {
-                href: localizeHref("/blog", { locale: currentLang }),
-                label: m.header_news(),
-            },
-            {
-                href: localizeHref("/contact", { locale: currentLang }),
-                label: m.header_contact(),
-            },
-        ];
-    });
     function getLinks() {
         return propLinks && propLinks.length > 0 ? propLinks : defaultLinks;
     }
-    const mobileMenuOpen = $state(false);
 </script>
 
 <header
@@ -67,7 +39,7 @@
 >
     <div class="container mx-auto px-6 py-5 flex justify-between items-center">
         <a
-            href={localizeHref("/", { locale: currentLang })}
+            href="/"
             class="text-2xl font-black tracking-tight text-text-main group"
         >
             <span class="transition-all group-hover:text-white">HEINZE</span

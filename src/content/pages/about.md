@@ -104,20 +104,23 @@ ctaStats:
     label: "Possibilities"
   - value: "1"
     label: "Passionate Expert"
+ctaTitle: "Let's Build Your <span class='text-accent'>Galaxy</span>"
+ctaTagline: "Ready to Start?"
+ctaDescription: "If you are ready to transform your digital presence from a passive website into an explorable, interactive world that delights your customers, let's talk."
+ctaButtonText: "START YOUR PROJECT"
 ---
 
-# Play Forward
+# Play Forward: A Strategic Approach
 
-### A collaborative and strategic partner
+When you're ready to use technology to drive your business forward, you need the right partner. We drive business growth for our clients through interactive 3D sales tools, engaged employees through VR, and immersive corporate experiences.
 
-When you're ready to use technology to drive your business forward, you need the right partner. We drive business growth for our clients through interactive 3D sales tools, engaged employees through VR and immersive corporate experiences, training and developed web, mobile and app platforms.
+## Technology & Design United
 
-We have the proven team and skills you need to create technology experiences that set your business apart. At HM, we work with our partners to find the right mix of technology, design, content and business strategy.
+We have the proven team and skills you need to create technology experiences that set your business apart. At Heinze Media, we work with our partners to find the right mix of technology, design, content, and business strategy.
 
-## Heinze Media
+### Our Focus
+*   **Interactive 3D Sales Enablement**
+*   **Virtual Employee Training**
+*   **Hybrid Event Platforms**
 
-We love technology and design
-
-HM harnesses the power of technology to drive real business results. Born from a combination of video game development DNA and a virtual user experience mindset, our team provides a playful and results-oriented approach to the challenge of immersive business experiences. HM's solutions are used in employee training, product marketing, sales and BD enablement, team collaboration, and virtual and hybrid events.
-
-HM designs and develops apps and platforms that engage visitors, drive business growth through interactive 3D sales enablement tools. We produce live-streamed content for workforces in VR.
+Our team combines video game development DNA with a virtual user experience mindset. This playful yet results-oriented approach solves the challenges of immersive business experiences.

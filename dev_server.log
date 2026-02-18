@@ -1,0 +1,9 @@
+
+> heinze-media-app@0.0.1 dev
+> vite dev --port 5177
+
+
+  VITE v7.3.1  ready in 1353 ms
+
+  ➜  Local:   http://localhost:5177/
+  ➜  Network: http://10.89.168.148:5177/

@@ -2,7 +2,6 @@
     import ThemePreview from "$lib/components/brand/ThemePreview.svelte";
     import LogoDownload from "$lib/components/brand/LogoDownload.svelte";
     import SEOHead from "$lib/components/SEOHead.svelte";
-    import * as m from "$lib/paraglide/messages.js";
 
     const themes = [
         {
@@ -38,7 +37,7 @@
 
 <SEOHead
     title="Brand Guidelines | HEINZE MEDIA"
-    description="Corporate Design, Brand Guidelines und Presse-Kit von HEINZE MEDIA."
+    description="Corporate Design, Brand Guidelines, and Press Kit of HEINZE MEDIA."
 />
 
 <div class="min-h-screen pt-32 pb-20">
@@ -49,17 +48,16 @@
                 Brand <span class="text-accent">Guidelines</span>
             </h1>
             <p class="text-xl text-text-muted leading-relaxed">
-                Unsere visuelle Identität ist das Fundament unserer
-                Markenbotschaft. Hier findest du alle Ressourcen und Richtlinien
-                für HEINZE MEDIA.
+                Our visual identity is the foundation of our brand message. 
+                Here you'll find all the resources and guidelines for HEINZE MEDIA.
             </p>
         </header>
 
         <!-- 4 Themes Grid -->
         <section class="mb-32">
-            <h2 class="text-3xl font-bold mb-12 flex items-center gap-4">
-                <span class="w-12 h-1 bg-accent rounded-full text-white"></span>
-                Das 4-Theme System
+            <h2 class="text-3xl font-bold mb-12 flex items-center gap-4 text-white">
+                <span class="w-12 h-1 bg-accent rounded-full"></span>
+                The 4-Theme System
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {#each themes as theme}
@@ -68,19 +66,19 @@
             </div>
         </section>
 
-        <!-- Presse Kit / Logo Downloads -->
+        <!-- Press Kit / Logo Downloads -->
         <section
             class="mb-32 bg-white/5 rounded-3xl p-12 border border-white/10"
         >
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <div>
-                    <h2 class="text-4xl font-black mb-6 text-white text-white">
-                        Presse-Kit
+                    <h2 class="text-4xl font-black mb-6 text-white">
+                        Press Kit
                     </h2>
                     <p class="text-lg text-text-muted mb-8 leading-relaxed">
-                        Lade unser offizielles Logo in verschiedenen Varianten
-                        herunter. Bitte beachte die Schutzräume und
-                        Mindestgrößen laut Corporate Design Manual.
+                        Download our official logo in various formats. 
+                        Please respect the clear space and minimum size requirements 
+                        as outlined in our Corporate Design Manual.
                     </p>
                     <div class="flex flex-wrap gap-4">
                         <LogoDownload
@@ -91,7 +89,7 @@
                             href="/corporate-design"
                             class="px-6 py-3 border border-white/20 rounded-full hover:bg-white/10 transition-colors text-white"
                         >
-                            Design Manual lesen
+                            Read Design Manual
                         </a>
                     </div>
                 </div>
@@ -114,7 +112,7 @@
                 class="text-3xl font-bold mb-12 flex items-center gap-4 text-white"
             >
                 <span class="w-12 h-1 bg-accent rounded-full"></span>
-                Typografie
+                Typography
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                 <div class="space-y-6">
@@ -127,8 +125,8 @@
                         Montserrat Bold
                     </p>
                     <p class="text-text-muted">
-                        Modern, technisch und präsent. Montserrat wird für alle
-                        Überschriften und Markenelemente verwendet.
+                        Modern, technical, and bold. Montserrat is used for all 
+                        headlines and brand elements.
                     </p>
                 </div>
                 <div class="space-y-6">
@@ -141,8 +139,8 @@
                         Inter Medium
                     </p>
                     <p class="text-text-muted">
-                        Optimiert für Lesbarkeit auf Screens. Inter ist unsere
-                        Wahl für Fließtext, Menüs und Daten-Visualisierungen.
+                        Optimized for readability on screens. Inter is our 
+                        choice for body text, menus, and data visualizations.
                     </p>
                 </div>
             </div>

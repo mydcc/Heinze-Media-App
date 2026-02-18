@@ -1,6 +1,5 @@
 <script lang="ts">
     import SEOHead from "$lib/components/SEOHead.svelte";
-    import { localizeHref } from "$lib/paraglide/runtime.js";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
@@ -10,7 +9,7 @@
 
 <SEOHead
     title="Blog - News & Insights | Heinze Media"
-    description="Artikel über XR, Metaverse, 3D Web-Technologien und digitale Transformation"
+    description="Articles about XR, Metaverse, 3D Web technologies, and digital transformation"
     ogImage="/images/og-blog.png"
 />
 
@@ -24,8 +23,7 @@
                 Blog & Insights
             </h1>
             <p class="text-lg text-white/70">
-                Neueste Artikel über immersive Technologien und digitale
-                Innovation
+                Latest articles about immersive technologies and digital innovation
             </p>
         </div>
     </div>
@@ -34,7 +32,7 @@
 <div class="container mx-auto px-6 py-16 md:py-24">
     {#if blogPosts.length === 0}
         <div class="text-center py-12">
-            <p class="text-white/60">Noch keine Blog-Posts verfügbar.</p>
+            <p class="text-white/60">No blog posts available yet.</p>
         </div>
     {:else}
         <div
@@ -44,7 +42,7 @@
                 <article
                     class="group rounded-lg bg-white/5 hover:bg-white/10 backdrop-blur-sm border border-white/10 hover:border-accent/30 transition-all overflow-hidden"
                 >
-                    <a href={localizeHref(`/blog/${post.slug}`)} class="block h-full">
+                    <a href={`/blog/${post.slug}`} class="block h-full">
                         {#if post.image}
                             <div class="aspect-video overflow-hidden">
                                 <img
@@ -60,9 +58,9 @@
                             >
                                 {post.date
                                     ? new Date(post.date).toLocaleDateString(
-                                          "de-DE",
+                                          "en-US",
                                       )
-                                    : "Kein Datum"}
+                                    : "No Date"}
                             </time>
                             <h3
                                 class="text-xl font-bold mb-3 group-hover:text-accent transition-colors"
@@ -71,7 +69,7 @@
                             </h3>
                             <p class="text-white/60 text-sm flex-grow mb-4 line-clamp-3">
                                 {post.description ||
-                                    "Keine Beschreibung verfügbar"}
+                                    "No description available"}
                             </p>
                             
                             {#if post.categories}
@@ -87,7 +85,7 @@
                             <div
                                 class="flex items-center text-accent text-sm font-semibold"
                             >
-                                Weiterlesen
+                                Read More
                                 <svg
                                     class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"
                                     fill="none"

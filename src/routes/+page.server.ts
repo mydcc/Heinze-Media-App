@@ -1,10 +1,9 @@
 import { renderMarkdown } from '$lib/content/render';
 import { loadContentBySlug } from '$lib/content/loader';
-import { getLocale } from '$lib/paraglide/runtime.js';
 
 export const load = async () => {
-    const lang = getLocale();
-    const homeContent = loadContentBySlug('pages', 'home', lang);
+    // Single language call
+    const homeContent = loadContentBySlug('pages', 'home');
 
     if (homeContent) {
         homeContent.html = await renderMarkdown(homeContent.content);

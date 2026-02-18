@@ -28,8 +28,6 @@
   }
 
   // Dynamic Theme Colors from Frontmatter
-  // We extract brandColor and accentColor from the current page's metadata
-  // These are passed down from +page.server.ts -> +layout.server.ts (implicit) -> data
   const metadata = $derived((data as any)?.metadata);
   const brandColor = $derived(metadata?.brandColor);
   const accentColor = $derived(metadata?.accentColor);
@@ -55,7 +53,7 @@
   "description" in data &&
   typeof (data as any).description === "string"
     ? (data as any).description
-    : "Immersive Tech & XR Solutions aus Berlin. WebXR, AR, VR, Metaverse und mehr."}
+    : "Immersive Tech & XR Solutions from Berlin. WebXR, AR, VR, Metaverse and more."}
 />
 
 <svelte:window onkeydown={handleKeydown} />
@@ -67,7 +65,6 @@
 >
   <Header />
   <main class="flex-grow pt-20">
-    <!-- Added padding-top for fixed header -->
     {@render children()}
   </main>
   <Footer />

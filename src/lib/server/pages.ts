@@ -1,33 +1,28 @@
 import { pageSchema, blogSchema, workSchema } from './schemas';
-import { getLocale as languageTag, locales as availableLanguageTags } from '$lib/paraglide/runtime.js';
-import { validateContent } from './validator';
 
 export async function getRawPagesGrouped() {
-    // Start validation (runs in background or logs warnings)
-    validateContent();
-
     // Import modules directly (mdsvex handles parsing)
     // Note: eager=true is essential for static site generation
     const modules = import.meta.glob('/src/content/**/*.md', { eager: true });
-    const grouped: Record<string, Record<string, any>> = {};
+    const pages: any[] = [];
 
     for (const [file, module] of Object.entries(modules)) {
-        // Path analysis: /src/content/de/pages/home.md
-        const parts = file.replace('/src/content/', '').split('/');
-        if (parts.length < 3) continue;
+        // Path analysis: /src/content/pages/home.md
+        // Remove prefix
+        const cleanPath = file.replace('/src/content/', '');
+        const parts = cleanPath.split('/');
+        
+        // Expected: [type, slug.md] or [type, subfolder, slug.md]
+        if (parts.length < 2) continue;
 
-        const lang = parts[0];
-        const type = parts[1];
-        const slugPath = parts.slice(2).join('/').replace(/\.md$/, '');
-
-        // Only process supported languages
-        if (!availableLanguageTags.includes(lang as any)) continue;
+        const type = parts[0];
+        // Join the rest as slug, remove extension
+        const slugPath = parts.slice(1).join('/').replace(/\.md$/, '');
 
         const rawMetadata = (module as any).metadata;
         const schema = type === 'blog' ? blogSchema : type === 'work' ? workSchema : pageSchema;
 
-        // Strict Validation: Throw on failure
-        // This stops the build process as required by AGENT.md
+        // Validation
         let meta;
         try {
             meta = schema.parse(rawMetadata || {});
@@ -36,54 +31,20 @@ export async function getRawPagesGrouped() {
             throw e; // Build-Breaker
         }
 
-        const id = `${type}/${slugPath}`;
-
-        if (!grouped[id]) grouped[id] = {};
-        grouped[id][lang] = {
-            id,
+        pages.push({
+            id: `${type}/${slugPath}`,
             slug: meta.slug || slugPath,
             type,
             meta,
-            // Component is NOT returned here to keep payload serializable
-            // The component will be loaded by +page.ts via dynamic import
-            lang,
             filePath: file
-        };
+        });
     }
 
-    // Strict Validation for Pages and Work
-    for (const [id, translations] of Object.entries(grouped)) {
-        const [type] = id.split('/');
-        if (['pages', 'work'].includes(type)) {
-            const missing = availableLanguageTags.filter(tag => !translations[tag]);
-            if (missing.length > 0) {
-                // We throw an error to break the build if a translation is missing
-                // This ensures content parity as requested.
-                throw new Error(`[STRICT VALIDATION] Missing translations for content '${id}': ${missing.join(', ')}. Ensure file exists in all languages.`);
-            }
-        }
-    }
-
-    return grouped;
+    return pages;
 }
 
 export async function getAllPages() {
-    const grouped = await getRawPagesGrouped();
-    const currentLang = languageTag();
-    const finalPages = [];
-
-    for (const [id, translations] of Object.entries(grouped)) {
-        const page = translations[currentLang] || translations['de'] || Object.values(translations)[0];
-
-        if (page) {
-            if (!translations[currentLang]) {
-                page.isFallback = true;
-            }
-            finalPages.push(page);
-        }
-    }
-
-    return finalPages;
+    return await getRawPagesGrouped();
 }
 
 export async function getPage(slug: string, type?: string) {
@@ -91,6 +52,7 @@ export async function getPage(slug: string, type?: string) {
 
     const found = pages.find((p) => {
         if (type && p.type !== type) return false;
+        // Check for exact slug match or ID match
         return p.slug === slug || p.id === slug || p.id.endsWith(`/${slug}`);
     }) ?? null;
 

@@ -11,6 +11,13 @@
     let { data }: { data: PageData } = $props();
 
     const metadata = $derived(data.metadata);
+    // DEBUG: Log metadata to console to verify content loading
+    $effect(() => {
+        console.log("Page Metadata:", metadata);
+        console.log("Current Layout:", metadata?.layout);
+        console.log("Content Component Present:", !!data.component);
+    });
+
     // Component is now loaded dynamically via mdsvex
     const ContentComponent = $derived(data.component);
 

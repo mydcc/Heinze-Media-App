@@ -1,0 +1,9 @@
+
+> heinze-media-app@0.0.1 dev
+> vite dev --port 9999
+
+
+  VITE v7.3.1  ready in 1369 ms
+
+  ➜  Local:   http://localhost:9999/
+  ➜  Network: http://10.89.168.148:9999/

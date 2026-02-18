@@ -1,1 +1,2 @@
-export { reroute } from "$lib/paraglide/adapter.js";
+// Empty hooks file for now
+export {};

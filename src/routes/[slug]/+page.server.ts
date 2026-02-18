@@ -1,4 +1,3 @@
-
 import { error, redirect } from '@sveltejs/kit';
 import { getPage } from '$lib/server/pages';
 
@@ -13,7 +12,8 @@ export async function entries() {
 
 export async function load({ params }) {
     const { slug } = params;
-    // Strict validation happens inside getPage -> getAllPages
+    
+    // Simplifed: No language handling needed
     const page = await getPage(slug, 'pages');
 
     if (!page) {
@@ -21,14 +21,12 @@ export async function load({ params }) {
     }
 
     if (page.isFallback) {
-        throw redirect(307, '/');
+        // Fallback logic not strictly needed anymore but good for safety
     }
 
-    // Pass metadata to the client (serialized)
-    // The component loading happens in +page.ts
     return {
         metadata: { ...page.meta, slug: page.slug },
-        filePath: page.filePath, // Pass filePath to help +page.ts find the module
+        filePath: page.filePath,
         seoMeta: {
             title: page.meta.title,
             description: page.meta.description || '',

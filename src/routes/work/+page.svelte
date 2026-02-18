@@ -1,16 +1,17 @@
 <script lang="ts">
     import SEOHead from "$lib/components/SEOHead.svelte";
-    import { localizeHref } from "$lib/paraglide/runtime.js";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
 
     const workItems = $derived(data.workItems || []);
+    const metadata = $derived((data.metadata || {}) as any);
+    const hero = $derived(metadata.hero || {});
 </script>
 
 <SEOHead
-    title="Portfolio - Case Studies & Projects | Heinze Media"
-    description="Entdecken Sie unsere erfolgreichen XR, Metaverse und 3D Web Projekte"
+    title={`${metadata.title || "Portfolio"} | Heinze Media`}
+    description={metadata.description || "Discover our successful XR, Metaverse, and 3D Web projects"}
     ogImage="/images/og-work.png"
 />
 
@@ -21,10 +22,10 @@
     <div class="container mx-auto px-6 relative z-10">
         <div class="max-w-3xl mx-auto text-center">
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-black mb-6">
-                Portfolio
+                {hero.titlePrefix || "Portfolio"} <span class="text-accent">{hero.titleAccent || ""}</span>
             </h1>
             <p class="text-lg text-white/70">
-                Erfolgreiche Projekte in XR, Metaverse und 3D Web
+                {hero.description || "Successful projects in XR, Metaverse, and 3D Web"}
             </p>
         </div>
     </div>
@@ -34,7 +35,7 @@
     {#if workItems.length === 0}
         <div class="text-center py-12">
             <p class="text-white/60">
-                Noch keine Portfolio-Projekte verfügbar.
+                No portfolio projects available yet.
             </p>
         </div>
     {:else}
@@ -45,7 +46,7 @@
                 <article
                     class="group rounded-lg bg-gradient-to-br from-white/5 to-white/0 hover:from-white/10 hover:to-accent/5 backdrop-blur-sm border border-white/10 hover:border-accent/30 transition-all overflow-hidden"
                 >
-                    <a href={localizeHref(`/work/${project.slug}`)} class="block p-6">
+                    <a href={`/work/${project.slug}`} class="block p-6">
                         <div class="flex flex-col h-full">
                             <h3
                                 class="text-xl font-bold mb-3 group-hover:text-accent transition-colors"
@@ -54,21 +55,21 @@
                             </h3>
                             <p class="text-white/60 text-sm flex-grow mb-4">
                                 {project.description ||
-                                    "Kein Description verfügbar"}
+                                    "No description available"}
                             </p>
                             {#if project.date}
                                 <time
                                     class="text-xs text-accent/70 font-semibold uppercase tracking-widest mb-4"
                                 >
                                     {new Date(project.date).toLocaleDateString(
-                                        "de-DE",
+                                        "en-US",
                                     )}
                                 </time>
                             {/if}
                             <div
                                 class="flex items-center text-accent text-sm font-semibold"
                             >
-                                Projekt ansehen
+                                View Project
                                 <svg
                                     class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"
                                     fill="none"
