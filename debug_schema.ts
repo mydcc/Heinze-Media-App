@@ -1,13 +1,8 @@
 import { z } from 'zod';
+import fs from 'fs';
+import matter from 'gray-matter';
 
-const blockSchema = z.object({
-    type: z.string(),
-    data: z.record(z.string(), z.any()).optional()
-});
-
-/**
- * Helper to transform string booleans from frontmatter
- */
+// Recreate the schema parts
 const booleanSchema = z.preprocess((val) => {
     if (typeof val === 'string') {
         if (val.toLowerCase() === 'true') return true;
@@ -16,9 +11,11 @@ const booleanSchema = z.preprocess((val) => {
     return val;
 }, z.boolean().optional().default(true));
 
-/**
- * Common fields for all content types
- */
+const blockSchema = z.object({
+    type: z.string(),
+    data: z.record(z.string(), z.any()).optional()
+});
+
 const baseSchema = z.object({
     title: z.string().min(1, 'Title is required'),
     description: z.string().min(1, 'Description is required').optional(),
@@ -31,34 +28,12 @@ const baseSchema = z.object({
     sitemap: booleanSchema,
 });
 
-/**
- * Specific schema for Blog posts
- */
-export const blogSchema = baseSchema.extend({
-    author: z.string().default('Heinze Media Team'),
-    tags: z.string().optional(), // Usually comma separated string in frontmatter
-    featured: z.string().optional().transform(v => v === 'true'),
-});
-
-/**
- * Specific schema for Work/Portfolio items
- */
-export const workSchema = baseSchema.extend({
-    category: z.string().optional(),
-    client: z.string().optional(),
-    thumbnail: z.string().optional(),
-    src: z.string().optional(), // 3D Model source
-});
-
-/**
- * Specific schema for general Pages
- */
-export const pageSchema = baseSchema.extend({
+const pageSchema = baseSchema.extend({
     layout: z.string().optional().default('default'),
     blocks: z.array(blockSchema).optional(),
     theme: z.string().optional(),
     
-    // Extended fields for specific layouts (About, Contact, etc.)
+    // Updated with explicit record keys
     hero: z.record(z.string(), z.any()).optional(),
     mission: z.record(z.string(), z.any()).optional(),
     journeyTagline: z.string().optional(),
@@ -75,12 +50,16 @@ export const pageSchema = baseSchema.extend({
     ctaDescription: z.string().optional(),
     ctaButtonText: z.string().optional(),
     
-    // Contact Page specific
     tagline: z.string().optional(),
     contactEmail: z.string().optional(),
     locations: z.array(z.string()).optional(),
 });
 
-export type BlogEntry = z.infer<typeof blogSchema>;
-export type WorkEntry = z.infer<typeof workSchema>;
-export type PageEntry = z.infer<typeof pageSchema>;
+try {
+    const fileContent = fs.readFileSync('src/content/pages/about.md', 'utf-8');
+    const { data } = matter(fileContent);
+    pageSchema.parse(data);
+    console.log('Validation Success!');
+} catch (e) {
+    console.error('Validation Failed:', e);
+}

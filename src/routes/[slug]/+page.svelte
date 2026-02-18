@@ -46,7 +46,9 @@
 {:else if layout === "about"}
     <AboutLayout {metadata}>
         {#snippet children()}
-            <ContentComponent />
+            {#if ContentComponent}
+                <ContentComponent />
+            {/if}
         {/snippet}
     </AboutLayout>
 {:else if layout === "service"}

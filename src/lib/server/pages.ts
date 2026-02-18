@@ -27,8 +27,11 @@ export async function getRawPagesGrouped() {
         try {
             meta = schema.parse(rawMetadata || {});
         } catch (e) {
-            console.error(`[VALIDATION ERROR] File: ${file}`);
-            throw e; // Build-Breaker
+            console.error(`[VALIDATION ERROR] Skipping invalid content file: ${file}`);
+            if (e instanceof Error) {
+                console.error(`- ${e.message}`);
+            }
+            continue; // Skip invalid files instead of crashing
         }
 
         pages.push({

@@ -1,16 +1,16 @@
 ---
 title: "About Patrick Heinze - XR Strategist & Metaverse Architect"
-description: "From merchant to marketer to XR specialist. Learn how Patrick Heinze builds independent digital galaxies for companies using 3D, AI, and decentralized technologies."
+description: "From merchant to marketer to XR specialist. Learn how Patrick Heinze builds independent digital galaxies for companies."
 layout: "about"
 published: true
 hero:
-  titlePrefix: "Building Your"
-  titleAccent: "Digital Galaxy"
-  tagline: "About Patrick Heinze"
-  description: "From merchant to marketer to XR specialist. I don't just build 3D spaces—I create <span class='text-accent font-bold'>interactive worlds</span> that drive measurable business results."
+  titlePrefix: "Play"
+  titleAccent: "Forward"
+  tagline: "A collaborative and strategic partner"
+  description: "When you’re ready to use technology to drive your business forward, you need the right partner. We drive business growth for our clients through interactive 3D sales tools, engaged employees through VR and immersive corporate experiences, training and developed web, mobile and app platforms. We have the proven team and skills you need to create technology experiences that set your business apart. At HM, we work with our partners to find the right mix of technology, design, content and business strategy."
   image: "/images/about/patrick-heinze-portrait.jpg"
   imageWebp: "/images/about/patrick-heinze-portrait.webp"
-  imageAlt: "Patrick Heinze - XR Strategist and Metaverse Architect"
+  imageAlt: "Patrick Heinze - XR Strategist"
   badge: "Est. 2000"
   ctaPrimaryText: "LET'S TALK"
   ctaPrimaryLink: "/contact"
@@ -29,37 +29,33 @@ mission:
       label: "Brand-Compliant"
 journeyTagline: "My Journey"
 journeyTitle: "From Vision to <span class='text-accent'>Strategic Implementation</span>"
-journeyText: "This conviction is the result of a long journey that began with commercial foundations and evolved through creative exploration into strategic XR implementation."
+journeyText: "This conviction is the result of a long journey. It began with my training as a Management Assistant in IT-Systems (2000-2004), which laid my commercial and strategic foundation. The creative spark followed in 2009, when I developed my first 3D educational game with Blender during my European Voluntary Service—years before the Metaverse became a trend. After completing further studies in Computer Science (2011-2012), becoming a certified Online Marketing Manager (2018), and gaining years of experience implementing digital projects (including WordPress), I realized: Classic web design is no longer enough. The true fascination lies in interactivity."
+quote: "<span class='font-black'>\"The decisive turning point came in 2022</span> when I partnered with a team of expert Unity developers. **Together, we build** revolutionary platforms and interactive experiences. This unique journey from merchant to marketer to XR specialist is your greatest advantage today: <span class='text-accent font-bold'>I am not just a developer, but your strategic partner</span> who understands your vision and translates it into measurable success. <strong>Our Vision:</strong> The Metaverse is not a single app. It is a network of millions of virtual worlds and digital experiences that people visit to play, socialize and collaborate. Today, most of these experiences are closed and disconnected walled gardens.\""
 milestones:
   - year: "2000-2004"
-    title: "Foundation"
-    desc: "Management Assistant in IT-Systems"
+    title: "Commercial Foundation"
+    desc: "Management Assistant in IT-Systems."
     icon: "💼"
   - year: "2009"
-    title: "First 3D Game"
-    desc: "Educational game with Blender"
+    title: "Creative Spark"
+    desc: "First 3D educational game developed with Blender during European Voluntary Service."
     icon: "🎮"
   - year: "2011-2012"
-    title: "Computer Science"
-    desc: "Studies & Certification"
+    title: "Deepening Tech"
+    desc: "Studies in Computer Science."
     icon: "🎓"
   - year: "2018"
-    title: "Marketing Expert"
-    desc: "Certified Online Marketing Manager"
+    title: "Marketing Expertise"
+    desc: "Certified Online Marketing Manager. Implementation of digital projects."
     icon: "📊"
   - year: "2022"
-    title: "Platform Partner"
-    desc: "Strategic collaboration with Mr. Metaverse"
+    title: "The Turning Point"
+    desc: "Partnering with Unity Experts. Transition from developer to strategic partner."
     icon: "🤝"
-  - year: "2026"
-    title: "Today"
-    desc: "Building Digital Galaxies"
-    icon: "🌌"
-quote: "<span class='font-black'>\"The decisive turning point came in 2022</span> when I met the developer Mr. Metaverse. He was beginning to develop a revolutionary platform, and I immediately recognized the potential. From the very beginning, I helped refine the platform and contributed my perspective. This unique journey from merchant to marketer to XR specialist is your greatest advantage today: <span class='text-accent font-bold'>I am not just a developer, but your strategic partner</span> who understands your vision and translates it into measurable success.\""
 techStack:
-  - name: "Mr. Metaverse"
+  - name: "Unity"
     category: "Platform"
-    desc: "Enterprise Edition"
+    desc: "Enterprise Development"
   - name: "Blender"
     category: "3D Creation"
     desc: "GameLogic Development"
@@ -72,7 +68,7 @@ techStack:
 platformComparison:
   tagline: "Expertise & Technology"
   title: "Powered by <span class='text-accent'>Enterprise-Grade</span> Technology"
-  text: "<p class='text-lg leading-relaxed'>To implement your vision stably and efficiently, I rely on the powerful <span class='font-bold text-accent'>Mr. Metaverse platform</span>. Instead of reinventing the wheel, I use a proven Enterprise Edition.</p><p class='text-lg leading-relaxed'><span class='font-bold'>The decisive advantage for you:</span> You own and control your own platform, rather than renting a world from providers like Spatial or Roblox.</p><p class='text-lg leading-relaxed'>My passion is <span class='font-bold text-accent'>\"GameLogic\"</span>: I don't just build beautiful 3D spaces; using my experience with Blender and intelligent interactions, I create captivating experiences that retain customers.</p>"
+  text: "To implement your vision stably and efficiently, I rely on powerful <span class='font-bold text-accent'>Unity-based enterprise solutions</span>. Instead of reinventing the wheel, I use proven Enterprise Editions. The decisive advantage for you: <span class='font-bold'>You own and control your own platform</span>, rather than renting a world from providers like Spatial or Roblox. My passion is <span class='font-bold text-accent'>\"GameLogic\"</span>: I don't just build beautiful 3D spaces; using my experience with Blender and intelligent interactions, I create captivating experiences that retain customers. To make these worlds future-proof, I also integrate AI and Machine Learning technologies from Google Cloud, Firebase, and HuggingFace."
   comparison:
     bad:
       title: "Rented Platforms"
@@ -87,11 +83,11 @@ platformComparison:
         - "One-time investment, no monthly fees"
         - "100% brand-compliant & customized"
 showcase:
-  - image: "/images/about/workspace.jpg"
+  - image: "/images/about/themed-studio.svg"
     alt: "XR Development Workspace"
     title: "Development Studio"
     subtitle: "Where magic happens"
-  - image: "/images/about/3d-project.jpg"
+  - image: "/images/about/themed-logic.svg"
     alt: "3D Interactive Project"
     title: "3D GameLogic"
     subtitle: "Interactive experiences"
@@ -110,17 +106,10 @@ ctaDescription: "If you are ready to transform your digital presence from a pass
 ctaButtonText: "START YOUR PROJECT"
 ---
 
-# Play Forward: A Strategic Approach
+## Heinze Media
 
-When you're ready to use technology to drive your business forward, you need the right partner. We drive business growth for our clients through interactive 3D sales tools, engaged employees through VR, and immersive corporate experiences.
+### We love technology and design
 
-## Technology & Design United
+HM harnesses the power of technology to drive real business results. Born from a combination of video game development DNA and a virtual user experience mindset, our team provides a playful and results-oriented approach to the challenge of immersive business experiences. HM’s solutions are used in employee training, product marketing, sales and BD enablement, team collaboration, and virtual and hybrid events.
 
-We have the proven team and skills you need to create technology experiences that set your business apart. At Heinze Media, we work with our partners to find the right mix of technology, design, content, and business strategy.
-
-### Our Focus
-*   **Interactive 3D Sales Enablement**
-*   **Virtual Employee Training**
-*   **Hybrid Event Platforms**
-
-Our team combines video game development DNA with a virtual user experience mindset. This playful yet results-oriented approach solves the challenges of immersive business experiences.
+HM designs and develops apps and platforms that engage visitors, drive business growth through interactive 3D sales enablement tools. We produce live-streamed content for workforces in VR.
