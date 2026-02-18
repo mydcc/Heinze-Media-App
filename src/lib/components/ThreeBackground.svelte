@@ -310,6 +310,8 @@
             renderer.dispose();
             sphereGeometry.dispose();
             sphereMaterial.dispose();
+            gridHelper.geometry.dispose();
+            (gridHelper.material as THREE.Material).dispose();
             container.removeChild(renderer.domElement);
         };
     });
