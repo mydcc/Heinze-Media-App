@@ -176,6 +176,8 @@
         // Animation basierend auf Section Scroll Progress (von prop)
         // 3 Phasen: 0-40% (Kugel kommt), 40-60% (Camera dreht), 60-100% (Kugel geht)
         let time = 0;
+        let animationId: number;
+        let isVisible = false;
         const sphereRadius = 2;
 
         // Phase 1: Kugel kommt von hinten-rechts nach vorne-mitte
@@ -189,7 +191,8 @@
         const phase3EndX = -2; // Leicht links
 
         function animate() {
-            requestAnimationFrame(animate);
+            if (!isVisible) return;
+            animationId = requestAnimationFrame(animate);
             time += 0.01;
 
             // Phasen-Berechnung
@@ -265,7 +268,20 @@
             renderer.render(scene, camera);
         }
 
-        animate();
+        // Visibility Observer
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const entry = entries[0];
+                const wasVisible = isVisible;
+                isVisible = entry.isIntersecting;
+
+                if (isVisible && !wasVisible) {
+                    animate();
+                }
+            },
+            { threshold: 0.1 },
+        );
+        observer.observe(container);
 
         // Reactive Theme Updates via Svelte 5 Rune
         $effect(() => {
@@ -288,10 +304,14 @@
 
         // Cleanup
         return () => {
+            observer.disconnect();
             window.removeEventListener("resize", handleResize);
+            cancelAnimationFrame(animationId);
             renderer.dispose();
             sphereGeometry.dispose();
             sphereMaterial.dispose();
+            gridHelper.geometry.dispose();
+            (gridHelper.material as THREE.Material).dispose();
             container.removeChild(renderer.domElement);
         };
     });

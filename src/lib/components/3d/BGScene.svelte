@@ -23,6 +23,7 @@
     let handleMouseMove: ((event: MouseEvent) => void) | null = null;
     let themeObserver: MutationObserver | null = null;
     let startTime = 0;
+    let isVisible = false;
 
     const getVar = (name: string) =>
         getComputedStyle(document.documentElement)
@@ -148,6 +149,7 @@
         // Animation loop
         startTime = performance.now();
         const animate = () => {
+            if (!isVisible) return;
             animationId = requestAnimationFrame(animate);
             const t = (performance.now() - startTime) * 0.001;
 
@@ -173,7 +175,21 @@
         };
 
         applyThemeColors();
-        animate();
+
+        // Visibility Observer
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const entry = entries[0];
+                const wasVisible = isVisible;
+                isVisible = entry.isIntersecting;
+
+                if (isVisible && !wasVisible) {
+                    animate();
+                }
+            },
+            { threshold: 0.1 },
+        );
+        observer.observe(canvas);
 
         // Handle window resize
         handleResize = () => {
@@ -189,6 +205,7 @@
 
         // Handle mouse movement
         handleMouseMove = (event: MouseEvent) => {
+            if (!isVisible) return;
             const x = (event.clientX / window.innerWidth) * 2 - 1;
             const y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -205,6 +222,7 @@
         });
 
         return () => {
+            observer.disconnect();
             if (handleResize)
                 window.removeEventListener("resize", handleResize);
             if (handleMouseMove)
