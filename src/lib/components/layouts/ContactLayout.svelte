@@ -14,43 +14,36 @@
     const contactEmail = $derived(metadata.contactEmail || "kontakt@heinze-media.de");
 </script>
 
-<div class="relative min-h-screen w-full overflow-hidden">
+<div class="relative min-h-screen w-full">
     <!-- Background: 3D Galaxy -->
     <div class="fixed inset-0 z-0">
         <HeroContact heightClass="h-screen" viewMode="full" />
     </div>
 
-    <!-- Floating HUD Overlay -->
+    <!-- Fixed Glass Tile at Bottom -->
     <div
-        class="absolute inset-0 z-10 pointer-events-none flex flex-col justify-end items-center pb-[148px] transition-all duration-1000 ease-out"
+        class="fixed bottom-12 left-1/2 -translate-x-1/2 z-50 transition-all duration-1000 ease-out"
         class:opacity-0={!mounted}
-        class:translate-y-4={!mounted}
+        class:translate-y-10={!mounted}
         class:opacity-100={mounted}
         class:translate-y-0={mounted}
     >
-        <div
-            class="pointer-events-auto backdrop-blur-2xl bg-bg-body/40 border border-white/10 rounded-2xl px-8 py-6 shadow-[0_0_50px_rgba(0,0,0,0.5)] border-t-white/20 transition-all duration-500 hover:border-accent/40 group"
+        <a
+            href="mailto:{contactEmail}"
+            class="block backdrop-blur-xl bg-bg-body/30 border border-white/10 rounded-2xl px-10 py-6 shadow-[0_20px_50px_rgba(0,0,0,0.3)] border-t-white/20 transition-all duration-500 group"
         >
-            <div class="text-center">
-                <p class="text-[10px] uppercase tracking-[0.4em] text-accent font-black mb-2 opacity-70">
-                    {metadata.tagline || "Get in Touch"}
+            <div class="text-center relative">
+                <p class="text-[10px] uppercase tracking-[0.5em] text-accent font-black mb-3 opacity-80">
+                    {metadata.tagline || "GET IN TOUCH"}
                 </p>
-                <a
-                    href="mailto:{contactEmail}"
-                    class="text-xl md:text-2xl font-black text-white hover:text-accent transition-all duration-300 block"
+                <div
+                    class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-black text-white transition-all duration-300 block tracking-tight whitespace-nowrap"
+                    style="font-size: clamp(1rem, 5vw, 1.875rem);"
                 >
                     {contactEmail}
-                </a>
-                <div class="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-white/5">
-                    {#each (metadata.locations || ["Berlin", "Remote", "Metaverse"]) as loc}
-                        <span class="text-[10px] text-text-muted uppercase tracking-widest">{loc}</span>
-                        {#if loc !== metadata.locations?.at(-1)}
-                            <span class="w-1 h-1 rounded-full bg-accent/30"></span>
-                        {/if}
-                    {/each}
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 
