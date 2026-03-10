@@ -151,7 +151,7 @@
         }
 
         /* === SCHACHBRETT & STEUERUNG === */
-        .board-container {
+        .chessboard {
             display: grid;
             grid-template-areas: ". top-labels ." "left-labels board right-labels" ". bottom-labels .";
             grid-template-columns: auto 1fr auto;
@@ -227,14 +227,14 @@
                 justify-content: center; 
                 min-width: 0;
             }
-            .board-container {
+            .chessboard {
                 max-height: 100%; 
                 width: auto; 
             }
         }
         
         /* Mobile im Querformat - FINALER FIX */
-        @media (max-height: 550px) and (orientation: landscape) {
+        @media screen and (max-height: 500px) and (orientation: landscape) {
             body {
                 padding: 0.5rem;
                 height: 100vh;
@@ -271,11 +271,9 @@
                 padding: 0.25rem 0;
             }
 
-            .board-container {
-                width: auto;
-                height: auto;
-                max-height: calc(100% - 130px); /* Höhe begrenzen, um Platz für Controls zu lassen */
-                margin: 0 auto;
+            #chessboard {
+                max-height: 85vh;
+                max-width: 85vh;
             }
             
             .status-message {
@@ -389,7 +387,7 @@
                 </div>
 
                 <div id="status-message" class="status-message">White's Turn</div>
-                <div id="board-container" class="board-container">
+                <div id="chessboard" class="chessboard">
                     <div id="top-labels" class="board-labels top-labels"></div>
                     <div id="left-labels" class="board-labels left-labels"></div>
                     <div id="chess-board" class="chess-board"></div>
