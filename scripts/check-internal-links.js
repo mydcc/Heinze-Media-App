@@ -1,42 +1,73 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
-const glob = require('glob');
+import fsPromises from 'node:fs/promises';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { globSync } from 'glob';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, '..');
 
-function findHrefMatches() {
-    const files = glob.sync('**/*.{svelte,html,md,ts,js}', { cwd: root, nodir: true, ignore: ['node_modules/**', 'build/**', 'dist/**'] });
+// Concurrency limit to avoid EMFILE errors
+const CONCURRENCY_LIMIT = 20;
+
+async function mapConcurrent(items, fn, limit = CONCURRENCY_LIMIT) {
+    const results = [];
+    const executing = new Set();
+    for (const item of items) {
+        const p = Promise.resolve().then(() => fn(item));
+        results.push(p);
+        executing.add(p);
+        const clean = () => executing.delete(p);
+        p.finally(clean).catch(() => {});
+        if (executing.size >= limit) {
+            await Promise.race(executing);
+        }
+    }
+    return Promise.all(results);
+}
+
+async function findHrefMatches() {
+    const files = globSync('**/*.{svelte,html,md,ts,js}', { cwd: root, nodir: true, ignore: ['node_modules/**', 'build/**', 'dist/**', '.git/**'] });
     const hrefs = new Map();
 
-    const hrefRegex = /href=\"(\/[^\"#?> ]*)(?:[\"#? >])/g;
-
-    for (const file of files) {
+    const results = await mapConcurrent(files, async (file) => {
         const full = path.join(root, file);
-        let content;
         try {
-            content = fs.readFileSync(full, 'utf8');
+            const content = await fsPromises.readFile(full, 'utf8');
+            const fileHrefs = [];
+            const hrefRegex = /href=\"(\/[^\"#?> ]*)(?:[\"#? >])/g;
+            let m;
+            while ((m = hrefRegex.exec(content))) {
+                const href = m[1];
+                if (href.startsWith('/')) {
+                   fileHrefs.push(href);
+                }
+            }
+            return { file, hrefs: fileHrefs };
         } catch (e) {
-            continue;
+            return null;
         }
+    });
 
-        let m;
-        while ((m = hrefRegex.exec(content))) {
-            const href = m[1];
-            if (!href.startsWith('/')) continue;
+    for (const res of results) {
+        if (!res) continue;
+        for (const href of res.hrefs) {
             if (!hrefs.has(href)) hrefs.set(href, new Set());
-            hrefs.get(href).add(file);
+            hrefs.get(href).add(res.file);
         }
     }
     return hrefs;
 }
 
-function targetExists(href) {
+async function targetExists(href) {
     // Normalize: strip trailing slash except root
     const normalized = href.endsWith('/') && href !== '/' ? href.slice(0, -1) : href;
 
     // Possible targets to check (in order)
     const candidates = [];
+
     // static files (public/static served root)
     candidates.push(path.join(root, 'static', normalized));
     candidates.push(path.join(root, 'static', normalized + '.html'));
@@ -74,27 +105,25 @@ function targetExists(href) {
 
     for (const c of candidates) {
         try {
-            if (fs.existsSync(c)) return { ok: true, found: c };
+            await fsPromises.access(c, fs.constants.F_OK);
+            return { ok: true, found: c };
         } catch (e) { }
     }
     return { ok: false, checked: candidates };
 }
 
-function main() {
-    const hrefs = findHrefMatches();
-    const results = [];
+async function main() {
+    const hrefs = await findHrefMatches();
 
-    for (const [href, sources] of hrefs.entries()) {
-        // ignore anchors and mailto/tel
-        if (href.startsWith('/#') || href.startsWith('/mailto:') || href.startsWith('/tel:')) continue;
+    const results = await mapConcurrent(Array.from(hrefs.entries()), async ([href, sources]) => {
+        if (href.startsWith('/#') || href.startsWith('/mailto:') || href.startsWith('/tel:')) return null;
+        const res = await targetExists(href);
+        return { href, sources: Array.from(sources), ...res };
+    });
 
-        const res = targetExists(href);
-        results.push({ href, sources: Array.from(sources), ...res });
-    }
-
-    const missing = results.filter(r => !r.ok).sort((a, b) => a.href.localeCompare(b.href));
-
-    console.log(`Checked ${results.length} unique internal hrefs. Missing: ${missing.length}\n`);
+    const filteredResults = results.filter(Boolean);
+    const missing = filteredResults.filter(r => !r.ok).sort((a, b) => a.href.localeCompare(b.href));
+    console.log(`Checked ${filteredResults.length} unique internal hrefs. Missing: ${missing.length}\n`);
 
     if (missing.length === 0) {
         console.log('No missing internal targets found.');
@@ -116,4 +145,7 @@ function main() {
     process.exit(2);
 }
 
-if (require.main === module) main();
+main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+});

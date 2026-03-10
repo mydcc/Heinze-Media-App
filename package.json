@@ -11,6 +11,7 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:content": "npx tsx scripts/check-content.ts",
 		"check:links": "npx tsx scripts/check-links.ts",
+		"check:internal-links": "node scripts/check-internal-links.js",
 		"pre-commit": "node scripts/pre-commit-check.js",
 		"fix:content": "npx tsx scripts/fix-frontmatter.ts",
 		"translate": "node scripts/translate-content.js"
