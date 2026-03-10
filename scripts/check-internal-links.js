@@ -29,7 +29,7 @@ async function mapConcurrent(items, fn, limit = CONCURRENCY_LIMIT) {
 
 async function findHrefMatches() {
     // fs.globSync is Node 22+; since project uses Node 22 as confirmed in env
-    const files = fs.globSync('**/*.{svelte,html,md,ts,js}', { cwd: root, nodir: true, ignore: ['node_modules/**', 'build/**', 'dist/**'] });
+    const files = fs.globSync('**/*.{svelte,html,md,ts,js}', { cwd: root, exclude: (dirent) => ['node_modules', 'build', 'dist', '.git'].includes(dirent.name) });
     const hrefs = new Map();
 
     const results = await mapConcurrent(files, async (file) => {
