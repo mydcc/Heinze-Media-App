@@ -3,6 +3,7 @@ import fsPromises from 'node:fs/promises';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { globSync } from 'glob';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,7 +20,7 @@ async function mapConcurrent(items, fn, limit = CONCURRENCY_LIMIT) {
         results.push(p);
         executing.add(p);
         const clean = () => executing.delete(p);
-        p.then(clean).catch(clean);
+        p.finally(clean);
         if (executing.size >= limit) {
             await Promise.race(executing);
         }
@@ -28,8 +29,7 @@ async function mapConcurrent(items, fn, limit = CONCURRENCY_LIMIT) {
 }
 
 async function findHrefMatches() {
-    // fs.globSync is Node 22+; since project uses Node 22 as confirmed in env
-    const files = fs.globSync('**/*.{svelte,html,md,ts,js}', { cwd: root, exclude: (name) => ['node_modules', 'build', 'dist', '.git'].includes(name) });
+    const files = globSync('**/*.{svelte,html,md,ts,js}', { cwd: root, nodir: true, ignore: ['node_modules/**', 'build/**', 'dist/**', '.git/**'] });
     const hrefs = new Map();
 
     const results = await mapConcurrent(files, async (file) => {
@@ -145,4 +145,7 @@ async function main() {
     process.exit(2);
 }
 
-main();
+main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+});
