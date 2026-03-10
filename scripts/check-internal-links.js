@@ -20,7 +20,7 @@ async function mapConcurrent(items, fn, limit = CONCURRENCY_LIMIT) {
         results.push(p);
         executing.add(p);
         const clean = () => executing.delete(p);
-        p.finally(clean);
+        p.finally(clean).catch(() => {});
         if (executing.size >= limit) {
             await Promise.race(executing);
         }
